@@ -109,7 +109,7 @@ export function getWCAGLevel(ratio: number, textSize: TextSize): WCAGLevel {
     return 'AAA';
   }
   if (ratio >= thresholds.AA) {
-    return textSize === 'large' ? 'AA' : 'AA';
+    return 'AA';
   }
   if (textSize === 'normal' && ratio >= WCAG_THRESHOLDS.large.AA) {
     // Passes AA for large text only
