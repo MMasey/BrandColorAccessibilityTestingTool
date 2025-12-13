@@ -1,0 +1,252 @@
+/* ==========================================================================
+   Brand Color Accessibility Tool - Global Styles & Theme Tokens
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties - Theme Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Color scheme preference */
+  color-scheme: light dark;
+
+  /* ---------- Light Theme (default) ---------- */
+
+  /* Surface colors */
+  --color-surface-primary: #ffffff;
+  --color-surface-secondary: #f5f5f5;
+  --color-surface-tertiary: #e8e8e8;
+
+  /* Text colors */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #555555;
+  --color-text-muted: #777777;
+  --color-text-inverse: #ffffff;
+
+  /* Brand/accent colors */
+  --color-accent-primary: #0066cc;
+  --color-accent-primary-hover: #0052a3;
+  --color-accent-secondary: #6b21a8;
+
+  /* Semantic colors */
+  --color-success: #15803d;
+  --color-success-bg: #dcfce7;
+  --color-warning: #a16207;
+  --color-warning-bg: #fef3c7;
+  --color-error: #dc2626;
+  --color-error-bg: #fee2e2;
+
+  /* Border colors */
+  --color-border-default: #d4d4d4;
+  --color-border-strong: #a3a3a3;
+  --color-border-focus: var(--color-accent-primary);
+
+  /* ---------- Spacing Scale ---------- */
+  --space-xs: 0.25rem;   /* 4px */
+  --space-sm: 0.5rem;    /* 8px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+
+  /* ---------- Typography Scale ---------- */
+  --font-family-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-md: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 2rem;     /* 32px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ---------- Border Radius ---------- */
+  --radius-sm: 0.25rem;  /* 4px */
+  --radius-md: 0.5rem;   /* 8px */
+  --radius-lg: 0.75rem;  /* 12px */
+  --radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* ---------- Focus Ring ---------- */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color: var(--color-accent-primary);
+
+  /* ---------- Transitions ---------- */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ---------- Touch Target ---------- */
+  --touch-target-min: 44px;
+
+  /* ---------- User Font Size Adjustment ---------- */
+  --user-font-scale: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Dark Theme
+   -------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-surface-primary: #1a1a1a;
+    --color-surface-secondary: #262626;
+    --color-surface-tertiary: #333333;
+
+    --color-text-primary: #f5f5f5;
+    --color-text-secondary: #a3a3a3;
+    --color-text-muted: #737373;
+    --color-text-inverse: #1a1a1a;
+
+    --color-accent-primary: #60a5fa;
+    --color-accent-primary-hover: #93c5fd;
+
+    --color-success: #4ade80;
+    --color-success-bg: #14532d;
+    --color-warning: #fbbf24;
+    --color-warning-bg: #713f12;
+    --color-error: #f87171;
+    --color-error-bg: #7f1d1d;
+
+    --color-border-default: #404040;
+    --color-border-strong: #525252;
+  }
+}
+
+/* Explicit dark theme */
+:root[data-theme="dark"] {
+  --color-surface-primary: #1a1a1a;
+  --color-surface-secondary: #262626;
+  --color-surface-tertiary: #333333;
+
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted: #737373;
+  --color-text-inverse: #1a1a1a;
+
+  --color-accent-primary: #60a5fa;
+  --color-accent-primary-hover: #93c5fd;
+
+  --color-success: #4ade80;
+  --color-success-bg: #14532d;
+  --color-warning: #fbbf24;
+  --color-warning-bg: #713f12;
+  --color-error: #f87171;
+  --color-error-bg: #7f1d1d;
+
+  --color-border-default: #404040;
+  --color-border-strong: #525252;
+}
+
+/* --------------------------------------------------------------------------
+   High Contrast Theme
+   -------------------------------------------------------------------------- */
+
+:root[data-theme="high-contrast"] {
+  --color-surface-primary: #000000;
+  --color-surface-secondary: #1a1a1a;
+  --color-surface-tertiary: #333333;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #ffffff;
+  --color-text-muted: #e5e5e5;
+  --color-text-inverse: #000000;
+
+  --color-accent-primary: #ffff00;
+  --color-accent-primary-hover: #ffff66;
+
+  --color-success: #00ff00;
+  --color-success-bg: #003300;
+  --color-warning: #ffff00;
+  --color-warning-bg: #333300;
+  --color-error: #ff0000;
+  --color-error-bg: #330000;
+
+  --color-border-default: #ffffff;
+  --color-border-strong: #ffffff;
+  --color-border-focus: #ffff00;
+}
+
+/* --------------------------------------------------------------------------
+   Base Styles
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: calc(100% * var(--user-font-scale));
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --------------------------------------------------------------------------
+   Focus Styles
+   -------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Skip Link (Accessibility)
+   -------------------------------------------------------------------------- */
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-accent-primary);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  z-index: 9999;
+}
+
+.skip-link:focus {
+  top: 0;
+}
