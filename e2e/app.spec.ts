@@ -50,7 +50,6 @@ test.describe('Accessibility', () => {
     await expect(imagesWithoutAlt).toHaveCount(0);
 
     // Check for form labels (if any forms exist)
-    const inputsWithoutLabels = page.locator('input:not([aria-label]):not([aria-labelledby])');
     // This is a soft check - will be more relevant when we add inputs
   });
 });
