@@ -3,6 +3,7 @@ import { customElement } from 'lit/decorators.js';
 import './color-palette';
 import './text-size-toggle';
 import './contrast-grid';
+import './theme-switcher';
 
 /**
  * Main application shell component.
@@ -61,6 +62,23 @@ export class AppShell extends LitElement {
       margin: 0;
       font-size: var(--font-size-sm, 0.875rem);
       color: var(--color-text-secondary, #555555);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md, 1rem);
+    }
+
+    /* Hide full theme switcher on mobile, show compact version */
+    .header-controls theme-switcher {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .header-controls theme-switcher {
+        display: block;
+      }
     }
 
     main {
@@ -126,6 +144,17 @@ export class AppShell extends LitElement {
       letter-spacing: 0.05em;
     }
 
+    /* Show mobile theme switcher only on small screens */
+    .mobile-only {
+      display: block;
+    }
+
+    @media (min-width: 768px) {
+      .mobile-only {
+        display: none;
+      }
+    }
+
     .grid-section {
       min-width: 0;
     }
@@ -185,6 +214,9 @@ export class AppShell extends LitElement {
             <h1>Brand Color Accessibility Tool</h1>
             <p class="tagline">Validate your color palette against WCAG 2.1 contrast requirements</p>
           </div>
+          <div class="header-controls">
+            <theme-switcher></theme-switcher>
+          </div>
         </div>
       </header>
 
@@ -196,6 +228,11 @@ export class AppShell extends LitElement {
             <div class="controls-section">
               <h3 class="section-title">Evaluation Settings</h3>
               <text-size-toggle></text-size-toggle>
+            </div>
+
+            <div class="controls-section mobile-only">
+              <h3 class="section-title">Display Preferences</h3>
+              <theme-switcher></theme-switcher>
             </div>
           </aside>
 

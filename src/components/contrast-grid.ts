@@ -126,6 +126,19 @@ export class ContrastGrid extends LitElement {
       writing-mode: vertical-rl;
       transform: rotate(180deg);
     }
+
+    /* Screen reader only - visually hidden but accessible */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   `;
 
   private store = new ColorStoreController(this);
@@ -142,6 +155,31 @@ export class ContrastGrid extends LitElement {
 
   private getColorLabel(color: Color): string {
     return color.label || color.hex;
+  }
+
+  private getAccessibilitySummary(matrix: ContrastResult[][]): string {
+    let aaa = 0;
+    let aa = 0;
+    let aa18 = 0;
+    let fail = 0;
+
+    for (const row of matrix) {
+      for (const result of row) {
+        if (result) {
+          switch (result.level) {
+            case 'AAA': aaa++; break;
+            case 'AA': aa++; break;
+            case 'AA18': aa18++; break;
+            case 'DNP': fail++; break;
+          }
+        }
+      }
+    }
+
+    const total = aaa + aa + aa18 + fail;
+    const passing = aaa + aa;
+
+    return `${total} color combinations: ${passing} pass AA or better, ${aa18} pass for large text only, ${fail} fail.`;
   }
 
   render() {
@@ -166,9 +204,15 @@ export class ContrastGrid extends LitElement {
 
     const matrix = this.getContrastMatrix();
     const gridSize = colors.length + 1;
+    const summary = this.getAccessibilitySummary(matrix);
 
     return html`
       <div class="grid-container">
+        <!-- Screen reader summary announced on updates -->
+        <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          ${summary}
+        </div>
+
         <div class="axis-label">
           ↓ Foreground (text) &nbsp;&nbsp;|&nbsp;&nbsp; Background →
         </div>
