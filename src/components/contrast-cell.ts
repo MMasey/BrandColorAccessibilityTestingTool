@@ -111,6 +111,28 @@ export class ContrastCell extends LitElement {
     :host([compact]) .sample-text {
       display: none;
     }
+
+    /* Mobile: auto-compact mode */
+    @media (max-width: 640px) {
+      .cell {
+        min-width: 3.5rem;
+        min-height: 3.5rem;
+        padding: var(--space-xs, 0.25rem);
+      }
+
+      .ratio {
+        font-size: var(--font-size-sm, 0.875rem);
+      }
+
+      .badge {
+        font-size: 0.625rem;
+        padding: 0.0625rem 0.25rem;
+      }
+
+      .sample-text {
+        display: none;
+      }
+    }
   `;
 
   /** The contrast result to display */

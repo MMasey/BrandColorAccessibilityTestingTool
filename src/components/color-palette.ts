@@ -54,6 +54,18 @@ export class ColorPalette extends LitElement {
 
     .add-row color-input {
       flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile: stack input and button */
+    @media (max-width: 400px) {
+      .add-row {
+        flex-direction: column;
+      }
+
+      .add-row color-input {
+        width: 100%;
+      }
     }
 
     .add-btn {

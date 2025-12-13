@@ -127,6 +127,58 @@ export class ContrastGrid extends LitElement {
       transform: rotate(180deg);
     }
 
+    /* Mobile: smaller cells and headers */
+    @media (max-width: 640px) {
+      .header-cell {
+        min-width: 3.5rem;
+        padding: var(--space-xs, 0.25rem);
+        font-size: var(--font-size-xs, 0.75rem);
+      }
+
+      .header-cell.row-header {
+        min-height: 3.5rem;
+      }
+
+      .color-dot {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+
+      .color-label {
+        max-width: 3rem;
+        font-size: var(--font-size-xs, 0.75rem);
+      }
+
+      .axis-label {
+        font-size: var(--font-size-xs, 0.75rem);
+      }
+
+      .legend {
+        gap: var(--space-sm, 0.5rem);
+        padding: var(--space-sm, 0.5rem);
+      }
+
+      .legend-item {
+        font-size: var(--font-size-xs, 0.75rem);
+      }
+
+      .legend-badge {
+        font-size: 0.625rem;
+        padding: 0.0625rem 0.25rem;
+      }
+    }
+
+    /* Tablet: medium adjustments */
+    @media (min-width: 641px) and (max-width: 1023px) {
+      .header-cell {
+        min-width: 4rem;
+      }
+
+      .color-label {
+        max-width: 4rem;
+      }
+    }
+
     /* Screen reader only - visually hidden but accessible */
     .sr-only {
       position: absolute;
