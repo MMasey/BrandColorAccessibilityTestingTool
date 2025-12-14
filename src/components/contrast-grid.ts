@@ -117,7 +117,7 @@ export class ContrastGrid extends LitElement {
 
     .axis-label {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #777777);
+      color: var(--color-text-muted, #666666);
       text-align: center;
       padding: var(--space-xs, 0.25rem);
     }
@@ -271,18 +271,17 @@ export class ContrastGrid extends LitElement {
 
         <div
           class="grid"
-          role="grid"
-          aria-label="Color contrast matrix"
+          aria-hidden="true"
           style="grid-template-columns: repeat(${gridSize}, auto)"
         >
           <!-- Corner cell -->
-          <div class="header-cell corner" role="columnheader">
+          <div class="header-cell corner">
             <span aria-hidden="true">FG \\ BG</span>
           </div>
 
           <!-- Column headers (background colors) -->
           ${colors.map((color) => html`
-            <div class="header-cell" role="columnheader">
+            <div class="header-cell">
               <div class="color-indicator">
                 <div class="color-dot" style="background: ${color.hex}"></div>
                 <span class="color-label">${this.getColorLabel(color)}</span>
@@ -293,7 +292,7 @@ export class ContrastGrid extends LitElement {
           <!-- Rows -->
           ${colors.map((fgColor, fgIndex) => html`
             <!-- Row header (foreground color) -->
-            <div class="header-cell row-header" role="rowheader">
+            <div class="header-cell row-header">
               <div class="color-indicator">
                 <div class="color-dot" style="background: ${fgColor.hex}"></div>
                 <span class="color-label">${this.getColorLabel(fgColor)}</span>
@@ -313,7 +312,7 @@ export class ContrastGrid extends LitElement {
           `)}
         </div>
 
-        <div class="legend" role="legend" aria-label="WCAG compliance legend">
+        <div class="legend" aria-label="WCAG compliance legend">
           <div class="legend-item">
             <span class="legend-badge aaa">AAA</span>
             <span>Enhanced (7:1${textSize === 'large' ? ', 4.5:1 large' : ''})</span>

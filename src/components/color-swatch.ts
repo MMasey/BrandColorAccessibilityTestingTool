@@ -15,16 +15,28 @@ export class ColorSwatch extends LitElement {
       display: block;
     }
 
+    .swatch-container {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--color-surface-secondary, #f5f5f5);
+      border: 1px solid var(--color-border-default, #d4d4d4);
+      border-radius: var(--radius-md, 0.5rem);
+      overflow: hidden;
+    }
+
     .swatch {
+      flex: 1;
       display: flex;
       align-items: center;
       gap: var(--space-sm, 0.5rem);
       padding: var(--space-sm, 0.5rem);
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
-      border-radius: var(--radius-md, 0.5rem);
+      background: transparent;
+      border: none;
       cursor: pointer;
       transition: background var(--transition-fast, 150ms ease);
+      font-family: inherit;
+      text-align: left;
     }
 
     .swatch:hover {
@@ -95,7 +107,7 @@ export class ColorSwatch extends LitElement {
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
-      color: var(--color-text-muted, #777777);
+      color: var(--color-text-muted, #666666);
       cursor: pointer;
       transition: color var(--transition-fast, 150ms ease),
                   background var(--transition-fast, 150ms ease);
@@ -134,6 +146,10 @@ export class ColorSwatch extends LitElement {
       width: 1.5rem;
       height: 1.5rem;
     }
+
+    .swatch-container:hover .remove-btn {
+      opacity: 1;
+    }
   `;
 
   /** The color to display */
@@ -171,26 +187,20 @@ export class ColorSwatch extends LitElement {
     const label = this.color.label || 'Unnamed';
 
     return html`
-      <div
-        class="swatch"
-        role="button"
-        tabindex="0"
-        style="--swatch-color: ${this.color.hex}"
-        aria-label="${label}: ${this.color.hex}"
-        @click="${this.handleClick}"
-        @keydown="${(e: KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            this.handleClick();
-          }
-        }}"
-      >
-        <div class="color-box" aria-hidden="true"></div>
+      <div class="swatch-container" style="--swatch-color: ${this.color.hex}">
+        <button
+          type="button"
+          class="swatch"
+          aria-label="${label}: ${this.color.hex}"
+          @click="${this.handleClick}"
+        >
+          <div class="color-box" aria-hidden="true"></div>
 
-        <div class="info">
-          <div class="label">${label}</div>
-          <div class="hex">${this.color.hex}</div>
-        </div>
+          <div class="info">
+            <div class="label">${label}</div>
+            <div class="hex">${this.color.hex}</div>
+          </div>
+        </button>
 
         ${this.showRemove ? html`
           <button

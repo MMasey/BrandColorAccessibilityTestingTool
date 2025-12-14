@@ -60,7 +60,7 @@ export class TextSizeToggle extends LitElement {
 
     .size-info {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #777777);
+      color: var(--color-text-muted, #666666);
     }
 
     .thresholds {
@@ -68,7 +68,7 @@ export class TextSizeToggle extends LitElement {
       gap: var(--space-md, 1rem);
       margin-top: var(--space-xs, 0.25rem);
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #777777);
+      color: var(--color-text-muted, #666666);
     }
 
     .threshold {

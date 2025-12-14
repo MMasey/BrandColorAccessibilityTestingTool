@@ -144,7 +144,7 @@ export class ThemeSwitcher extends LitElement {
       border: 1px solid var(--color-border-default, #d4d4d4);
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #777777);
+      color: var(--color-text-muted, #666666);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
     }

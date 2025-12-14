@@ -64,23 +64,6 @@ export class AppShell extends LitElement {
       color: var(--color-text-secondary, #555555);
     }
 
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md, 1rem);
-    }
-
-    /* Hide full theme switcher on mobile, show compact version */
-    .header-controls theme-switcher {
-      display: none;
-    }
-
-    @media (min-width: 768px) {
-      .header-controls theme-switcher {
-        display: block;
-      }
-    }
-
     main {
       padding: var(--space-lg, 1.5rem);
       max-width: 1400px;
@@ -144,17 +127,6 @@ export class AppShell extends LitElement {
       letter-spacing: 0.05em;
     }
 
-    /* Show mobile theme switcher only on small screens */
-    .mobile-only {
-      display: block;
-    }
-
-    @media (min-width: 768px) {
-      .mobile-only {
-        display: none;
-      }
-    }
-
     .grid-section {
       min-width: 0;
     }
@@ -191,11 +163,11 @@ export class AppShell extends LitElement {
 
     .footer-content a {
       color: var(--color-accent-primary, #0066cc);
-      text-decoration: none;
+      text-decoration: underline;
     }
 
     .footer-content a:hover {
-      text-decoration: underline;
+      text-decoration-thickness: 2px;
     }
 
     .footer-content a:focus-visible {
@@ -214,9 +186,6 @@ export class AppShell extends LitElement {
             <h1>Brand Color Accessibility Tool</h1>
             <p class="tagline">Validate your color palette against WCAG 2.1 contrast requirements</p>
           </div>
-          <div class="header-controls">
-            <theme-switcher></theme-switcher>
-          </div>
         </div>
       </header>
 
@@ -230,7 +199,7 @@ export class AppShell extends LitElement {
               <text-size-toggle></text-size-toggle>
             </div>
 
-            <div class="controls-section mobile-only">
+            <div class="controls-section">
               <h3 class="section-title">Display Preferences</h3>
               <theme-switcher></theme-switcher>
             </div>

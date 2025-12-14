@@ -88,7 +88,7 @@ export class ColorInput extends LitElement {
     }
 
     input[type="text"]::placeholder {
-      color: var(--color-text-muted, #777777);
+      color: var(--color-text-muted, #666666);
     }
 
     .label-input {
@@ -107,7 +107,7 @@ export class ColorInput extends LitElement {
     }
 
     .label-input::placeholder {
-      color: var(--color-text-muted, #777777);
+      color: var(--color-text-muted, #666666);
     }
 
     /* Mobile: hide label input to save space */
