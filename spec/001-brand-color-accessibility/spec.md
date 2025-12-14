@@ -19,11 +19,32 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 2. **Tool-Only Page**: Stripped-back, embeddable version for sharing/whitelabeling (potential future)
 
 # Inputs
-- Brand colors via manual input (hex, RGB, HSL formats)
+- Brand colors via:
+  - Manual text input (hex, RGB, HSL formats)
+  - Visual color picker (native `<input type="color">` with Alwan enhancement)
+  - EyeDropper API for screen color sampling (Chromium browsers only, progressive enhancement)
 - AI prompt describing brand personality/feel (future phase)
 - Algorithm toggle (WCAG 2.1, APCA, or both)
 - Target compliance level (AA or AAA)
 - Text size context (normal or large text)
+
+## Color Picker Strategy
+Layered approach following progressive enhancement:
+
+| Layer | Solution | Description |
+|-------|----------|-------------|
+| **Baseline** | Text input | Paste hex/RGB/HSL - works without JS |
+| **Native** | `<input type="color">` | Browser's built-in picker, accessible |
+| **Enhanced** | Alwan | Chrome DevTools-style picker, keyboard accessible |
+| **Optional** | EyeDropper API | Pick color from anywhere on screen (Chromium only) |
+
+**Why Alwan?**
+- Vanilla JavaScript, zero framework dependencies
+- Explicitly designed for accessibility (full keyboard support)
+- UI inspired by Chrome DevTools color picker
+- Lightweight and performant
+- Supports hex, RGB, HSL output formats
+- MIT licensed
 
 # Outputs
 - Contrast grid displaying all color pair combinations with ratios
@@ -47,6 +68,78 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
   - AA: 4.5:1 normal text, 3:1 large text
   - AAA: 7:1 normal text, 4.5:1 large text
   - UI components: 3:1 minimum
+- **Progressive Enhancement**: Core functionality must degrade gracefully without JavaScript
+
+# Progressive Enhancement Principles
+
+The tool follows progressive enhancement - building from a solid HTML foundation, enhanced by CSS, then JavaScript. This ensures maximum accessibility and resilience.
+
+## Core Principle
+> "Make the core functionality work for everyone, then enhance for those with more capable browsers."
+
+## Enhancement Layers
+
+### Layer 1: HTML Baseline (No JavaScript)
+The tool must provide meaningful functionality without JavaScript:
+- **Shareable URLs**: Color palette encoded in URL query parameters (`?colors=FF5733,3498DB,2ECC71&labels=Orange,Blue,Green`)
+- **Server-side fallback option**: URL structure supports future server-rendered output
+- **Noscript content**: Clear message explaining JS requirement with link to alternative tools (WebAIM)
+- **Semantic HTML**: Forms, tables, and landmarks that convey structure without styling
+
+### Layer 2: CSS Enhancement
+Visual presentation and some interactivity via CSS-only techniques:
+- **Theme switching**: Use `prefers-color-scheme` media query as default
+- **CSS-only theme toggle**: Hidden radio inputs with sibling selectors (`:checked ~ .content`)
+- **Print styles**: Contrast grid prints cleanly without JS
+- **Reduced motion**: Respect `prefers-reduced-motion` via CSS
+
+### Layer 3: JavaScript Enhancement
+Rich interactivity for capable browsers:
+- Real-time color validation and preview
+- Dynamic contrast calculations as colors are entered
+- Instant grid updates without page reload
+- Enhanced state management and undo/redo
+- ARIA live region announcements
+
+## URL State Architecture
+Colors are persisted in URL for bookmarking, sharing, and progressive enhancement:
+
+```
+?colors=FF5733,3498DB,2ECC71&labels=Orange,Blue,Green&text=normal&theme=dark
+```
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `colors` | Comma-separated hex values (no #) | `FF5733,3498DB` |
+| `labels` | Comma-separated labels (URL-encoded) | `Primary,Secondary` |
+| `text` | Text size mode | `normal` or `large` |
+| `theme` | Color theme | `light`, `dark`, or `high-contrast` |
+
+Benefits:
+- Page can render initial state from URL before JS loads
+- Shareable links work immediately
+- Browser back/forward navigation works naturally
+- Bookmarkable states
+
+## Implementation Requirements
+
+### Minimum Viable No-JS Experience
+1. Display a meaningful landing page with tool description
+2. Show a form for entering colors (submits to update URL)
+3. If colors exist in URL, display static contrast grid (pre-rendered or noscript table)
+4. Provide fallback links to WebAIM contrast checker
+
+### JavaScript-Enhanced Experience
+1. Intercept form submission, update URL without reload
+2. Calculate contrast ratios client-side in real-time
+3. Render dynamic grid with live updates
+4. Add keyboard shortcuts and enhanced interactions
+
+## What Progressive Enhancement is NOT
+- It's not about supporting ancient browsers
+- It's not about building everything twice
+- It's about **layered experiences** where each layer adds value
+- JavaScript failures (network issues, CDN outages, corporate firewalls) shouldn't break the core experience
 
 # Design Requirements
 - **Responsive**: Mobile-first, fully functional across mobile, tablet, and desktop
@@ -56,6 +149,26 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 - **Keyboard navigation**: Full keyboard accessibility with visible focus states
 - **Screen reader optimized**: Proper ARIA labels, live regions for dynamic updates
 - **Reduced motion**: Respect prefers-reduced-motion for animations
+
+## UI/UX Refinements
+
+### Contrast Grid
+- **Diagonal cells (same-color pairs)**: Display as blank/empty or "—" rather than showing "1:1 FAIL" — these comparisons are meaningless and add visual clutter
+- **Badge clarity**: Consider tooltips or help text explaining what "AA 18+" means ("Passes AA for large text only, fails for normal text")
+- **Visual hierarchy**: Use subtle borders or gaps to help users track rows/columns
+
+### Display Preferences Placement
+- **DOM order**: Display preferences (theme, font size) should appear **early in the DOM** for accessibility
+- **Rationale**: Users who need to adjust contrast or font size should be able to do so before navigating through main content
+- **Options**:
+  1. Move to header (always visible)
+  2. Place at top of sidebar (before color palette)
+  3. Add a quick-access button in header that reveals preferences
+
+### Theme Switcher
+- **Overflow handling**: Ensure button labels don't overflow at any viewport width
+- **Label abbreviations**: Consider "Hi-Con" or just icon-only for high-contrast on narrow screens
+- **Consistent sizing**: All theme buttons should have equal width to prevent layout shifts
 
 # Tech Stack
 - **Language**: Vanilla TypeScript
@@ -70,18 +183,28 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 ## Phase 1: Core Contrast Checker
 - Color input parser (hex #RRGGBB/#RGB, RGB, HSL)
 - Color labels (optional names for each color)
+- **Visual color picker:**
+  - Native `<input type="color">` as baseline
+  - Alwan picker for enhanced Chrome DevTools-style experience
+  - EyeDropper API integration (Chromium browsers, graceful fallback)
 - Relative luminance calculator with sRGB gamma correction
 - WCAG 2.1 contrast ratio calculator
 - Contrast grid UI showing all foreground/background combinations
 - Pass/fail indicators for AA and AAA levels (AAA, AA, AA18/Large, DNP)
 - Toggle between normal and large text thresholds
 - Grid view mode: Equal grid (all combinations same size)
+- **Progressive Enhancement baseline:**
+  - URL state persistence (colors, labels, settings encoded in URL params)
+  - Semantic HTML form for color input (works without JS via URL update)
+  - Static HTML fallback content with tool description
+  - Noscript message with alternative tool links
+  - CSS-only theme switching via `prefers-color-scheme` default
+  - Print stylesheet for contrast grid
 
 ## Phase 2: APCA & Export Options
 - APCA contrast calculator
 - Algorithm toggle (WCAG only, APCA only, both side-by-side)
 - CSS/SCSS/Sass export with utility classes
-- Shareable URL with encoded color data
 - Grid view mode: Smart/Brand Guidelines view (highlights optimal pairings based on color theory + accessibility)
 
 ## Phase 3: Visual Exports
@@ -129,9 +252,10 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 - No multi-color grid view
 
 # Dependencies
-- None for Phase 1-3 (greenfield, client-side only)
-- Phase 4-5: AI API integration (OpenAI/Anthropic)
-- Phase 5: Backend for payments (Stripe or similar)
+- **Phase 1**: Alwan color picker (vanilla JS, MIT license, ~8kb gzipped)
+- **Phase 1-3**: Client-side only, no backend required
+- **Phase 4-5**: AI API integration (OpenAI/Anthropic)
+- **Phase 5**: Backend for payments (Stripe or similar)
 
 # Out of Scope
 - Color blindness simulation
@@ -145,11 +269,16 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 - User sees a contrast grid of all color combinations
 - User sees contrast ratios and pass/fail for WCAG AA/AAA
 - Tool itself meets WCAG AA accessibility
+- **Progressive Enhancement:**
+  - Page displays meaningful content before JavaScript loads
+  - Colors can be shared via URL parameters
+  - Theme respects system preference without JavaScript
+  - Noscript users see helpful fallback content
+  - Contrast grid prints correctly
 
 ## Phase 2 Complete When:
 - User can toggle between WCAG and APCA algorithms
 - User can export colors as CSS/SCSS/Sass with utility classes
-- User can generate a shareable URL
 - User can switch between Equal Grid and Smart/Brand Guidelines views
 
 ## Phase 3 Complete When:
