@@ -89,6 +89,34 @@ Layered approach following progressive enhancement:
   - Simple HTML page of contrast grid with labels
   - Shareable URL (colors encoded in URL params)
 
+## Grid Features
+
+### Filtering
+- **Hide failed combinations**: Toggle to show only passing color pairs (AA or better)
+- **Show only AAA passing**: More strict filter for AAA compliance
+- Reduces visual clutter when validating large palettes
+- Maintains grid structure with empty/disabled cells for failed pairs
+- Filter state persists in URL for shareable filtered views
+- Multiple filters can be active simultaneously
+
+### Sorting
+- **Sort by accessibility**: Reorder colors from most to least accessible (or reverse)
+- Accessibility score based on number of passing combinations
+- Visual indicator showing each color's accessibility score
+- Sorting options:
+  - Most accessible first (colors that pass with most other colors)
+  - Least accessible first (problematic colors to address)
+  - Original order (as entered)
+- Sort state persists in URL
+
+### Stress Testing
+The UI must handle:
+- Large color palettes (15+ colors)
+- Long color labels that wrap appropriately
+- Mixed label lengths (some short, some long)
+- Browser font scaling up to 200% (WCAG 1.4.4)
+- Responsive grid that scrolls or reflows gracefully
+
 # Constraints
 - Platform: Browser-based web app
 - Must be accessible (WCAG AA compliant itself)

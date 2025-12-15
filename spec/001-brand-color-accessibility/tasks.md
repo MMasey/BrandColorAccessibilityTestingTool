@@ -107,13 +107,26 @@
 - [ ] 11.9 Handle mixed formats in same paste (some with labels, some without)
 - [ ] 11.10 Add example/help text showing supported formats
 
-## 12. Documentation & Deployment
+## 12. Grid Filtering & Sorting
 
-- [ ] 12.1 Create comprehensive README.md with project overview
-- [ ] 12.2 Document installation and development setup in README
-- [ ] 12.3 Add feature list and screenshots to README
-- [ ] 12.4 Include accessibility statement in README
-- [ ] 12.5 Add contribution guidelines
-- [ ] 12.6 Set up GitHub Pages deployment configuration (for future testing)
-- [ ] 12.7 Add project license (MIT)
-- [ ] 12.8 Create CHANGELOG.md for version tracking
+- [ ] 12.1 Add filter controls to grid header (checkboxes/toggles)
+- [ ] 12.2 Implement "Hide failed combinations" filter
+- [ ] 12.3 Implement "Show only AAA passing" filter
+- [ ] 12.4 Maintain grid structure when filtering (empty/disabled cells)
+- [ ] 12.5 Add filter state to URL parameters
+- [ ] 12.6 Calculate accessibility score per color (# passing combinations)
+- [ ] 12.7 Add sort dropdown (Most/Least accessible, Original order)
+- [ ] 12.8 Implement color reordering by accessibility score
+- [ ] 12.9 Show accessibility score indicator per color
+- [ ] 12.10 Add sort state to URL, test with 15+ colors
+
+## 13. Documentation & Deployment
+
+- [ ] 13.1 Create comprehensive README.md with project overview
+- [ ] 13.2 Document installation and development setup in README
+- [ ] 13.3 Add feature list and screenshots to README
+- [ ] 13.4 Include accessibility statement in README
+- [ ] 13.5 Add contribution guidelines
+- [ ] 13.6 Set up GitHub Pages deployment configuration
+- [ ] 13.7 Add project license (MIT)
+- [ ] 13.8 Create CHANGELOG.md for version tracking
