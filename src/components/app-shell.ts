@@ -60,9 +60,27 @@ export class AppShell extends LitElement {
       flex: 0 0 auto;
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-start;
-      gap: var(--space-md, 1rem);
-      align-self: flex-end;
+      align-items: center;
+      gap: var(--space-lg, 1.5rem);
+      align-self: center;
+    }
+
+    /* Control group separator */
+    .header-controls > *:not(:last-child) {
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      .header-controls > *:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: calc(var(--space-lg, 1.5rem) / -2);
+        top: 50%;
+        transform: translateY(-50%);
+        height: 24px;
+        width: 1px;
+        background: var(--color-border-default, #d4d4d4);
+      }
     }
 
     h1 {

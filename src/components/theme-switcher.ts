@@ -18,7 +18,7 @@ export class ThemeSwitcher extends LitElement {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: var(--space-md, 1rem);
+      gap: var(--space-lg, 1.5rem);
     }
 
     .section {
@@ -32,6 +32,21 @@ export class ThemeSwitcher extends LitElement {
       font-weight: var(--font-weight-medium, 500);
       color: var(--color-text-secondary, #555555);
       white-space: nowrap;
+    }
+
+    /* Hide labels on very small screens for compact header */
+    @media (max-width: 479px) {
+      .section-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
     }
 
     /* Theme buttons */

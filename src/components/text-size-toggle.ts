@@ -25,6 +25,21 @@ export class TextSizeToggle extends LitElement {
       white-space: nowrap;
     }
 
+    /* Hide label on very small screens for compact header */
+    @media (max-width: 479px) {
+      .label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    }
+
     .toggle-buttons {
       display: flex;
       gap: 2px;
