@@ -165,9 +165,10 @@ export class ColorPalette extends LitElement {
   private isNewColorValid = false;
 
   private handleColorChange(e: CustomEvent): void {
-    const { value } = e.detail;
+    const { value, color } = e.detail;
     this.newColorValue = value;
-    this.isNewColorValid = e.detail.color !== null;
+    this.newColorLabel = color?.label || '';
+    this.isNewColorValid = color !== null;
   }
 
   private handleColorInvalid(): void {

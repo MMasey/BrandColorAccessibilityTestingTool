@@ -67,22 +67,22 @@ export class ContrastCell extends LitElement {
     }
 
     .badge.aaa {
-      background: var(--color-success, #15803d);
+      background: #14532d;
       color: #ffffff;
     }
 
     .badge.aa {
-      background: var(--color-success, #15803d);
+      background: #166534;
       color: #ffffff;
     }
 
     .badge.aa18 {
-      background: var(--color-warning, #a16207);
+      background: #713f12;
       color: #ffffff;
     }
 
     .badge.dnp {
-      background: var(--color-error, #dc2626);
+      background: #7f1d1d;
       color: #ffffff;
     }
 

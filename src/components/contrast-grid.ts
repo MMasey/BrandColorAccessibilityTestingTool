@@ -50,10 +50,8 @@ export class ContrastGrid extends LitElement {
     }
 
     .header-cell.row-header {
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      transform: rotate(180deg);
-      min-height: 5rem;
+      justify-content: flex-start;
+      min-width: 8rem;
     }
 
     .color-indicator {
@@ -71,10 +69,11 @@ export class ContrastGrid extends LitElement {
     }
 
     .color-label {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
       max-width: 6rem;
+      line-height: 1.2;
     }
 
     .empty-state {
@@ -111,10 +110,10 @@ export class ContrastGrid extends LitElement {
       text-transform: uppercase;
     }
 
-    .legend-badge.aaa { background: var(--color-success, #15803d); color: #fff; }
-    .legend-badge.aa { background: var(--color-success, #15803d); color: #fff; }
-    .legend-badge.aa18 { background: var(--color-warning, #a16207); color: #fff; }
-    .legend-badge.dnp { background: var(--color-error, #dc2626); color: #fff; }
+    .legend-badge.aaa { background: #14532d; color: #fff; }
+    .legend-badge.aa { background: #166534; color: #fff; }
+    .legend-badge.aa18 { background: #713f12; color: #fff; }
+    .legend-badge.dnp { background: #7f1d1d; color: #fff; }
 
     .axis-label {
       font-size: var(--font-size-xs, 0.75rem);
@@ -137,7 +136,7 @@ export class ContrastGrid extends LitElement {
       }
 
       .header-cell.row-header {
-        min-height: 3.5rem;
+        min-width: 5rem;
       }
 
       .color-dot {
@@ -173,6 +172,10 @@ export class ContrastGrid extends LitElement {
     @media (min-width: 641px) and (max-width: 1023px) {
       .header-cell {
         min-width: 4rem;
+      }
+
+      .header-cell.row-header {
+        min-width: 6rem;
       }
 
       .color-label {

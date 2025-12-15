@@ -122,6 +122,10 @@ export class AppShell extends LitElement {
       .sidebar {
         grid-column: 1 / -1;
       }
+
+      .grid-section {
+        grid-column: 1 / -1;
+      }
     }
 
     /* Mobile: single column */
