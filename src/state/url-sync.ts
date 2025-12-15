@@ -91,7 +91,7 @@ function syncStateToURL(): void {
 
   const urlState: Partial<URLState> = {
     colors: colors.map(c => hexToURLColor(c.hex)),
-    labels: colors.map(c => c.label || '').filter((_, i) => colors[i]?.label),
+    labels: colors.map(c => c.label || ''),
     textSize,
     theme,
   };
