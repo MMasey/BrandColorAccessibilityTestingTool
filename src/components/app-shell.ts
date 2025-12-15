@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import './color-palette';
-import './text-size-toggle';
 import './contrast-grid';
 import './theme-switcher';
+import './grid-filters';
 
 /**
  * Main application shell component.
@@ -58,29 +58,7 @@ export class AppShell extends LitElement {
 
     .header-controls {
       flex: 0 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--space-lg, 1.5rem);
       align-self: center;
-    }
-
-    /* Control group separator */
-    .header-controls > *:not(:last-child) {
-      position: relative;
-    }
-
-    @media (min-width: 768px) {
-      .header-controls > *:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        right: calc(var(--space-lg, 1.5rem) / -2);
-        top: 50%;
-        transform: translateY(-50%);
-        height: 24px;
-        width: 1px;
-        background: var(--color-border-default, #d4d4d4);
-      }
     }
 
     h1 {
@@ -235,7 +213,6 @@ export class AppShell extends LitElement {
             <p class="tagline">Validate your color palette against WCAG 2.1 contrast requirements</p>
           </div>
           <div class="header-controls">
-            <text-size-toggle></text-size-toggle>
             <theme-switcher></theme-switcher>
           </div>
         </div>
@@ -245,6 +222,10 @@ export class AppShell extends LitElement {
         <div class="layout">
           <aside class="sidebar" aria-label="Color palette controls">
             <color-palette></color-palette>
+
+            <div class="controls-section">
+              <grid-filters></grid-filters>
+            </div>
           </aside>
 
           <section class="grid-section" aria-label="Contrast results">
