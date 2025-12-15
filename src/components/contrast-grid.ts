@@ -15,7 +15,14 @@ export class ContrastGrid extends LitElement {
   static styles = css`
     :host {
       display: block;
-      overflow-x: auto;
+    }
+
+    .grid-wrapper {
+      overflow: auto;
+      max-height: 70vh;
+      border: 1px solid var(--color-border-default, #d4d4d4);
+      border-radius: var(--radius-md, 0.5rem);
+      background: var(--color-border-default, #d4d4d4);
     }
 
     .grid-container {
@@ -27,9 +34,7 @@ export class ContrastGrid extends LitElement {
       display: grid;
       gap: 1px;
       background: var(--color-border-default, #d4d4d4);
-      border: 1px solid var(--color-border-default, #d4d4d4);
-      border-radius: var(--radius-md, 0.5rem);
-      overflow: hidden;
+      position: relative;
     }
 
     .header-cell {
@@ -43,15 +48,30 @@ export class ContrastGrid extends LitElement {
       color: var(--color-text-secondary, #555555);
       min-width: 5rem;
       min-height: 2.5rem;
+      position: sticky;
+      z-index: 1;
     }
 
     .header-cell.corner {
       background: var(--color-surface-tertiary, #e8e8e8);
+      position: sticky;
+      top: 0;
+      left: 0;
+      z-index: 3;
+    }
+
+    .header-cell.column-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
     .header-cell.row-header {
       justify-content: flex-start;
       min-width: 8rem;
+      position: sticky;
+      left: 0;
+      z-index: 2;
     }
 
     .color-indicator {
@@ -278,35 +298,36 @@ export class ContrastGrid extends LitElement {
     const summary = this.getAccessibilitySummary(matrix);
 
     return html`
-      <div class="grid-container">
-        <!-- Screen reader summary announced on updates -->
-        <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-          ${summary}
-        </div>
+      <!-- Screen reader summary announced on updates -->
+      <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        ${summary}
+      </div>
 
-        <div class="axis-label">
-          ↓ Foreground (text) &nbsp;&nbsp;|&nbsp;&nbsp; Background →
-        </div>
+      <div class="axis-label">
+        ↓ Foreground (text) &nbsp;&nbsp;|&nbsp;&nbsp; Background →
+      </div>
 
-        <div
-          class="grid"
-          aria-hidden="true"
-          style="grid-template-columns: repeat(${gridSize}, auto)"
-        >
-          <!-- Corner cell -->
-          <div class="header-cell corner">
-            <span aria-hidden="true">FG \\ BG</span>
-          </div>
-
-          <!-- Column headers (background colors) -->
-          ${colors.map((color) => html`
-            <div class="header-cell">
-              <div class="color-indicator">
-                <div class="color-dot" style="background: ${color.hex}"></div>
-                <span class="color-label">${this.getColorLabel(color)}</span>
-              </div>
+      <div class="grid-wrapper">
+        <div class="grid-container">
+          <div
+            class="grid"
+            aria-hidden="true"
+            style="grid-template-columns: repeat(${gridSize}, auto)"
+          >
+            <!-- Corner cell -->
+            <div class="header-cell corner">
+              <span aria-hidden="true">FG \\ BG</span>
             </div>
-          `)}
+
+            <!-- Column headers (background colors) -->
+            ${colors.map((color) => html`
+              <div class="header-cell column-header">
+                <div class="color-indicator">
+                  <div class="color-dot" style="background: ${color.hex}"></div>
+                  <span class="color-label">${this.getColorLabel(color)}</span>
+                </div>
+              </div>
+            `)}
 
           <!-- Rows -->
           ${colors.map((fgColor, fgIndex) => html`
@@ -333,25 +354,26 @@ export class ContrastGrid extends LitElement {
               `;
             })}
           `)}
+          </div>
         </div>
+      </div>
 
-        <div class="legend" aria-label="WCAG compliance legend">
-          <div class="legend-item">
-            <span class="legend-badge aaa">AAA</span>
-            <span>Enhanced (7:1${textSize === 'large' ? ', 4.5:1 large' : ''})</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-badge aa">AA</span>
-            <span>Minimum (4.5:1${textSize === 'large' ? ', 3:1 large' : ''})</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-badge aa18">AA 18+</span>
-            <span>Large text only (3:1)</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-badge dnp">Fail</span>
-            <span>Does not pass</span>
-          </div>
+      <div class="legend" aria-label="WCAG compliance legend">
+        <div class="legend-item">
+          <span class="legend-badge aaa">AAA</span>
+          <span>Enhanced (7:1${textSize === 'large' ? ', 4.5:1 large' : ''})</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge aa">AA</span>
+          <span>Minimum (4.5:1${textSize === 'large' ? ', 3:1 large' : ''})</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge aa18">AA 18+</span>
+          <span>Large text only (3:1)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge dnp">Fail</span>
+          <span>Does not pass</span>
         </div>
       </div>
     `;

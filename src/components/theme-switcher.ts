@@ -45,18 +45,18 @@ export class ThemeSwitcher extends LitElement {
     }
 
     .theme-btn {
-      flex: 1 1 0;
-      min-width: 0;
+      flex: 1 1 auto;
+      min-width: fit-content;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: var(--space-xs, 0.25rem);
-      padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+      padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
       min-height: var(--touch-target-min, 44px);
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
-      font-size: clamp(0.75rem, 2vw, 0.875rem);
+      font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
       color: var(--color-text-secondary, #555555);
       cursor: pointer;
@@ -86,8 +86,7 @@ export class ThemeSwitcher extends LitElement {
     }
 
     .theme-btn .label {
-      overflow: hidden;
-      text-overflow: ellipsis;
+      /* Labels are always visible */
     }
   `;
 
