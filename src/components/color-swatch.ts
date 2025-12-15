@@ -29,8 +29,8 @@ export class ColorSwatch extends LitElement {
       flex: 1;
       display: flex;
       align-items: center;
-      gap: var(--space-sm, 0.5rem);
-      padding: var(--space-sm, 0.5rem);
+      gap: var(--space-xs, 0.25rem);
+      padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
       background: transparent;
       border: none;
       cursor: pointer;
@@ -49,9 +49,9 @@ export class ColorSwatch extends LitElement {
     }
 
     .color-box {
-      width: 2.5rem;
-      height: 2.5rem;
-      min-width: 2.5rem;
+      width: 2rem;
+      height: 2rem;
+      min-width: 2rem;
       border-radius: var(--radius-sm, 0.25rem);
       border: 1px solid var(--color-border-default, #d4d4d4);
       position: relative;

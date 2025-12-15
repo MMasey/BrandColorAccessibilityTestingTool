@@ -4,6 +4,7 @@ import { ColorStoreController } from '../state';
 import type { Color } from '../utils';
 import './color-input';
 import './color-swatch';
+import './brand-guidance';
 
 /**
  * Color palette component for managing a list of brand colors.
@@ -98,7 +99,10 @@ export class ColorPalette extends LitElement {
     .colors-list {
       display: flex;
       flex-direction: column;
-      gap: var(--space-sm, 0.5rem);
+      gap: var(--space-xs, 0.25rem);
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .empty-state {
@@ -214,6 +218,10 @@ export class ColorPalette extends LitElement {
             <span class="color-count">${colors.length} color${colors.length !== 1 ? 's' : ''}</span>
           ` : null}
         </div>
+
+        ${colors.length >= 7 ? html`
+          <brand-guidance .colorCount="${colors.length}"></brand-guidance>
+        ` : null}
 
         <div class="add-section">
           <div class="add-row" @keydown="${this.handleKeyDown}">
