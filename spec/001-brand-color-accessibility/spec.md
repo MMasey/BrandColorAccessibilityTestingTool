@@ -21,12 +21,43 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 # Inputs
 - Brand colors via:
   - Manual text input (hex, RGB, HSL formats)
+  - **Bulk paste** - paste list of colors with optional labels (see format below)
   - Visual color picker (native `<input type="color">` with Alwan enhancement)
   - EyeDropper API for screen color sampling (Chromium browsers only, progressive enhancement)
 - AI prompt describing brand personality/feel (future phase)
 - Algorithm toggle (WCAG 2.1, APCA, or both)
 - Target compliance level (AA or AAA)
 - Text size context (normal or large text)
+
+## Bulk Paste Format
+Support pasting color lists with optional labels in various formats:
+
+```
+#2F1560, Dark Purple
+#FEF26B, Yellow
+#FC53AF, Pink
+```
+
+or without labels:
+```
+#2F1560
+#FEF26B
+#FC53AF
+```
+
+or mixed hex formats:
+```
+2F1560, Dark Purple
+FEF26B
+#FC53AF, Pink
+```
+
+**Parsing Rules:**
+- Each line is treated as a color entry
+- Comma separates color from optional label
+- Hex codes with or without `#` prefix
+- Empty lines ignored
+- Invalid color codes skipped with user notification
 
 ## Color Picker Strategy
 Layered approach following progressive enhancement:

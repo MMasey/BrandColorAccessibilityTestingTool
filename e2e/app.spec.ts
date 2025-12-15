@@ -562,20 +562,8 @@ test.describe('URL State Management (Progressive Enhancement)', () => {
     const fallbackContent = page.locator('.fallback-content');
     await expect(fallbackContent).toHaveCount(1);
 
-    const fallbackForm = page.locator('.fallback-form');
-    await expect(fallbackForm).toHaveCount(1);
-
+    // Verify noscript message exists for users without JS
     const noscriptMessage = page.locator('noscript');
     await expect(noscriptMessage).toHaveCount(1);
-
-    // Verify form has correct structure for GET submission
-    const colorsInput = page.locator('#colors');
-    await expect(colorsInput).toHaveAttribute('name', 'colors');
-
-    const labelsInput = page.locator('#labels');
-    await expect(labelsInput).toHaveAttribute('name', 'labels');
-
-    const form = page.locator('.fallback-form');
-    await expect(form).toHaveAttribute('method', 'GET');
   });
 });

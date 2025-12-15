@@ -76,84 +76,7 @@
       .noscript-message a {
         color: #0066cc;
       }
-      /* Fallback form styles */
-      .fallback-form {
-        margin-top: 1.5rem;
-        padding: 1.5rem;
-        background: #f9f9f9;
-        border: 1px solid #e0e0e0;
-        border-radius: 0.5rem;
-      }
-      .fallback-form fieldset {
-        border: none;
-        margin: 0;
-        padding: 0;
-      }
-      .fallback-form legend {
-        font-weight: 600;
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-        padding: 0;
-      }
-      .fallback-form .form-group {
-        margin-bottom: 1rem;
-      }
-      .fallback-form label {
-        display: block;
-        margin-bottom: 0.25rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-      }
-      .fallback-form input[type="text"] {
-        width: 100%;
-        max-width: 300px;
-        padding: 0.5rem 0.75rem;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 0.25rem;
-        font-family: ui-monospace, monospace;
-      }
-      .fallback-form input[type="text"]:focus {
-        outline: 2px solid #0066cc;
-        outline-offset: 1px;
-        border-color: #0066cc;
-      }
-      .fallback-form .form-hint {
-        font-size: 0.85rem;
-        color: #666;
-        margin-top: 0.25rem;
-      }
-      .fallback-form button[type="submit"] {
-        padding: 0.625rem 1.25rem;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #fff;
-        background: #0066cc;
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        min-height: 44px;
-      }
-      .fallback-form button[type="submit"]:hover {
-        background: #0052a3;
-      }
-      .fallback-form button[type="submit"]:focus {
-        outline: 2px solid #0066cc;
-        outline-offset: 2px;
-      }
       @media (prefers-color-scheme: dark) {
-        .fallback-form {
-          background: #262626;
-          border-color: #404040;
-        }
-        .fallback-form input[type="text"] {
-          background: #1a1a1a;
-          border-color: #404040;
-          color: #f5f5f5;
-        }
-        .fallback-form .form-hint {
-          color: #a3a3a3;
-        }
         .fallback-content p {
           color: #a3a3a3;
         }
@@ -172,49 +95,6 @@
           This tool helps you validate your brand color palette against
           <a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html">WCAG 2.1 accessibility standards</a>.
         </p>
-        <p>
-          Enter your brand colors to see a contrast grid showing all foreground/background
-          combinations with pass/fail indicators for AA and AAA compliance levels.
-        </p>
-
-        <!-- Semantic form that works without JS by updating URL params -->
-        <form class="fallback-form" action="" method="GET" aria-label="Color palette input">
-          <fieldset>
-            <legend>Enter Your Brand Colors</legend>
-
-            <div class="form-group">
-              <label for="colors">Colors (comma-separated hex values)</label>
-              <input
-                type="text"
-                id="colors"
-                name="colors"
-                placeholder="FF5733, 3498DB, 2ECC71"
-                pattern="^([A-Fa-f0-9]{6})(,\s*[A-Fa-f0-9]{6})*$"
-                aria-describedby="colors-hint"
-              />
-              <p class="form-hint" id="colors-hint">
-                Enter hex color codes without the # symbol, separated by commas.
-                Example: FF5733, 3498DB, 2ECC71
-              </p>
-            </div>
-
-            <div class="form-group">
-              <label for="labels">Labels (optional, comma-separated)</label>
-              <input
-                type="text"
-                id="labels"
-                name="labels"
-                placeholder="Primary, Secondary, Accent"
-                aria-describedby="labels-hint"
-              />
-              <p class="form-hint" id="labels-hint">
-                Optional names for each color in the same order.
-              </p>
-            </div>
-
-            <button type="submit">Generate Contrast Grid</button>
-          </fieldset>
-        </form>
       </div>
     </app-shell>
 

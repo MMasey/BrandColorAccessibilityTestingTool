@@ -90,6 +90,30 @@
 - [ ] 10.5 Add `<noscript>` block with helpful message and links to alternative tools
 - [ ] 10.6 Ensure `prefers-color-scheme` sets initial theme via CSS (before JS)
 - [ ] 10.7 Add print stylesheet for contrast grid
-- [ ] 10.8 Create semantic HTML form structure that could work without JS (form action updates URL)
-- [ ] 10.9 Test that page is usable with JavaScript disabled (shows fallback content)
-- [ ] 10.10 Test shareable URLs work correctly (colors load from URL params)
+- [x] 10.8 ~~Create semantic HTML form structure that could work without JS~~ (removed - doesn't work without SSR)
+- [x] 10.9 Test that page is usable with JavaScript disabled (shows fallback content)
+- [x] 10.10 Test shareable URLs work correctly (colors load from URL params)
+
+## 11. Bulk Paste Colors Feature
+
+- [ ] 11.1 Add textarea or enhanced text input for bulk color paste
+- [ ] 11.2 Create parser for multi-line color input (hex with optional labels)
+- [ ] 11.3 Support comma-separated format: `#RRGGBB, Label Name`
+- [ ] 11.4 Support hex codes with or without `#` prefix
+- [ ] 11.5 Handle empty lines and whitespace gracefully
+- [ ] 11.6 Show validation feedback for invalid color codes
+- [ ] 11.7 Add "Paste Colors" button/mode to switch input types
+- [ ] 11.8 Display parsed results before adding to palette (confirmation step)
+- [ ] 11.9 Handle mixed formats in same paste (some with labels, some without)
+- [ ] 11.10 Add example/help text showing supported formats
+
+## 12. Documentation & Deployment
+
+- [ ] 12.1 Create comprehensive README.md with project overview
+- [ ] 12.2 Document installation and development setup in README
+- [ ] 12.3 Add feature list and screenshots to README
+- [ ] 12.4 Include accessibility statement in README
+- [ ] 12.5 Add contribution guidelines
+- [ ] 12.6 Set up GitHub Pages deployment configuration (for future testing)
+- [ ] 12.7 Add project license (MIT)
+- [ ] 12.8 Create CHANGELOG.md for version tracking
