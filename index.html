@@ -6,9 +6,234 @@
     <meta name="description" content="Test and validate brand color palettes against WCAG accessibility standards" />
     <title>Brand Color Accessibility Tool</title>
     <link rel="stylesheet" href="/src/styles/global.css" />
+    <!-- Inline critical styles for no-JS fallback -->
+    <style>
+      /* Fallback content styles - shown before JS loads */
+      .fallback-content {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 1rem;
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+      }
+      .fallback-content .fallback-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+      .fallback-content p {
+        margin-bottom: 1rem;
+        color: #555;
+      }
+      .fallback-loading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: #f5f5f5;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .fallback-loading::before {
+        content: "";
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid #0066cc;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      /* Hide fallback when JS loads and component renders */
+      app-shell:defined .fallback-content {
+        display: none;
+      }
+      /* Noscript styles */
+      .noscript-message {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 0.5rem;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      .noscript-message h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.25rem;
+        color: #856404;
+      }
+      .noscript-message p {
+        margin: 0 0 1rem;
+        color: #856404;
+      }
+      .noscript-message ul {
+        margin: 0;
+        padding-left: 1.5rem;
+      }
+      .noscript-message a {
+        color: #0066cc;
+      }
+      /* Fallback form styles */
+      .fallback-form {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 0.5rem;
+      }
+      .fallback-form fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      .fallback-form legend {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding: 0;
+      }
+      .fallback-form .form-group {
+        margin-bottom: 1rem;
+      }
+      .fallback-form label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+      .fallback-form input[type="text"] {
+        width: 100%;
+        max-width: 300px;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+        font-family: ui-monospace, monospace;
+      }
+      .fallback-form input[type="text"]:focus {
+        outline: 2px solid #0066cc;
+        outline-offset: 1px;
+        border-color: #0066cc;
+      }
+      .fallback-form .form-hint {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.25rem;
+      }
+      .fallback-form button[type="submit"] {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #fff;
+        background: #0066cc;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .fallback-form button[type="submit"]:hover {
+        background: #0052a3;
+      }
+      .fallback-form button[type="submit"]:focus {
+        outline: 2px solid #0066cc;
+        outline-offset: 2px;
+      }
+      @media (prefers-color-scheme: dark) {
+        .fallback-form {
+          background: #262626;
+          border-color: #404040;
+        }
+        .fallback-form input[type="text"] {
+          background: #1a1a1a;
+          border-color: #404040;
+          color: #f5f5f5;
+        }
+        .fallback-form .form-hint {
+          color: #a3a3a3;
+        }
+        .fallback-content p {
+          color: #a3a3a3;
+        }
+      }
+    </style>
   </head>
   <body>
-    <app-shell></app-shell>
+    <app-shell>
+      <!-- Fallback content shown before JavaScript loads -->
+      <div class="fallback-content">
+        <div class="fallback-title">Brand Color Accessibility Tool</div>
+        <div class="fallback-loading">
+          Loading application...
+        </div>
+        <p>
+          This tool helps you validate your brand color palette against
+          <a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html">WCAG 2.1 accessibility standards</a>.
+        </p>
+        <p>
+          Enter your brand colors to see a contrast grid showing all foreground/background
+          combinations with pass/fail indicators for AA and AAA compliance levels.
+        </p>
+
+        <!-- Semantic form that works without JS by updating URL params -->
+        <form class="fallback-form" action="" method="GET" aria-label="Color palette input">
+          <fieldset>
+            <legend>Enter Your Brand Colors</legend>
+
+            <div class="form-group">
+              <label for="colors">Colors (comma-separated hex values)</label>
+              <input
+                type="text"
+                id="colors"
+                name="colors"
+                placeholder="FF5733, 3498DB, 2ECC71"
+                pattern="^([A-Fa-f0-9]{6})(,\s*[A-Fa-f0-9]{6})*$"
+                aria-describedby="colors-hint"
+              />
+              <p class="form-hint" id="colors-hint">
+                Enter hex color codes without the # symbol, separated by commas.
+                Example: FF5733, 3498DB, 2ECC71
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="labels">Labels (optional, comma-separated)</label>
+              <input
+                type="text"
+                id="labels"
+                name="labels"
+                placeholder="Primary, Secondary, Accent"
+                aria-describedby="labels-hint"
+              />
+              <p class="form-hint" id="labels-hint">
+                Optional names for each color in the same order.
+              </p>
+            </div>
+
+            <button type="submit">Generate Contrast Grid</button>
+          </fieldset>
+        </form>
+      </div>
+    </app-shell>
+
+    <!-- Message for users with JavaScript disabled -->
+    <noscript>
+      <div class="noscript-message">
+        <h2>JavaScript Required</h2>
+        <p>
+          This tool requires JavaScript for real-time contrast calculations.
+          Please enable JavaScript or try one of these alternatives:
+        </p>
+        <ul>
+          <li><a href="https://webaim.org/resources/contrastchecker/">WebAIM Contrast Checker</a> - Simple two-color comparison</li>
+          <li><a href="https://contrast-grid.eightshapes.com/">EightShapes Contrast Grid</a> - Multi-color grid view</li>
+          <li><a href="https://coolors.co/contrast-checker">Coolors Contrast Checker</a> - Visual color picker</li>
+        </ul>
+      </div>
+    </noscript>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
