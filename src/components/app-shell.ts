@@ -45,23 +45,53 @@ export class AppShell extends LitElement {
       max-width: 1400px;
       margin: 0 auto;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       flex-wrap: wrap;
+      gap: var(--space-lg, 1.5rem);
+    }
+
+    .header-main {
+      flex: 1 1 auto;
+      min-width: 0; /* Allow text to wrap */
+    }
+
+    .header-controls {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
       gap: var(--space-md, 1rem);
+      align-self: flex-end;
     }
 
     h1 {
-      margin: 0;
-      font-size: var(--font-size-2xl, 1.5rem);
+      margin: 0 0 var(--space-xs, 0.25rem) 0;
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
       font-weight: var(--font-weight-bold, 700);
       color: var(--color-text-primary, #1a1a1a);
+      line-height: 1.2;
     }
 
     .tagline {
       margin: 0;
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: clamp(0.8125rem, 2vw, 0.875rem);
       color: var(--color-text-secondary, #555555);
+      line-height: 1.4;
+    }
+
+    /* Responsive header layout */
+    @media (max-width: 767px) {
+      .header-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-md, 1rem);
+      }
+
+      .header-controls {
+        align-self: stretch;
+        justify-content: flex-start;
+      }
     }
 
     main {
@@ -182,9 +212,13 @@ export class AppShell extends LitElement {
 
       <header>
         <div class="header-content">
-          <div>
+          <div class="header-main">
             <h1>Brand Color Accessibility Tool</h1>
             <p class="tagline">Validate your color palette against WCAG 2.1 contrast requirements</p>
+          </div>
+          <div class="header-controls">
+            <text-size-toggle></text-size-toggle>
+            <theme-switcher></theme-switcher>
           </div>
         </div>
       </header>
@@ -193,16 +227,6 @@ export class AppShell extends LitElement {
         <div class="layout">
           <aside class="sidebar" aria-label="Color palette controls">
             <color-palette></color-palette>
-
-            <div class="controls-section">
-              <h3 class="section-title">Evaluation Settings</h3>
-              <text-size-toggle></text-size-toggle>
-            </div>
-
-            <div class="controls-section">
-              <h3 class="section-title">Display Preferences</h3>
-              <theme-switcher></theme-switcher>
-            </div>
           </aside>
 
           <section class="grid-section" aria-label="Contrast results">

@@ -16,25 +16,28 @@ export class ThemeSwitcher extends LitElement {
 
     .switcher {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      align-items: center;
       gap: var(--space-md, 1rem);
     }
 
     .section {
       display: flex;
-      flex-direction: column;
-      gap: var(--space-xs, 0.25rem);
+      align-items: center;
+      gap: var(--space-sm, 0.5rem);
     }
 
     .section-label {
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
       color: var(--color-text-secondary, #555555);
+      white-space: nowrap;
     }
 
     /* Theme buttons */
     .theme-buttons {
       display: flex;
+      flex-wrap: wrap;
       gap: 2px;
       background: var(--color-surface-secondary, #f5f5f5);
       border: 1px solid var(--color-border-default, #d4d4d4);
@@ -43,7 +46,8 @@ export class ThemeSwitcher extends LitElement {
     }
 
     .theme-btn {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -53,11 +57,12 @@ export class ThemeSwitcher extends LitElement {
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
       color: var(--color-text-secondary, #555555);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
+      white-space: nowrap;
     }
 
     .theme-btn:hover:not(.active) {
@@ -82,12 +87,14 @@ export class ThemeSwitcher extends LitElement {
     }
 
     .theme-btn .label {
-      display: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    @media (min-width: 400px) {
+    /* Show icon-only on very small screens */
+    @media (max-width: 359px) {
       .theme-btn .label {
-        display: inline;
+        display: none;
       }
     }
 

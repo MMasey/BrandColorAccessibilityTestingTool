@@ -11,7 +11,8 @@
       "Bash(npx vitest:*)",
       "Bash(npm run test:e2e:*)",
       "Bash(curl:*)",
-      "Bash(gh pr create:*)"
+      "Bash(gh pr create:*)",
+      "Bash(npm run build:*)"
     ]
   },
   "model": "sonnet"
