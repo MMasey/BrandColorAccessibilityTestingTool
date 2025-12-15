@@ -117,7 +117,7 @@ export class ColorInput extends LitElement {
       }
     }
 
-    .visually-hidden {
+    .sr-only {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -235,7 +235,7 @@ export class ColorInput extends LitElement {
           aria-label="${this.parsedColor ? `Color preview: ${this.parsedColor.hex}` : 'No color selected'}"
         ></div>
 
-        <label class="visually-hidden" for="color-value">Color value</label>
+        <label class="sr-only" for="color-value">Color value</label>
         <input
           id="color-value"
           type="text"
@@ -248,7 +248,7 @@ export class ColorInput extends LitElement {
         />
 
         ${this.showLabel ? html`
-          <label class="visually-hidden" for="color-label">Color label</label>
+          <label class="sr-only" for="color-label">Color label</label>
           <input
             id="color-label"
             type="text"
@@ -262,7 +262,7 @@ export class ColorInput extends LitElement {
       </div>
 
       ${!this.isValid ? html`
-        <span id="error-hint" class="visually-hidden">
+        <span id="error-hint" class="sr-only">
           Invalid color format. Use hex (#RGB or #RRGGBB), rgb(), or hsl().
         </span>
       ` : null}
