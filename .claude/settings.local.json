@@ -10,7 +10,8 @@
       "Bash(npm run dev:*)",
       "Bash(npx vitest:*)",
       "Bash(npm run test:e2e:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(gh pr create:*)"
     ]
   },
   "model": "sonnet"
