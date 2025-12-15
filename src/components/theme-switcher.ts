@@ -33,21 +33,6 @@ export class ThemeSwitcher extends LitElement {
       white-space: nowrap;
     }
 
-    /* Hide labels on very small screens for compact header */
-    @media (max-width: 479px) {
-      .section-label {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border-width: 0;
-      }
-    }
-
     /* Theme buttons */
     .theme-buttons {
       display: flex;
@@ -103,13 +88,6 @@ export class ThemeSwitcher extends LitElement {
     .theme-btn .label {
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    /* Show icon-only on very small screens */
-    @media (max-width: 359px) {
-      .theme-btn .label {
-        display: none;
-      }
     }
   `;
 

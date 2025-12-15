@@ -6,7 +6,7 @@
  */
 
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import { colorStore, type ColorStoreEvent, type ColorStoreState } from './color-store';
+import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel } from './color-store';
 import type { Color, TextSize } from '../utils/color-types';
 
 /**
@@ -66,6 +66,11 @@ export class ColorStoreController implements ReactiveController {
     return colorStore.getAlgorithm();
   }
 
+  /** Get active grid filters */
+  get gridFilters(): ReadonlySet<GridFilterLevel> {
+    return colorStore.getGridFilters();
+  }
+
   /** Get full state snapshot */
   get state(): Readonly<ColorStoreState> {
     return colorStore.getState();
@@ -121,6 +126,16 @@ export class ColorStoreController implements ReactiveController {
   /** Set algorithm */
   setAlgorithm(algorithm: 'wcag' | 'apca' | 'both'): void {
     colorStore.setAlgorithm(algorithm);
+  }
+
+  /** Toggle a grid filter on/off */
+  toggleGridFilter(level: GridFilterLevel): void {
+    colorStore.toggleGridFilter(level);
+  }
+
+  /** Set all grid filters at once */
+  setGridFilters(filters: Set<GridFilterLevel>): void {
+    colorStore.setGridFilters(filters);
   }
 
   /** Reset store */

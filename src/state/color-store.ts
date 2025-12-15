@@ -8,11 +8,15 @@
 import type { Color, TextSize } from '../utils/color-types';
 import { createColor } from '../utils/color-converter';
 
+/** Grid filter levels for WCAG compliance */
+export type GridFilterLevel = 'aaa' | 'aa' | 'aa-large' | 'failed';
+
 /** Store state shape */
 export interface ColorStoreState {
   colors: Color[];
   textSize: TextSize;
   selectedAlgorithm: 'wcag' | 'apca' | 'both';
+  gridFilters: Set<GridFilterLevel>;
 }
 
 /** Event types emitted by the store */
@@ -20,6 +24,7 @@ export type ColorStoreEvent =
   | { type: 'colors-changed'; colors: Color[] }
   | { type: 'text-size-changed'; textSize: TextSize }
   | { type: 'algorithm-changed'; algorithm: 'wcag' | 'apca' | 'both' }
+  | { type: 'grid-filters-changed'; filters: Set<GridFilterLevel> }
   | { type: 'state-reset' };
 
 type Listener = (event: ColorStoreEvent) => void;
@@ -33,6 +38,7 @@ function createColorStore() {
     colors: [],
     textSize: 'normal',
     selectedAlgorithm: 'wcag',
+    gridFilters: new Set(['aaa', 'aa', 'aa-large']),
   };
 
   // Subscribers
@@ -249,6 +255,35 @@ function createColorStore() {
     },
 
     /**
+     * Get active grid filters
+     */
+    getGridFilters(): ReadonlySet<GridFilterLevel> {
+      return new Set(state.gridFilters);
+    },
+
+    /**
+     * Toggle a grid filter on/off
+     */
+    toggleGridFilter(level: GridFilterLevel): void {
+      const newFilters = new Set(state.gridFilters);
+      if (newFilters.has(level)) {
+        newFilters.delete(level);
+      } else {
+        newFilters.add(level);
+      }
+      state = { ...state, gridFilters: newFilters };
+      emit({ type: 'grid-filters-changed', filters: state.gridFilters });
+    },
+
+    /**
+     * Set all grid filters at once
+     */
+    setGridFilters(filters: Set<GridFilterLevel>): void {
+      state = { ...state, gridFilters: new Set(filters) };
+      emit({ type: 'grid-filters-changed', filters: state.gridFilters });
+    },
+
+    /**
      * Reset store to initial state
      */
     reset(): void {
@@ -256,6 +291,7 @@ function createColorStore() {
         colors: [],
         textSize: 'normal',
         selectedAlgorithm: 'wcag',
+        gridFilters: new Set(['aaa', 'aa', 'aa-large']),
       };
       emit({ type: 'state-reset' });
     },

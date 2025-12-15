@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { ColorStoreController } from '../state';
+import type { GridFilterLevel } from '../state/color-store';
 
 /**
  * Grid filter controls for showing/hiding contrast combinations
@@ -83,14 +85,14 @@ export class GridFilters extends LitElement {
     }
   `;
 
-  private handleFilterToggle(filter: 'aaa' | 'aa' | 'aa-large' | 'failed'): void {
-    // TODO: Implement filter toggle in color store
-    console.log('Filter toggled:', filter);
+  private store = new ColorStoreController(this);
+
+  private handleFilterToggle(filter: GridFilterLevel): void {
+    this.store.toggleGridFilter(filter);
   }
 
   render() {
-    // TODO: Get active filters from store
-    const activeFilters = new Set(['aaa', 'aa', 'aa-large']); // Default: show all passing
+    const activeFilters = this.store.gridFilters;
 
     const filters = [
       {
@@ -98,8 +100,8 @@ export class GridFilters extends LitElement {
         label: 'AAA',
         description: '7:1 normal, 4.5:1 large',
         icon: html`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M9 11l3 3L22 4"/>
-          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+          <polyline points="7 13 10 16 17 9" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="7 8 10 11 17 4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`,
       },
       {
@@ -107,7 +109,7 @@ export class GridFilters extends LitElement {
         label: 'AA',
         description: '4.5:1 normal text',
         icon: html`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"/>
+          <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`,
       },
       {
@@ -115,7 +117,8 @@ export class GridFilters extends LitElement {
         label: 'AA Large',
         description: '3:1 large text (18pt+)',
         icon: html`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"/>
+          <circle cx="12" cy="12" r="10" stroke-linecap="round"/>
+          <polyline points="16 10 11 15 8 12" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`,
       },
       {
@@ -123,8 +126,8 @@ export class GridFilters extends LitElement {
         label: 'Failed',
         description: 'Does not meet WCAG',
         icon: html`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
+          <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/>
+          <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
         </svg>`,
       },
     ];

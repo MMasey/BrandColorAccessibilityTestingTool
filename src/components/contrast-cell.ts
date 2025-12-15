@@ -133,6 +133,21 @@ export class ContrastCell extends LitElement {
         display: none;
       }
     }
+
+    /* Filtered cells are hidden from view */
+    :host([filtered]) {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    :host([filtered]) .cell {
+      background: var(--color-surface-secondary, #f5f5f5) !important;
+    }
+
+    :host([filtered]) .cell:hover {
+      transform: none;
+      box-shadow: none;
+    }
   `;
 
   /** The contrast result to display */
@@ -154,6 +169,10 @@ export class ContrastCell extends LitElement {
   /** Compact display mode */
   @property({ type: Boolean, reflect: true })
   compact = false;
+
+  /** Whether this cell is filtered out by grid filters */
+  @property({ type: Boolean, reflect: true })
+  filtered = false;
 
   private getBadgeClass(level: WCAGLevel): string {
     return level.toLowerCase();

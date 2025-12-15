@@ -1,8 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ColorStoreController } from '../state';
+import type { GridFilterLevel } from '../state/color-store';
 import { generateContrastMatrix } from '../utils';
-import type { Color, ContrastResult } from '../utils';
+import type { Color, ContrastResult, WCAGLevel } from '../utils';
 import './contrast-cell';
 
 /**
@@ -209,6 +210,21 @@ export class ContrastGrid extends LitElement {
     return color.label || color.hex;
   }
 
+  private mapWCAGLevelToFilterLevel(level: WCAGLevel): GridFilterLevel {
+    switch (level) {
+      case 'AAA': return 'aaa';
+      case 'AA': return 'aa';
+      case 'AA18': return 'aa-large';
+      case 'DNP': return 'failed';
+    }
+  }
+
+  private isCellFiltered(result: ContrastResult | null): boolean {
+    if (!result) return true;
+    const filterLevel = this.mapWCAGLevelToFilterLevel(result.level);
+    return !this.store.gridFilters.has(filterLevel);
+  }
+
   private getAccessibilitySummary(matrix: ContrastResult[][]): string {
     let aaa = 0;
     let aa = 0;
@@ -300,15 +316,19 @@ export class ContrastGrid extends LitElement {
             </div>
 
             <!-- Cells -->
-            ${colors.map((bgColor, bgIndex) => html`
-              <contrast-cell
-                .result="${matrix[fgIndex]?.[bgIndex] ?? null}"
-                fg-color="${fgColor.hex}"
-                bg-color="${bgColor.hex}"
-                ?same-color="${fgIndex === bgIndex}"
-                ?compact="${this.compact}"
-              ></contrast-cell>
-            `)}
+            ${colors.map((bgColor, bgIndex) => {
+              const result = matrix[fgIndex]?.[bgIndex] ?? null;
+              return html`
+                <contrast-cell
+                  .result="${result}"
+                  fg-color="${fgColor.hex}"
+                  bg-color="${bgColor.hex}"
+                  ?same-color="${fgIndex === bgIndex}"
+                  ?compact="${this.compact}"
+                  ?filtered="${this.isCellFiltered(result)}"
+                ></contrast-cell>
+              `;
+            })}
           `)}
         </div>
 
