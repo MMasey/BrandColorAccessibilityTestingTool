@@ -470,3 +470,112 @@ test.describe('Responsive Design', () => {
     });
   });
 });
+
+test.describe('URL State Management (Progressive Enhancement)', () => {
+  test('should load colors from URL parameters', async ({ page }) => {
+    // Navigate with colors in URL
+    await page.goto('/?colors=FF5733,3498DB,2ECC71&labels=Orange,Blue,Green');
+    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+
+    // Wait for colors to be loaded
+    await page.waitForTimeout(500);
+
+    // Check that color swatches are displayed
+    const swatches = page.locator('color-swatch');
+    await expect(swatches).toHaveCount(3);
+  });
+
+  test('should update URL when colors are added', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+
+    // Add a color
+    const colorInput = page.locator('color-palette').locator('color-input');
+    const textInput = colorInput.locator('input[type="text"]').first();
+    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+
+    await textInput.fill('#FF5733');
+    await addButton.click();
+
+    // Wait for URL to update
+    await page.waitForTimeout(500);
+
+    // Check URL contains the color
+    const url = page.url();
+    expect(url).toContain('colors=');
+    expect(url.toUpperCase()).toContain('FF5733');
+  });
+
+  test('should load theme from URL parameters', async ({ page }) => {
+    // Navigate with dark theme in URL
+    await page.goto('/?theme=dark');
+    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+
+    // Wait for theme to be applied
+    await page.waitForTimeout(300);
+
+    // Check that dark theme is applied
+    const html = page.locator('html');
+    await expect(html).toHaveAttribute('data-theme', 'dark');
+  });
+
+  test('should load text size from URL parameters', async ({ page }) => {
+    // Navigate with large text in URL
+    await page.goto('/?text=large');
+    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+
+    // Wait for text size to be applied
+    await page.waitForTimeout(300);
+
+    // Check that the text size toggle shows large is selected
+    const largeTextButton = page.locator('text-size-toggle').locator('button[aria-checked="true"]');
+    await expect(largeTextButton).toContainText(/large/i);
+  });
+
+  test('shareable URL should work correctly with full state', async ({ page }) => {
+    // Navigate with full state in URL
+    await page.goto('/?colors=000000,FFFFFF&labels=Black,White&theme=high-contrast&text=large');
+    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+
+    // Wait for state to be applied
+    await page.waitForTimeout(500);
+
+    // Verify colors
+    const swatches = page.locator('color-swatch');
+    await expect(swatches).toHaveCount(2);
+
+    // Verify theme
+    const html = page.locator('html');
+    await expect(html).toHaveAttribute('data-theme', 'high-contrast');
+
+    // Verify text size toggle is on large
+    const largeTextBtn = page.locator('text-size-toggle').locator('button[aria-checked="true"]');
+    await expect(largeTextBtn).toContainText(/large/i);
+  });
+
+  test('fallback content and noscript message exist in HTML', async ({ page }) => {
+    // Navigate to page
+    await page.goto('/');
+    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+
+    // Verify fallback HTML elements exist (even if hidden when JS loads)
+    const fallbackContent = page.locator('.fallback-content');
+    await expect(fallbackContent).toHaveCount(1);
+
+    const fallbackForm = page.locator('.fallback-form');
+    await expect(fallbackForm).toHaveCount(1);
+
+    const noscriptMessage = page.locator('noscript');
+    await expect(noscriptMessage).toHaveCount(1);
+
+    // Verify form has correct structure for GET submission
+    const colorsInput = page.locator('#colors');
+    await expect(colorsInput).toHaveAttribute('name', 'colors');
+
+    const labelsInput = page.locator('#labels');
+    await expect(labelsInput).toHaveAttribute('name', 'labels');
+
+    const form = page.locator('.fallback-form');
+    await expect(form).toHaveAttribute('method', 'GET');
+  });
+});

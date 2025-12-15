@@ -185,6 +185,7 @@ export class ContrastCell extends LitElement {
       <div
         class="cell ${this.sameColor ? 'same-color' : ''}"
         style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
+        aria-label="${this.getAriaLabel()}"
       >
         <span class="ratio">${this.result.ratioString}</span>
         <span class="badge ${this.getBadgeClass(this.result.level)}">
