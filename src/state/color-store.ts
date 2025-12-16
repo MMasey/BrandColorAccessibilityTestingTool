@@ -38,7 +38,7 @@ function createColorStore() {
     colors: [],
     textSize: 'normal',
     selectedAlgorithm: 'wcag',
-    gridFilters: new Set(['aaa', 'aa', 'aa-large']),
+    gridFilters: new Set(['aaa', 'aa', 'aa-large', 'failed']),
   };
 
   // Subscribers
@@ -291,7 +291,7 @@ function createColorStore() {
         colors: [],
         textSize: 'normal',
         selectedAlgorithm: 'wcag',
-        gridFilters: new Set(['aaa', 'aa', 'aa-large']),
+        gridFilters: new Set(['aaa', 'aa', 'aa-large', 'failed']),
       };
       emit({ type: 'state-reset' });
     },
