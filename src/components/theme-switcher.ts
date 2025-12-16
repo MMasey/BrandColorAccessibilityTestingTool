@@ -29,7 +29,7 @@ export class ThemeSwitcher extends LitElement {
     .section-label {
       font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       white-space: nowrap;
     }
 
@@ -58,35 +58,35 @@ export class ThemeSwitcher extends LitElement {
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
       white-space: nowrap;
-    }
 
-    .theme-btn:hover:not(.active) {
-      background: var(--color-surface-tertiary, #e8e8e8);
-    }
+      &:hover:not(.active) {
+        background: var(--color-surface-tertiary, #e8e8e8);
+      }
 
-    .theme-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-      z-index: 1;
-    }
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+        z-index: 1;
+      }
 
-    .theme-btn.active {
-      background: var(--color-accent-primary, #0066cc);
-      color: var(--color-text-inverse, #ffffff);
-    }
+      &.active {
+        background: var(--color-accent-primary, #0066cc);
+        color: var(--color-text-inverse, #ffffff);
+      }
 
-    .theme-btn svg {
-      width: 1rem;
-      height: 1rem;
-      flex-shrink: 0;
-    }
+      svg {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+      }
 
-    .theme-btn .label {
-      /* Labels are always visible */
+      .label {
+        /* Labels are always visible */
+      }
     }
   `;
 

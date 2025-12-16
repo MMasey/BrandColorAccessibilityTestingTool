@@ -24,7 +24,7 @@ export class GridFilters extends LitElement {
       margin: 0;
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -47,40 +47,40 @@ export class GridFilters extends LitElement {
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
-    }
 
-    .filter-btn:hover {
-      background: var(--color-surface-tertiary, #e8e8e8);
-      border-color: var(--color-border-strong, #a3a3a3);
-    }
+      &:hover {
+        background: var(--color-surface-tertiary, #e8e8e8);
+        border-color: var(--color-border-strong, #a3a3a3);
+      }
 
-    .filter-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+      }
 
-    .filter-btn.active {
-      background: var(--color-accent-primary, #0066cc);
-      color: var(--color-text-inverse, #ffffff);
-      border-color: var(--color-accent-primary, #0066cc);
-    }
+      &.active {
+        background: var(--color-accent-primary, #0066cc);
+        color: var(--color-text-inverse, #ffffff);
+        border-color: var(--color-accent-primary, #0066cc);
+      }
 
-    .filter-btn .label {
-      white-space: nowrap;
-    }
+      .label {
+        white-space: nowrap;
+      }
 
-    .filter-btn .icon {
-      width: 1rem;
-      height: 1rem;
-      flex-shrink: 0;
+      .icon {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+      }
     }
 
     .help-text {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #666666);
+      color: var(--color-text-muted);
       line-height: 1.4;
     }
   `;

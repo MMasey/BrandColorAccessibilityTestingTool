@@ -39,7 +39,7 @@ export class ColorPalette extends LitElement {
 
     .color-count {
       font-size: var(--font-size-sm, 0.875rem);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
     }
 
     .add-section {
@@ -51,21 +51,19 @@ export class ColorPalette extends LitElement {
     .add-row {
       display: flex;
       gap: var(--space-sm, 0.5rem);
-    }
 
-    .add-row color-input {
-      flex: 1;
-      min-width: 0;
-    }
-
-    /* Mobile: stack input and button */
-    @media (max-width: 400px) {
-      .add-row {
-        flex-direction: column;
+      color-input {
+        flex: 1;
+        min-width: 0;
       }
 
-      .add-row color-input {
-        width: 100%;
+      /* Mobile: stack input and button */
+      @media (max-width: 400px) {
+        flex-direction: column;
+
+        color-input {
+          width: 100%;
+        }
       }
     }
 
@@ -80,20 +78,20 @@ export class ColorPalette extends LitElement {
       font-weight: var(--font-weight-medium, 500);
       cursor: pointer;
       transition: background var(--transition-fast, 150ms ease);
-    }
 
-    .add-btn:hover {
-      background: var(--color-accent-primary-hover, #0052a3);
-    }
+      &:hover {
+        background: var(--color-accent-primary-hover, #0052a3);
+      }
 
-    .add-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+      }
 
-    .add-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
 
     .colors-list {
@@ -111,18 +109,18 @@ export class ColorPalette extends LitElement {
       background: var(--color-surface-secondary, #f5f5f5);
       border: 2px dashed var(--color-border-default, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
-      color: var(--color-text-secondary, #555555);
-    }
+      color: var(--color-text-secondary);
 
-    .empty-state p {
-      margin: 0 0 var(--space-sm, 0.5rem);
-    }
+      p {
+        margin: 0 0 var(--space-sm, 0.5rem);
+      }
 
-    .empty-state code {
-      font-family: var(--font-family-mono, monospace);
-      background: var(--color-surface-tertiary, #e8e8e8);
-      padding: 0.1em 0.3em;
-      border-radius: var(--radius-sm, 0.25rem);
+      code {
+        font-family: var(--font-family-mono, monospace);
+        background: var(--color-surface-tertiary, #e8e8e8);
+        padding: 0.1em 0.3em;
+        border-radius: var(--radius-sm, 0.25rem);
+      }
     }
 
     .actions {
@@ -133,23 +131,23 @@ export class ColorPalette extends LitElement {
     .clear-btn {
       padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
       background: transparent;
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       border: 1px solid var(--color-border-default, #d4d4d4);
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
-    }
 
-    .clear-btn:hover {
-      background: var(--color-error-bg, #fee2e2);
-      border-color: var(--color-error, #dc2626);
-      color: var(--color-error, #dc2626);
-    }
+      &:hover {
+        background: var(--color-error-bg, #fee2e2);
+        border-color: var(--color-error, #dc2626);
+        color: var(--color-error, #dc2626);
+      }
 
-    .clear-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+      }
     }
   `;
 

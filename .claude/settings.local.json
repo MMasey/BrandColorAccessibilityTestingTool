@@ -12,7 +12,8 @@
       "Bash(npm run test:e2e:*)",
       "Bash(curl:*)",
       "Bash(gh pr create:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm test:*)"
     ]
   },
   "model": "sonnet"

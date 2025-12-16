@@ -50,28 +50,51 @@ export class ContrastGrid extends LitElement {
       min-height: 2.5rem;
       position: sticky;
       z-index: 1;
-    }
+      border-right: 2px solid var(--color-border-default, #d4d4d4);
+      border-bottom: 2px solid var(--color-border-default, #d4d4d4);
 
-    .header-cell.corner {
-      background: var(--color-surface-tertiary, #e8e8e8);
-      position: sticky;
-      top: 0;
-      left: 0;
-      z-index: 3;
-    }
+      &.corner {
+        background: var(--color-surface-tertiary, #e8e8e8);
+        position: sticky;
+        top: 0;
+        left: 0;
+        z-index: 3;
+        font-weight: var(--font-weight-semibold, 600);
+      }
 
-    .header-cell.column-header {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
+      &.column-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
 
-    .header-cell.row-header {
-      justify-content: flex-start;
-      min-width: 8rem;
-      position: sticky;
-      left: 0;
-      z-index: 2;
+      &.row-header {
+        justify-content: flex-start;
+        min-width: 8rem;
+        position: sticky;
+        left: 0;
+        z-index: 2;
+      }
+
+      /* Mobile: smaller headers */
+      @media (max-width: 640px) {
+        min-width: 3.5rem;
+        padding: var(--space-xs, 0.25rem);
+        font-size: var(--font-size-xs, 0.75rem);
+
+        &.row-header {
+          min-width: 5rem;
+        }
+      }
+
+      /* Tablet: medium adjustments */
+      @media (min-width: 641px) and (max-width: 1023px) {
+        min-width: 4rem;
+
+        &.row-header {
+          min-width: 6rem;
+        }
+      }
     }
 
     .color-indicator {
@@ -86,6 +109,11 @@ export class ContrastGrid extends LitElement {
       border-radius: 50%;
       border: 1px solid var(--color-border-default, #d4d4d4);
       flex-shrink: 0;
+
+      @media (max-width: 640px) {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
     }
 
     .color-label {
@@ -94,6 +122,15 @@ export class ContrastGrid extends LitElement {
       hyphens: auto;
       max-width: 6rem;
       line-height: 1.2;
+
+      @media (max-width: 640px) {
+        max-width: 3rem;
+        font-size: var(--font-size-xs, 0.75rem);
+      }
+
+      @media (min-width: 641px) and (max-width: 1023px) {
+        max-width: 4rem;
+      }
     }
 
     .empty-state {
@@ -113,6 +150,11 @@ export class ContrastGrid extends LitElement {
       padding: var(--space-md, 1rem);
       background: var(--color-surface-secondary, #f5f5f5);
       border-radius: var(--radius-md, 0.5rem);
+
+      @media (max-width: 640px) {
+        gap: var(--space-sm, 0.5rem);
+        padding: var(--space-sm, 0.5rem);
+      }
     }
 
     .legend-item {
@@ -120,6 +162,10 @@ export class ContrastGrid extends LitElement {
       align-items: center;
       gap: var(--space-xs, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
+
+      @media (max-width: 640px) {
+        font-size: var(--font-size-xs, 0.75rem);
+      }
     }
 
     .legend-badge {
@@ -128,79 +174,32 @@ export class ContrastGrid extends LitElement {
       font-weight: var(--font-weight-semibold, 600);
       border-radius: var(--radius-sm, 0.25rem);
       text-transform: uppercase;
-    }
 
-    .legend-badge.aaa { background: #14532d; color: #fff; }
-    .legend-badge.aa { background: #166534; color: #fff; }
-    .legend-badge.aa18 { background: #713f12; color: #fff; }
-    .legend-badge.dnp { background: #7f1d1d; color: #fff; }
+      &.aaa { background: #14532d; color: #fff; }  /* 10.5:1 AAA */
+      &.aa { background: #15803d; color: #fff; }   /* 7.3:1 AAA - updated from #166534 */
+      &.aa18 { background: #713f12; color: #fff; } /* 8.5:1 AAA */
+      &.dnp { background: #991b1b; color: #fff; }  /* 7.1:1 AAA - updated from #7f1d1d */
+
+      @media (max-width: 640px) {
+        font-size: 0.625rem;
+        padding: 0.0625rem 0.25rem;
+      }
+    }
 
     .axis-label {
       font-size: var(--font-size-xs, 0.75rem);
       color: var(--color-text-muted, #666666);
       text-align: center;
       padding: var(--space-xs, 0.25rem);
+
+      @media (max-width: 640px) {
+        font-size: var(--font-size-xs, 0.75rem);
+      }
     }
 
     .row-axis-label {
       writing-mode: vertical-rl;
       transform: rotate(180deg);
-    }
-
-    /* Mobile: smaller cells and headers */
-    @media (max-width: 640px) {
-      .header-cell {
-        min-width: 3.5rem;
-        padding: var(--space-xs, 0.25rem);
-        font-size: var(--font-size-xs, 0.75rem);
-      }
-
-      .header-cell.row-header {
-        min-width: 5rem;
-      }
-
-      .color-dot {
-        width: 0.75rem;
-        height: 0.75rem;
-      }
-
-      .color-label {
-        max-width: 3rem;
-        font-size: var(--font-size-xs, 0.75rem);
-      }
-
-      .axis-label {
-        font-size: var(--font-size-xs, 0.75rem);
-      }
-
-      .legend {
-        gap: var(--space-sm, 0.5rem);
-        padding: var(--space-sm, 0.5rem);
-      }
-
-      .legend-item {
-        font-size: var(--font-size-xs, 0.75rem);
-      }
-
-      .legend-badge {
-        font-size: 0.625rem;
-        padding: 0.0625rem 0.25rem;
-      }
-    }
-
-    /* Tablet: medium adjustments */
-    @media (min-width: 641px) and (max-width: 1023px) {
-      .header-cell {
-        min-width: 4rem;
-      }
-
-      .header-cell.row-header {
-        min-width: 6rem;
-      }
-
-      .color-label {
-        max-width: 4rem;
-      }
     }
 
     /* Screen reader only - visually hidden but accessible */

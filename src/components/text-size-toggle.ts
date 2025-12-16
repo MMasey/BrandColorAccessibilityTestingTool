@@ -21,13 +21,11 @@ export class TextSizeToggle extends LitElement {
     .label {
       font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       white-space: nowrap;
-    }
 
-    /* Hide label on very small screens for compact header */
-    @media (max-width: 479px) {
-      .label {
+      /* Hide label on very small screens for compact header */
+      @media (max-width: 479px) {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -59,31 +57,31 @@ export class TextSizeToggle extends LitElement {
       border-radius: var(--radius-sm, 0.25rem);
       font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
 
-    .toggle-btn:hover:not(.active) {
-      background: var(--color-surface-tertiary, #e8e8e8);
-    }
+      &:hover:not(.active) {
+        background: var(--color-surface-tertiary, #e8e8e8);
+      }
 
-    .toggle-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+      }
 
-    .toggle-btn.active {
-      background: var(--color-accent-primary, #0066cc);
-      color: var(--color-text-inverse, #ffffff);
+      &.active {
+        background: var(--color-accent-primary, #0066cc);
+        color: var(--color-text-inverse, #ffffff);
+      }
     }
 
     .size-info {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #666666);
+      color: var(--color-text-muted);
     }
 
     .thresholds {
@@ -95,7 +93,7 @@ export class TextSizeToggle extends LitElement {
         display: flex;
         gap: var(--space-sm, 0.5rem);
         font-size: clamp(0.625rem, 1.5vw, 0.75rem);
-        color: var(--color-text-muted, #666666);
+        color: var(--color-text-muted);
         white-space: nowrap;
       }
     }

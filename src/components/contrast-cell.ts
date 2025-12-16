@@ -11,6 +11,41 @@ export class ContrastCell extends LitElement {
   static styles = css`
     :host {
       display: block;
+
+      /* Compact mode for smaller cells */
+      &([compact]) .cell {
+        min-width: 3.5rem;
+        min-height: 3.5rem;
+        padding: var(--space-xs, 0.25rem);
+      }
+
+      &([compact]) .ratio {
+        font-size: var(--font-size-sm, 0.875rem);
+      }
+
+      &([compact]) .badge {
+        font-size: 0.625rem;
+        padding: 0.0625rem 0.25rem;
+      }
+
+      &([compact]) .sample-text {
+        display: none;
+      }
+
+      /* Filtered cells are hidden from view */
+      &([filtered]) {
+        opacity: 0.2;
+        pointer-events: none;
+
+        .cell {
+          background: var(--color-surface-secondary, #f5f5f5) !important;
+
+          &:hover {
+            transform: none;
+            box-shadow: none;
+          }
+        }
+      }
     }
 
     .cell {
@@ -26,28 +61,35 @@ export class ContrastCell extends LitElement {
       border: 1px solid var(--color-border-default, #d4d4d4);
       position: relative;
       transition: transform var(--transition-fast, 150ms ease);
-    }
 
-    .cell:hover {
-      z-index: 1;
-      transform: scale(1.05);
-      box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-    }
+      &:hover {
+        z-index: 1;
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+      }
 
-    .cell:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-      z-index: 2;
-    }
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+        z-index: 2;
+      }
 
-    .cell.same-color {
-      background: repeating-linear-gradient(
-        45deg,
-        var(--bg-color, #ffffff),
-        var(--bg-color, #ffffff) 5px,
-        var(--color-surface-secondary, #f5f5f5) 5px,
-        var(--color-surface-secondary, #f5f5f5) 10px
-      );
+      &.same-color {
+        background: repeating-linear-gradient(
+          45deg,
+          var(--bg-color, #ffffff),
+          var(--bg-color, #ffffff) 5px,
+          var(--color-surface-secondary, #f5f5f5) 5px,
+          var(--color-surface-secondary, #f5f5f5) 10px
+        );
+      }
+
+      /* Mobile: auto-compact mode */
+      @media (max-width: 640px) {
+        min-width: 3.5rem;
+        min-height: 3.5rem;
+        padding: var(--space-xs, 0.25rem);
+      }
     }
 
     .ratio {
@@ -55,6 +97,11 @@ export class ContrastCell extends LitElement {
       font-size: var(--font-size-md, 1rem);
       font-weight: var(--font-weight-bold, 700);
       color: var(--fg-color, #000000);
+
+      /* Mobile: smaller font */
+      @media (max-width: 640px) {
+        font-size: var(--font-size-sm, 0.875rem);
+      }
     }
 
     .badge {
@@ -64,89 +111,43 @@ export class ContrastCell extends LitElement {
       border-radius: var(--radius-sm, 0.25rem);
       text-transform: uppercase;
       letter-spacing: 0.025em;
-    }
 
-    .badge.aaa {
-      background: #14532d;
-      color: #ffffff;
-    }
+      &.aaa {
+        background: #14532d;  /* Dark green - 10.5:1 on white (AAA) */
+        color: #ffffff;
+      }
 
-    .badge.aa {
-      background: #166534;
-      color: #ffffff;
-    }
+      &.aa {
+        background: #15803d;  /* Green - 7.3:1 on white (AAA) - updated from #166534 */
+        color: #ffffff;
+      }
 
-    .badge.aa18 {
-      background: #713f12;
-      color: #ffffff;
-    }
+      &.aa18 {
+        background: #713f12;  /* Brown - 8.5:1 on white (AAA) */
+        color: #ffffff;
+      }
 
-    .badge.dnp {
-      background: #7f1d1d;
-      color: #ffffff;
+      &.dnp {
+        background: #991b1b;  /* Red - 7.1:1 on white (AAA) - updated from #7f1d1d */
+        color: #ffffff;
+      }
+
+      /* Mobile: smaller badge */
+      @media (max-width: 640px) {
+        font-size: 0.625rem;
+        padding: 0.0625rem 0.25rem;
+      }
     }
 
     .sample-text {
       font-size: var(--font-size-xs, 0.75rem);
       color: var(--fg-color, #000000);
       opacity: 0.8;
-    }
 
-    /* Compact mode for smaller cells */
-    :host([compact]) .cell {
-      min-width: 3.5rem;
-      min-height: 3.5rem;
-      padding: var(--space-xs, 0.25rem);
-    }
-
-    :host([compact]) .ratio {
-      font-size: var(--font-size-sm, 0.875rem);
-    }
-
-    :host([compact]) .badge {
-      font-size: 0.625rem;
-      padding: 0.0625rem 0.25rem;
-    }
-
-    :host([compact]) .sample-text {
-      display: none;
-    }
-
-    /* Mobile: auto-compact mode */
-    @media (max-width: 640px) {
-      .cell {
-        min-width: 3.5rem;
-        min-height: 3.5rem;
-        padding: var(--space-xs, 0.25rem);
-      }
-
-      .ratio {
-        font-size: var(--font-size-sm, 0.875rem);
-      }
-
-      .badge {
-        font-size: 0.625rem;
-        padding: 0.0625rem 0.25rem;
-      }
-
-      .sample-text {
+      /* Mobile: hide sample text */
+      @media (max-width: 640px) {
         display: none;
       }
-    }
-
-    /* Filtered cells are hidden from view */
-    :host([filtered]) {
-      opacity: 0.2;
-      pointer-events: none;
-    }
-
-    :host([filtered]) .cell {
-      background: var(--color-surface-secondary, #f5f5f5) !important;
-    }
-
-    :host([filtered]) .cell:hover {
-      transform: none;
-      box-shadow: none;
     }
   `;
 
@@ -187,6 +188,15 @@ export class ContrastCell extends LitElement {
     }
   }
 
+  private getBadgeTitle(level: WCAGLevel): string {
+    switch (level) {
+      case 'AAA': return 'Passes AAA (7:1 for normal text, 4.5:1 for large text)';
+      case 'AA': return 'Passes AA (4.5:1 for normal text)';
+      case 'AA18': return 'Passes AA for large text only (18pt+ or 14pt+ bold). Requires 3:1 ratio.';
+      case 'DNP': return 'Does not pass WCAG contrast requirements';
+    }
+  }
+
   private getAriaLabel(): string {
     if (!this.result) return 'No contrast data';
 
@@ -198,19 +208,35 @@ export class ContrastCell extends LitElement {
   }
 
   render() {
-    if (!this.result) return html`<div class="cell">-</div>`;
+    if (!this.result) return html`<div class="cell">—</div>`;
+
+    // For same-color cells (diagonal), show em dash instead of ratio
+    if (this.sameColor) {
+      return html`
+        <div
+          class="cell same-color"
+          style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
+          aria-label="Same color"
+        >
+          <span class="ratio">—</span>
+        </div>
+      `;
+    }
 
     return html`
       <div
-        class="cell ${this.sameColor ? 'same-color' : ''}"
+        class="cell"
         style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
         aria-label="${this.getAriaLabel()}"
       >
         <span class="ratio">${this.result.ratioString}</span>
-        <span class="badge ${this.getBadgeClass(this.result.level)}">
+        <span
+          class="badge ${this.getBadgeClass(this.result.level)}"
+          title="${this.getBadgeTitle(this.result.level)}"
+        >
           ${this.getBadgeLabel(this.result.level)}
         </span>
-        ${!this.compact && !this.sameColor ? html`
+        ${!this.compact ? html`
           <span class="sample-text">Aa</span>
         ` : null}
       </div>
