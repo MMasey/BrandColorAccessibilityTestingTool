@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { ColorStoreController } from '../state';
 import type { Color } from '../utils';
+import type { ColorInput } from './color-input';
 import './color-input';
 import './color-swatch';
 import './brand-guidance';
@@ -149,6 +150,18 @@ export class ColorPalette extends LitElement {
         outline-offset: var(--focus-ring-offset, 2px);
       }
     }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   `;
 
   private store = new ColorStoreController(this);
@@ -161,6 +174,9 @@ export class ColorPalette extends LitElement {
 
   @state()
   private isNewColorValid = false;
+
+  @state()
+  private statusMessage = '';
 
   private handleColorChange(e: CustomEvent): void {
     const { value, color } = e.detail;
@@ -178,14 +194,22 @@ export class ColorPalette extends LitElement {
 
     const added = this.store.addColor(this.newColorValue, this.newColorLabel || undefined);
     if (added) {
+      // Announce to screen readers
+      const colorLabel = this.newColorLabel || added.hex;
+      this.statusMessage = `Color ${colorLabel} added to palette`;
+
+      // Clear inputs
       this.newColorValue = '';
       this.newColorLabel = '';
       this.isNewColorValid = false;
 
-      // Focus back on the input
-      const input = this.shadowRoot?.querySelector('color-input');
-      if (input) {
-        (input as HTMLElement).focus();
+      // Focus back on the color input for easy sequential entry
+      const colorInput = this.shadowRoot?.querySelector('color-input') as ColorInput | null;
+      if (colorInput && typeof colorInput.focusInput === 'function') {
+        // Use requestAnimationFrame to ensure DOM updates complete
+        requestAnimationFrame(() => {
+          colorInput.focusInput();
+        });
       }
     }
   }
@@ -211,6 +235,16 @@ export class ColorPalette extends LitElement {
 
     return html`
       <div class="palette">
+        <!-- Screen reader announcements for status updates -->
+        <div
+          class="sr-only"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          ${this.statusMessage}
+        </div>
+
         <div class="header">
           <h2>Brand Colors</h2>
           ${colors.length > 0 ? html`

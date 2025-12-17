@@ -154,6 +154,15 @@ export class ColorInput extends LitElement {
   @state()
   private parsedColor: Color | null = null;
 
+  /**
+   * Focus the color input field
+   * Public method for programmatic focus management
+   */
+  public focusInput(): void {
+    const input = this.shadowRoot?.querySelector<HTMLInputElement>('#color-value');
+    input?.focus();
+  }
+
   /** Whether current input is valid */
   @state()
   private isValid = true;
