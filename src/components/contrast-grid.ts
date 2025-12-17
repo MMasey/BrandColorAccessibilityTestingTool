@@ -117,11 +117,15 @@ export class ContrastGrid extends LitElement {
     }
 
     .color-label {
-      word-wrap: break-word;
+      max-width: 8rem;
+      line-height: 1.3;
+      /* Limit to 2 lines with ellipsis */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
       overflow-wrap: break-word;
-      hyphens: auto;
-      max-width: 6rem;
-      line-height: 1.2;
 
       @media (max-width: 640px) {
         max-width: 3rem;
@@ -129,7 +133,7 @@ export class ContrastGrid extends LitElement {
       }
 
       @media (min-width: 641px) and (max-width: 1023px) {
-        max-width: 4rem;
+        max-width: 5rem;
       }
     }
 
@@ -320,7 +324,7 @@ export class ContrastGrid extends LitElement {
 
             <!-- Column headers (background colors) -->
             ${colors.map((color) => html`
-              <div class="header-cell column-header">
+              <div class="header-cell column-header" title="${this.getColorLabel(color)}">
                 <div class="color-indicator">
                   <div class="color-dot" style="background: ${color.hex}"></div>
                   <span class="color-label">${this.getColorLabel(color)}</span>
@@ -331,7 +335,7 @@ export class ContrastGrid extends LitElement {
           <!-- Rows -->
           ${colors.map((fgColor, fgIndex) => html`
             <!-- Row header (foreground color) -->
-            <div class="header-cell row-header">
+            <div class="header-cell row-header" title="${this.getColorLabel(fgColor)}">
               <div class="color-indicator">
                 <div class="color-dot" style="background: ${fgColor.hex}"></div>
                 <span class="color-label">${this.getColorLabel(fgColor)}</span>

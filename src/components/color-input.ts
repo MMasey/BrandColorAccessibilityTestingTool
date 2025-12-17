@@ -110,10 +110,16 @@ export class ColorInput extends LitElement {
       color: var(--color-text-muted, #666666);
     }
 
-    /* Mobile: hide label input to save space */
+    /* Mobile: stack label input below color input */
     @media (max-width: 480px) {
+      .input-wrapper {
+        flex-direction: column;
+      }
+
       .label-input {
-        display: none;
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--color-border-default, #d4d4d4);
       }
     }
 

@@ -87,9 +87,14 @@ export class ColorSwatch extends LitElement {
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
       color: var(--color-text-primary, #1a1a1a);
-      white-space: nowrap;
+      line-height: 1.3;
+      /* Allow wrapping to 2 lines max */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
 
     .hex {
@@ -197,7 +202,7 @@ export class ColorSwatch extends LitElement {
           <div class="color-box" aria-hidden="true"></div>
 
           <div class="info">
-            <div class="label">${label}</div>
+            <div class="label" title="${label}">${label}</div>
             <div class="hex">${this.color.hex}</div>
           </div>
         </button>

@@ -15,8 +15,8 @@ export class ContrastCell extends LitElement {
 
     /* Compact mode for smaller cells */
     :host([compact]) .cell {
-      min-width: 3.5rem;
-      min-height: 3.5rem;
+      min-width: 4rem;
+      min-height: 4rem;
       padding: var(--space-xs, 0.25rem);
     }
 
@@ -84,10 +84,10 @@ export class ContrastCell extends LitElement {
         );
       }
 
-      /* Mobile: auto-compact mode */
+      /* Mobile: auto-compact mode with larger touch targets */
       @media (max-width: 640px) {
-        min-width: 3.5rem;
-        min-height: 3.5rem;
+        min-width: 4rem;
+        min-height: 4rem;
         padding: var(--space-xs, 0.25rem);
       }
     }
