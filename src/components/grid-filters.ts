@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { ColorStoreController } from '../state';
-import type { GridFilterLevel } from '../state/color-store';
+import type { GridFilterLevel, GridCellSize } from '../state/color-store';
 
 /**
  * Grid filter controls for showing/hiding contrast combinations
@@ -83,6 +83,50 @@ export class GridFilters extends LitElement {
       color: var(--color-text-muted);
       line-height: 1.4;
     }
+
+    .size-control {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm, 0.5rem);
+    }
+
+    .size-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-xs, 0.25rem);
+    }
+
+    .size-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+      min-height: var(--touch-target-min, 44px);
+      background: var(--color-surface-secondary, #f5f5f5);
+      border: 1px solid var(--color-border-default, #d4d4d4);
+      border-radius: var(--radius-sm, 0.25rem);
+      font-size: var(--font-size-sm, 0.875rem);
+      font-weight: var(--font-weight-medium, 500);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast, 150ms ease);
+
+      &:hover {
+        background: var(--color-surface-tertiary, #e8e8e8);
+        border-color: var(--color-border-strong, #a3a3a3);
+      }
+
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+      }
+
+      &.active {
+        background: var(--color-accent-primary, #0066cc);
+        color: var(--color-text-inverse, #ffffff);
+        border-color: var(--color-accent-primary, #0066cc);
+      }
+    }
   `;
 
   private store = new ColorStoreController(this);
@@ -91,8 +135,13 @@ export class GridFilters extends LitElement {
     this.store.toggleGridFilter(filter);
   }
 
+  private handleCellSizeChange(size: GridCellSize): void {
+    this.store.setGridCellSize(size);
+  }
+
   render() {
     const activeFilters = this.store.gridFilters;
+    const currentSize = this.store.gridCellSize;
 
     const filters = [
       {
@@ -132,6 +181,12 @@ export class GridFilters extends LitElement {
       },
     ];
 
+    const sizes: Array<{ id: GridCellSize; label: string; description: string }> = [
+      { id: 'small', label: 'S', description: 'Small grid cells' },
+      { id: 'medium', label: 'M', description: 'Medium grid cells' },
+      { id: 'large', label: 'L', description: 'Large grid cells' },
+    ];
+
     return html`
       <div class="filters">
         <h3 class="section-title">Show in Grid</h3>
@@ -154,6 +209,27 @@ export class GridFilters extends LitElement {
         <p class="help-text">
           Click to show or hide combinations. All enabled levels will be visible in the contrast grid.
         </p>
+
+        <div class="size-control">
+          <h3 class="section-title">Cell Size</h3>
+          <div class="size-buttons" role="group" aria-label="Adjust grid cell size">
+            ${sizes.map(({ id, label, description }) => html`
+              <button
+                type="button"
+                class="size-btn ${currentSize === id ? 'active' : ''}"
+                @click="${() => this.handleCellSizeChange(id)}"
+                aria-pressed="${currentSize === id}"
+                aria-label="${description}"
+                title="${description}"
+              >
+                ${label}
+              </button>
+            `)}
+          </div>
+          <p class="help-text">
+            Adjust the size of grid cells. Text scales proportionally for accessibility.
+          </p>
+        </div>
       </div>
     `;
   }

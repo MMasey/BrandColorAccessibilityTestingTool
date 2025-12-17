@@ -13,7 +13,8 @@
       "Bash(curl:*)",
       "Bash(gh pr create:*)",
       "Bash(npm run build:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(gh pr list:*)"
     ]
   },
   "model": "sonnet"

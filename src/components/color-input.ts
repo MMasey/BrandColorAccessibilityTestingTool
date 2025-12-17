@@ -19,8 +19,9 @@ export class ColorInput extends LitElement {
 
     .input-wrapper {
       display: flex;
+      flex-direction: column;
       align-items: stretch;
-      gap: var(--space-xs, 0.25rem);
+      gap: 0;
       border: 1px solid var(--color-border-default, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
       overflow: hidden;
@@ -35,6 +36,12 @@ export class ColorInput extends LitElement {
 
     .input-wrapper.invalid {
       border-color: var(--color-error, #dc2626);
+    }
+
+    .color-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
     }
 
     .color-preview {
@@ -92,10 +99,10 @@ export class ColorInput extends LitElement {
     }
 
     .label-input {
-      width: 8rem;
-      padding: var(--space-sm, 0.5rem);
+      width: 100%;
+      padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
       border: none;
-      border-left: 1px solid var(--color-border-default, #d4d4d4);
+      border-top: 1px solid var(--color-border-default, #d4d4d4);
       font-size: var(--font-size-sm, 0.875rem);
       background: var(--color-surface-secondary, #f5f5f5);
       color: var(--color-text-primary, #1a1a1a);
@@ -110,19 +117,6 @@ export class ColorInput extends LitElement {
       color: var(--color-text-muted, #666666);
     }
 
-    /* Mobile: stack label input below color input */
-    @media (max-width: 480px) {
-      .input-wrapper {
-        flex-direction: column;
-      }
-
-      .label-input {
-        width: 100%;
-        border-left: none;
-        border-top: 1px solid var(--color-border-default, #d4d4d4);
-      }
-    }
-
     .sr-only {
       position: absolute;
       width: 1px;
@@ -133,6 +127,20 @@ export class ColorInput extends LitElement {
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
+    }
+
+    .help-text {
+      margin-top: var(--space-xs, 0.25rem);
+      font-size: var(--font-size-xs, 0.75rem);
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+
+    .error-text {
+      margin-top: var(--space-xs, 0.25rem);
+      font-size: var(--font-size-xs, 0.75rem);
+      color: var(--color-error, #dc2626);
+      line-height: 1.4;
     }
   `;
 
@@ -244,23 +252,24 @@ export class ColorInput extends LitElement {
         class="input-wrapper ${this.isValid ? '' : 'invalid'}"
         style="--preview-color: ${previewColor || 'transparent'}"
       >
-        <div
-          class="color-preview ${isEmpty ? 'empty' : ''}"
-          role="img"
-          aria-label="${this.parsedColor ? `Color preview: ${this.parsedColor.hex}` : 'No color selected'}"
-        ></div>
+        <div class="color-row">
+          <div
+            class="color-preview ${isEmpty ? 'empty' : ''}"
+            role="img"
+            aria-label="${this.parsedColor ? `Color preview: ${this.parsedColor.hex}` : 'No color selected'}"
+          ></div>
 
-        <label class="sr-only" for="color-value">Color value</label>
-        <input
-          id="color-value"
-          type="text"
-          .value="${this.value}"
-          placeholder="${this.placeholder}"
-          ?disabled="${this.disabled}"
-          @input="${this.handleColorInput}"
-          aria-invalid="${!this.isValid}"
-          aria-describedby="${!this.isValid ? 'error-hint' : ''}"
-        />
+          <label class="sr-only" for="color-value">Color value</label>
+          <input
+            id="color-value"
+            type="text"
+            .value="${this.value}"
+            ?disabled="${this.disabled}"
+            @input="${this.handleColorInput}"
+            aria-invalid="${!this.isValid}"
+            aria-describedby="${!this.isValid ? 'color-error' : 'color-help'}"
+          />
+        </div>
 
         ${this.showLabel ? html`
           <label class="sr-only" for="color-label">Color label</label>
@@ -269,7 +278,7 @@ export class ColorInput extends LitElement {
             type="text"
             class="label-input"
             .value="${this.label}"
-            placeholder="Label"
+            placeholder="Label (optional)"
             ?disabled="${this.disabled}"
             @input="${this.handleLabelInput}"
           />
@@ -277,10 +286,14 @@ export class ColorInput extends LitElement {
       </div>
 
       ${!this.isValid ? html`
-        <span id="error-hint" class="sr-only">
+        <p id="color-error" class="error-text">
           Invalid color format. Use hex (#RGB or #RRGGBB), rgb(), or hsl().
-        </span>
-      ` : null}
+        </p>
+      ` : html`
+        <p id="color-help" class="help-text">
+          Enter a color using hex (#RGB or #RRGGBB), rgb(r, g, b), or hsl(h, s%, l%) format.
+        </p>
+      `}
     `;
   }
 }

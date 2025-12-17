@@ -33,19 +33,9 @@ export class ColorSwatch extends LitElement {
       padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
       background: transparent;
       border: none;
-      cursor: pointer;
-      transition: background var(--transition-fast, 150ms ease);
+      cursor: default;
       font-family: inherit;
       text-align: left;
-    }
-
-    .swatch:hover {
-      background: var(--color-surface-tertiary, #e8e8e8);
-    }
-
-    .swatch:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
     }
 
     .color-box {
@@ -169,13 +159,6 @@ export class ColorSwatch extends LitElement {
   @property({ type: Boolean, reflect: true })
   compact = false;
 
-  private handleClick(): void {
-    this.dispatchEvent(new CustomEvent('swatch-click', {
-      detail: { color: this.color },
-      bubbles: true,
-      composed: true,
-    }));
-  }
 
   private handleRemove(e: Event): void {
     e.stopPropagation();
@@ -193,11 +176,10 @@ export class ColorSwatch extends LitElement {
 
     return html`
       <div class="swatch-container" style="--swatch-color: ${this.color.hex}">
-        <button
-          type="button"
+        <div
           class="swatch"
+          role="group"
           aria-label="${label}: ${this.color.hex}"
-          @click="${this.handleClick}"
         >
           <div class="color-box" aria-hidden="true"></div>
 
@@ -205,7 +187,7 @@ export class ColorSwatch extends LitElement {
             <div class="label" title="${label}">${label}</div>
             <div class="hex">${this.color.hex}</div>
           </div>
-        </button>
+        </div>
 
         ${this.showRemove ? html`
           <button

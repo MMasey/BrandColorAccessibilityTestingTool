@@ -17,6 +17,7 @@ export class ContrastCell extends LitElement {
     :host([compact]) .cell {
       min-width: 4rem;
       min-height: 4rem;
+      aspect-ratio: 1 / 1;
       padding: var(--space-xs, 0.25rem);
     }
 
@@ -31,6 +32,45 @@ export class ContrastCell extends LitElement {
 
     :host([compact]) .sample-text {
       display: none;
+    }
+
+    /* Cell size variations */
+    :host([cell-size="small"]) .cell {
+      min-width: 4rem;
+      min-height: 4rem;
+      padding: var(--space-xs, 0.25rem);
+    }
+
+    :host([cell-size="small"]) .ratio {
+      font-size: var(--font-size-sm, 0.875rem);
+    }
+
+    :host([cell-size="small"]) .badge {
+      font-size: 0.625rem;
+      padding: 0.0625rem 0.25rem;
+    }
+
+    :host([cell-size="small"]) .sample-text {
+      font-size: 0.625rem;
+    }
+
+    :host([cell-size="large"]) .cell {
+      min-width: 7rem;
+      min-height: 7rem;
+      padding: var(--space-md, 1rem);
+    }
+
+    :host([cell-size="large"]) .ratio {
+      font-size: var(--font-size-lg, 1.125rem);
+    }
+
+    :host([cell-size="large"]) .badge {
+      font-size: var(--font-size-sm, 0.875rem);
+      padding: 0.25rem 0.5rem;
+    }
+
+    :host([cell-size="large"]) .sample-text {
+      font-size: var(--font-size-sm, 0.875rem);
     }
 
     /* Filtered cells are hidden from view */
@@ -57,22 +97,10 @@ export class ContrastCell extends LitElement {
       padding: var(--space-sm, 0.5rem);
       min-width: 5rem;
       min-height: 5rem;
+      aspect-ratio: 1 / 1;
       background: var(--bg-color, #ffffff);
       border: 1px solid var(--color-border-default, #d4d4d4);
       position: relative;
-      transition: transform var(--transition-fast, 150ms ease);
-
-      &:hover {
-        z-index: 1;
-        transform: scale(1.05);
-        box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-      }
-
-      &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-        outline-offset: var(--focus-ring-offset, 2px);
-        z-index: 2;
-      }
 
       &.same-color {
         background: repeating-linear-gradient(
@@ -88,6 +116,7 @@ export class ContrastCell extends LitElement {
       @media (max-width: 640px) {
         min-width: 4rem;
         min-height: 4rem;
+        aspect-ratio: 1 / 1;
         padding: var(--space-xs, 0.25rem);
       }
     }
@@ -174,6 +203,10 @@ export class ContrastCell extends LitElement {
   /** Whether this cell is filtered out by grid filters */
   @property({ type: Boolean, reflect: true })
   filtered = false;
+
+  /** Grid cell size */
+  @property({ type: String, reflect: true, attribute: 'cell-size' })
+  cellSize: 'small' | 'medium' | 'large' = 'medium';
 
   private getBadgeClass(level: WCAGLevel): string {
     return level.toLowerCase();

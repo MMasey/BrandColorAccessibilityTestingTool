@@ -353,6 +353,7 @@ export class ContrastGrid extends LitElement {
                   ?same-color="${fgIndex === bgIndex}"
                   ?compact="${this.compact}"
                   ?filtered="${this.isCellFiltered(result)}"
+                  cell-size="${this.store.gridCellSize}"
                 ></contrast-cell>
               `;
             })}

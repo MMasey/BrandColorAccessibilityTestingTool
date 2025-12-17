@@ -11,12 +11,16 @@ import { createColor } from '../utils/color-converter';
 /** Grid filter levels for WCAG compliance */
 export type GridFilterLevel = 'aaa' | 'aa' | 'aa-large' | 'failed';
 
+/** Grid cell size options */
+export type GridCellSize = 'small' | 'medium' | 'large';
+
 /** Store state shape */
 export interface ColorStoreState {
   colors: Color[];
   textSize: TextSize;
   selectedAlgorithm: 'wcag' | 'apca' | 'both';
   gridFilters: Set<GridFilterLevel>;
+  gridCellSize: GridCellSize;
 }
 
 /** Event types emitted by the store */
@@ -25,6 +29,7 @@ export type ColorStoreEvent =
   | { type: 'text-size-changed'; textSize: TextSize }
   | { type: 'algorithm-changed'; algorithm: 'wcag' | 'apca' | 'both' }
   | { type: 'grid-filters-changed'; filters: Set<GridFilterLevel> }
+  | { type: 'grid-cell-size-changed'; size: GridCellSize }
   | { type: 'state-reset' };
 
 type Listener = (event: ColorStoreEvent) => void;
@@ -38,7 +43,8 @@ function createColorStore() {
     colors: [],
     textSize: 'normal',
     selectedAlgorithm: 'wcag',
-    gridFilters: new Set(['aaa', 'aa', 'aa-large', 'failed']),
+    gridFilters: new Set(['aaa', 'aa', 'aa-large']),
+    gridCellSize: 'medium',
   };
 
   // Subscribers
@@ -284,6 +290,22 @@ function createColorStore() {
     },
 
     /**
+     * Get current grid cell size
+     */
+    getGridCellSize(): GridCellSize {
+      return state.gridCellSize;
+    },
+
+    /**
+     * Set grid cell size
+     */
+    setGridCellSize(size: GridCellSize): void {
+      if (state.gridCellSize === size) return;
+      state = { ...state, gridCellSize: size };
+      emit({ type: 'grid-cell-size-changed', size });
+    },
+
+    /**
      * Reset store to initial state
      */
     reset(): void {
@@ -291,7 +313,8 @@ function createColorStore() {
         colors: [],
         textSize: 'normal',
         selectedAlgorithm: 'wcag',
-        gridFilters: new Set(['aaa', 'aa', 'aa-large', 'failed']),
+        gridFilters: new Set(['aaa', 'aa', 'aa-large']),
+        gridCellSize: 'medium',
       };
       emit({ type: 'state-reset' });
     },
