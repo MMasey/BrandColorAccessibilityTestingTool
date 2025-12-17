@@ -244,17 +244,7 @@ export class ContrastGrid extends LitElement {
   private isCellFiltered(result: ContrastResult | null): boolean {
     if (!result) return true;
     const filterLevel = this.mapWCAGLevelToFilterLevel(result.level);
-    const isFiltered = !this.store.gridFilters.has(filterLevel);
-    // Debug logging
-    if (Math.random() < 0.01) { // Only log 1% of calls to avoid spam
-      console.log('[contrast-grid] Filter check:', {
-        level: result.level,
-        filterLevel,
-        activeFilters: Array.from(this.store.gridFilters),
-        isFiltered
-      });
-    }
-    return isFiltered;
+    return !this.store.gridFilters.has(filterLevel);
   }
 
   private getAccessibilitySummary(matrix: ContrastResult[][]): string {

@@ -88,13 +88,7 @@ export class GridFilters extends LitElement {
   private store = new ColorStoreController(this);
 
   private handleFilterToggle(filter: GridFilterLevel): void {
-    console.log('[grid-filters] Toggling filter:', filter);
-    console.log('[grid-filters] Before toggle:', Array.from(this.store.gridFilters));
     this.store.toggleGridFilter(filter);
-    // Log after a small delay to see the updated state
-    setTimeout(() => {
-      console.log('[grid-filters] After toggle:', Array.from(this.store.gridFilters));
-    }, 10);
   }
 
   render() {

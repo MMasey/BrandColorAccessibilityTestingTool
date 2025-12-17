@@ -11,40 +11,40 @@ export class ContrastCell extends LitElement {
   static styles = css`
     :host {
       display: block;
+    }
 
-      /* Compact mode for smaller cells */
-      &([compact]) .cell {
-        min-width: 3.5rem;
-        min-height: 3.5rem;
-        padding: var(--space-xs, 0.25rem);
-      }
+    /* Compact mode for smaller cells */
+    :host([compact]) .cell {
+      min-width: 3.5rem;
+      min-height: 3.5rem;
+      padding: var(--space-xs, 0.25rem);
+    }
 
-      &([compact]) .ratio {
-        font-size: var(--font-size-sm, 0.875rem);
-      }
+    :host([compact]) .ratio {
+      font-size: var(--font-size-sm, 0.875rem);
+    }
 
-      &([compact]) .badge {
-        font-size: 0.625rem;
-        padding: 0.0625rem 0.25rem;
-      }
+    :host([compact]) .badge {
+      font-size: 0.625rem;
+      padding: 0.0625rem 0.25rem;
+    }
 
-      &([compact]) .sample-text {
-        display: none;
-      }
+    :host([compact]) .sample-text {
+      display: none;
+    }
 
-      /* Filtered cells are hidden from view */
-      &([filtered]) {
-        opacity: 0.2;
-        pointer-events: none;
+    /* Filtered cells are hidden from view */
+    :host([filtered]) {
+      opacity: 0.2;
+      pointer-events: none;
+    }
 
-        .cell {
-          background: var(--color-surface-secondary, #f5f5f5) !important;
+    :host([filtered]) .cell {
+      background: var(--color-surface-secondary, #f5f5f5) !important;
 
-          &:hover {
-            transform: none;
-            box-shadow: none;
-          }
-        }
+      &:hover {
+        transform: none;
+        box-shadow: none;
       }
     }
 
