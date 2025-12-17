@@ -46,6 +46,8 @@ export class ContrastGrid extends LitElement {
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
       color: var(--color-text-secondary, #555555);
+      max-width: 10rem;
+      overflow: hidden;
       min-width: 5rem;
       min-height: 2.5rem;
       position: sticky;
@@ -74,22 +76,30 @@ export class ContrastGrid extends LitElement {
         position: sticky;
         left: 0;
         z-index: 2;
+
+        @media (max-width: 640px) {
+          min-width: 4rem;
+          max-width: 5rem;
+        }
+
+        @media (min-width: 641px) and (max-width: 1023px) {
+          min-width: 6rem;
+          max-width: 7rem;
+        }
       }
 
       /* Mobile: smaller headers */
       @media (max-width: 640px) {
         min-width: 3.5rem;
+        max-width: 5rem;
         padding: var(--space-xs, 0.25rem);
         font-size: var(--font-size-xs, 0.75rem);
-
-        &.row-header {
-          min-width: 5rem;
-        }
       }
 
       /* Tablet: medium adjustments */
       @media (min-width: 641px) and (max-width: 1023px) {
         min-width: 4rem;
+        max-width: 7rem;
 
         &.row-header {
           min-width: 6rem;
@@ -101,6 +111,8 @@ export class ContrastGrid extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--space-xs, 0.25rem);
+      max-width: 100%;
+      min-width: 0;
     }
 
     .color-dot {
@@ -117,6 +129,8 @@ export class ContrastGrid extends LitElement {
     }
 
     .color-label {
+      flex: 1;
+      min-width: 0;
       max-width: 8rem;
       line-height: 1.3;
       /* Limit to 2 lines with ellipsis */
@@ -126,14 +140,17 @@ export class ContrastGrid extends LitElement {
       overflow: hidden;
       word-break: break-word;
       overflow-wrap: break-word;
+      text-overflow: ellipsis;
 
       @media (max-width: 640px) {
-        max-width: 3rem;
+        max-width: 2.5rem;
+        -webkit-line-clamp: 1;
         font-size: var(--font-size-xs, 0.75rem);
       }
 
       @media (min-width: 641px) and (max-width: 1023px) {
-        max-width: 5rem;
+        max-width: 4rem;
+        -webkit-line-clamp: 1;
       }
     }
 
@@ -314,19 +331,25 @@ export class ContrastGrid extends LitElement {
         <div class="grid-container">
           <div
             class="grid"
-            aria-hidden="true"
+            role="table"
+            aria-label="Contrast ratios between foreground and background colors"
             style="grid-template-columns: repeat(${gridSize}, auto)"
           >
             <!-- Corner cell -->
-            <div class="header-cell corner">
-              <span aria-hidden="true">FG \\ BG</span>
+            <div class="header-cell corner" role="columnheader">
+              <span aria-label="Foreground versus Background">FG \\ BG</span>
             </div>
 
             <!-- Column headers (background colors) -->
             ${colors.map((color) => html`
-              <div class="header-cell column-header" title="${this.getColorLabel(color)}">
+              <div
+                class="header-cell column-header"
+                role="columnheader"
+                aria-label="Background: ${this.getColorLabel(color)}"
+                title="${this.getColorLabel(color)}"
+              >
                 <div class="color-indicator">
-                  <div class="color-dot" style="background: ${color.hex}"></div>
+                  <div class="color-dot" style="background: ${color.hex}" aria-hidden="true"></div>
                   <span class="color-label">${this.getColorLabel(color)}</span>
                 </div>
               </div>
@@ -335,9 +358,14 @@ export class ContrastGrid extends LitElement {
           <!-- Rows -->
           ${colors.map((fgColor, fgIndex) => html`
             <!-- Row header (foreground color) -->
-            <div class="header-cell row-header" title="${this.getColorLabel(fgColor)}">
+            <div
+              class="header-cell row-header"
+              role="rowheader"
+              aria-label="Foreground: ${this.getColorLabel(fgColor)}"
+              title="${this.getColorLabel(fgColor)}"
+            >
               <div class="color-indicator">
-                <div class="color-dot" style="background: ${fgColor.hex}"></div>
+                <div class="color-dot" style="background: ${fgColor.hex}" aria-hidden="true"></div>
                 <span class="color-label">${this.getColorLabel(fgColor)}</span>
               </div>
             </div>
@@ -345,8 +373,12 @@ export class ContrastGrid extends LitElement {
             <!-- Cells -->
             ${colors.map((bgColor, bgIndex) => {
               const result = matrix[fgIndex]?.[bgIndex] ?? null;
+              const cellLabel = result
+                ? `${this.getColorLabel(fgColor)} on ${this.getColorLabel(bgColor)}: ${result.ratioString}, ${result.level === 'DNP' ? 'Does not pass' : 'Passes ' + result.level}`
+                : 'No result';
               return html`
-                <contrast-cell
+                <div role="cell" aria-label="${cellLabel}">
+                  <contrast-cell
                   .result="${result}"
                   fg-color="${fgColor.hex}"
                   bg-color="${bgColor.hex}"
@@ -355,6 +387,7 @@ export class ContrastGrid extends LitElement {
                   ?filtered="${this.isCellFiltered(result)}"
                   cell-size="${this.store.gridCellSize}"
                 ></contrast-cell>
+                </div>
               `;
             })}
           `)}

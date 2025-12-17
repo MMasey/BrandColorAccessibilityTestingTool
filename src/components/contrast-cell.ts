@@ -34,43 +34,62 @@ export class ContrastCell extends LitElement {
       display: none;
     }
 
-    /* Cell size variations */
+    /* Cell size variations - more pronounced differences */
     :host([cell-size="small"]) .cell {
-      min-width: 4rem;
-      min-height: 4rem;
+      min-width: 3.5rem;
+      min-height: 3.5rem;
       padding: var(--space-xs, 0.25rem);
     }
 
     :host([cell-size="small"]) .ratio {
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: 0.75rem;
     }
 
     :host([cell-size="small"]) .badge {
-      font-size: 0.625rem;
+      font-size: 0.5rem;
       padding: 0.0625rem 0.25rem;
     }
 
     :host([cell-size="small"]) .sample-text {
-      font-size: 0.625rem;
+      font-size: 0.5rem;
+    }
+
+    :host([cell-size="medium"]) .cell {
+      min-width: 5.5rem;
+      min-height: 5.5rem;
+      padding: var(--space-sm, 0.5rem);
+    }
+
+    :host([cell-size="medium"]) .ratio {
+      font-size: var(--font-size-md, 1rem);
+    }
+
+    :host([cell-size="medium"]) .badge {
+      font-size: var(--font-size-xs, 0.75rem);
+      padding: 0.125rem 0.375rem;
+    }
+
+    :host([cell-size="medium"]) .sample-text {
+      font-size: var(--font-size-xs, 0.75rem);
     }
 
     :host([cell-size="large"]) .cell {
-      min-width: 7rem;
-      min-height: 7rem;
+      min-width: 8rem;
+      min-height: 8rem;
       padding: var(--space-md, 1rem);
     }
 
     :host([cell-size="large"]) .ratio {
-      font-size: var(--font-size-lg, 1.125rem);
+      font-size: 1.25rem;
     }
 
     :host([cell-size="large"]) .badge {
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: var(--font-size-md, 1rem);
       padding: 0.25rem 0.5rem;
     }
 
     :host([cell-size="large"]) .sample-text {
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: var(--font-size-md, 1rem);
     }
 
     /* Filtered cells are hidden from view */
@@ -95,8 +114,8 @@ export class ContrastCell extends LitElement {
       justify-content: center;
       gap: var(--space-xs, 0.25rem);
       padding: var(--space-sm, 0.5rem);
-      min-width: 5rem;
-      min-height: 5rem;
+      min-width: 5.5rem;
+      min-height: 5.5rem;
       aspect-ratio: 1 / 1;
       background: var(--bg-color, #ffffff);
       border: 1px solid var(--color-border-default, #d4d4d4);
@@ -111,14 +130,6 @@ export class ContrastCell extends LitElement {
           var(--color-surface-secondary, #f5f5f5) 10px
         );
       }
-
-      /* Mobile: auto-compact mode with larger touch targets */
-      @media (max-width: 640px) {
-        min-width: 4rem;
-        min-height: 4rem;
-        aspect-ratio: 1 / 1;
-        padding: var(--space-xs, 0.25rem);
-      }
     }
 
     .ratio {
@@ -126,11 +137,6 @@ export class ContrastCell extends LitElement {
       font-size: var(--font-size-md, 1rem);
       font-weight: var(--font-weight-bold, 700);
       color: var(--fg-color, #000000);
-
-      /* Mobile: smaller font */
-      @media (max-width: 640px) {
-        font-size: var(--font-size-sm, 0.875rem);
-      }
     }
 
     .badge {
@@ -160,23 +166,12 @@ export class ContrastCell extends LitElement {
         background: #991b1b;  /* Red - 7.1:1 on white (AAA) - updated from #7f1d1d */
         color: #ffffff;
       }
-
-      /* Mobile: smaller badge */
-      @media (max-width: 640px) {
-        font-size: 0.625rem;
-        padding: 0.0625rem 0.25rem;
-      }
     }
 
     .sample-text {
       font-size: var(--font-size-xs, 0.75rem);
       color: var(--fg-color, #000000);
       opacity: 0.8;
-
-      /* Mobile: hide sample text */
-      @media (max-width: 640px) {
-        display: none;
-      }
     }
   `;
 

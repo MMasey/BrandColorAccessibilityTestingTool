@@ -17,109 +17,24 @@ export class GridFilters extends LitElement {
     .filters {
       display: flex;
       flex-direction: column;
-      gap: 0;
-    }
-
-    /* Mobile: Accordion mode */
-    details {
-      border-bottom: 1px solid var(--color-border-default, #d4d4d4);
-    }
-
-    details:first-of-type {
-      border-top: 1px solid var(--color-border-default, #d4d4d4);
-    }
-
-    summary {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      gap: var(--space-lg, 1.5rem);
       padding: var(--space-md, 1rem);
-      cursor: pointer;
-      user-select: none;
-      list-style: none;
-      background: var(--color-surface-secondary, #f5f5f5);
-      transition: background var(--transition-fast, 150ms ease);
+      background: var(--color-surface-primary, #ffffff);
+      border: 1px solid var(--color-border-default, #d4d4d4);
+      border-radius: var(--radius-md, 0.5rem);
     }
 
-    summary::-webkit-details-marker {
-      display: none;
-    }
-
-    summary:hover {
-      background: var(--color-surface-tertiary, #e8e8e8);
-    }
-
-    summary:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: calc(-1 * var(--focus-ring-width, 2px));
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm, 0.5rem);
     }
 
     .section-title {
       margin: 0;
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: var(--font-size-md, 1rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .chevron {
-      width: 1.25rem;
-      height: 1.25rem;
-      color: var(--color-text-secondary);
-      transition: transform var(--transition-fast, 150ms ease);
-    }
-
-    details[open] .chevron {
-      transform: rotate(180deg);
-    }
-
-    .section-content {
-      padding: var(--space-md, 1rem);
-      background: var(--color-surface-primary, #ffffff);
-    }
-
-    /* Desktop: Tab mode */
-    @media (min-width: 768px) {
-      details {
-        border: none;
-        border-bottom: 2px solid transparent;
-      }
-
-      details:first-of-type {
-        border-top: none;
-      }
-
-      details[open] {
-        border-bottom-color: var(--color-accent-primary, #0066cc);
-      }
-
-      summary {
-        background: transparent;
-        padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-        border-radius: var(--radius-sm, 0.25rem) var(--radius-sm, 0.25rem) 0 0;
-      }
-
-      summary:hover {
-        background: var(--color-surface-secondary, #f5f5f5);
-      }
-
-      details[open] summary {
-        background: var(--color-surface-primary, #ffffff);
-        color: var(--color-accent-primary, #0066cc);
-      }
-
-      details[open] summary .section-title {
-        color: var(--color-accent-primary, #0066cc);
-      }
-
-      .chevron {
-        display: none;
-      }
-
-      .section-content {
-        padding: var(--space-md, 1rem) 0;
-      }
+      color: var(--color-text-primary);
     }
 
     .filter-buttons {
@@ -279,63 +194,52 @@ export class GridFilters extends LitElement {
     return html`
       <div class="filters">
         <!-- Show in Grid Section -->
-        <details name="grid-filter-section" open>
-          <summary>
-            <h3 class="section-title">Show in Grid</h3>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </summary>
-          <div class="section-content">
-            <div class="filter-buttons" role="group" aria-label="Filter contrast grid by WCAG level">
-              ${filters.map(({ id, label, description, icon }) => html`
-                <button
-                  type="button"
-                  class="filter-btn ${activeFilters.has(id) ? 'active' : ''}"
-                  @click="${() => this.handleFilterToggle(id)}"
-                  aria-pressed="${activeFilters.has(id)}"
-                  title="${description}"
-                >
-                  ${icon}
-                  <span class="label">${label}</span>
-                </button>
-              `)}
-            </div>
+        <section class="filter-section" aria-labelledby="show-in-grid-heading">
+          <h3 id="show-in-grid-heading" class="section-title">Show in Grid</h3>
 
-            <p class="help-text">
-              Click to show or hide combinations. All enabled levels will be visible in the contrast grid.
-            </p>
+          <div class="filter-buttons" role="group" aria-label="Filter contrast grid by WCAG level">
+            ${filters.map(({ id, label, description, icon }) => html`
+              <button
+                type="button"
+                class="filter-btn ${activeFilters.has(id) ? 'active' : ''}"
+                @click="${() => this.handleFilterToggle(id)}"
+                aria-pressed="${activeFilters.has(id)}"
+                title="${description}"
+              >
+                ${icon}
+                <span class="label">${label}</span>
+              </button>
+            `)}
           </div>
-        </details>
+
+          <p class="help-text">
+            Click to show or hide combinations. All enabled levels will be visible in the contrast grid.
+          </p>
+        </section>
 
         <!-- Cell Size Section -->
-        <details name="grid-filter-section">
-          <summary>
-            <h3 class="section-title">Cell Size</h3>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </summary>
-          <div class="section-content">
-            <div class="size-buttons" role="group" aria-label="Adjust grid cell size">
-              ${sizes.map(({ id, label, description }) => html`
-                <button
-                  type="button"
-                  class="size-btn ${currentSize === id ? 'active' : ''}"
-                  @click="${() => this.handleCellSizeChange(id)}"
-                  aria-pressed="${currentSize === id}"
-                  aria-label="${description}"
-                  title="${description}"
-                >
-                  ${label}
-                </button>
-              `)}
-            </div>
-            <p class="help-text">
-              Adjust the size of grid cells. Text scales proportionally for accessibility.
-            </p>
+        <section class="filter-section" aria-labelledby="cell-size-heading">
+          <h3 id="cell-size-heading" class="section-title">Cell Size</h3>
+
+          <div class="size-buttons" role="group" aria-label="Adjust grid cell size">
+            ${sizes.map(({ id, label, description }) => html`
+              <button
+                type="button"
+                class="size-btn ${currentSize === id ? 'active' : ''}"
+                @click="${() => this.handleCellSizeChange(id)}"
+                aria-pressed="${currentSize === id}"
+                aria-label="${description}"
+                title="${description}"
+              >
+                ${label}
+              </button>
+            `)}
           </div>
-        </details>
+
+          <p class="help-text">
+            Adjust the size of grid cells. Text scales proportionally for accessibility.
+          </p>
+        </section>
       </div>
     `;
   }

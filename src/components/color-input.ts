@@ -17,9 +17,26 @@ export class ColorInput extends LitElement {
       display: block;
     }
 
-    .input-wrapper {
+    .input-group {
       display: flex;
       flex-direction: column;
+      gap: var(--space-sm, 0.5rem);
+    }
+
+    .field-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs, 0.25rem);
+    }
+
+    .field-label {
+      font-size: var(--font-size-sm, 0.875rem);
+      font-weight: var(--font-weight-medium, 500);
+      color: var(--color-text-primary);
+    }
+
+    .color-row {
+      display: flex;
       align-items: stretch;
       gap: 0;
       border: 1px solid var(--color-border-default, #d4d4d4);
@@ -28,20 +45,14 @@ export class ColorInput extends LitElement {
       transition: border-color var(--transition-fast, 150ms ease);
     }
 
-    .input-wrapper:focus-within {
+    .color-row:focus-within {
       border-color: var(--color-border-focus, #0066cc);
       outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
       outline-offset: var(--focus-ring-offset, 2px);
     }
 
-    .input-wrapper.invalid {
+    .color-row.invalid {
       border-color: var(--color-error, #dc2626);
-    }
-
-    .color-row {
-      display: flex;
-      align-items: stretch;
-      gap: 0;
     }
 
     .color-preview {
@@ -98,19 +109,33 @@ export class ColorInput extends LitElement {
       color: var(--color-text-muted, #666666);
     }
 
+    .label-input-wrapper {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--color-border-default, #d4d4d4);
+      border-radius: var(--radius-md, 0.5rem);
+      overflow: hidden;
+      transition: border-color var(--transition-fast, 150ms ease);
+    }
+
+    .label-input-wrapper:focus-within {
+      border-color: var(--color-border-focus, #0066cc);
+      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     .label-input {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
       padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
       border: none;
-      border-top: 1px solid var(--color-border-default, #d4d4d4);
-      font-size: var(--font-size-sm, 0.875rem);
-      background: var(--color-surface-secondary, #f5f5f5);
+      font-size: var(--font-size-md, 1rem);
+      background: var(--color-surface-primary, #ffffff);
       color: var(--color-text-primary, #1a1a1a);
     }
 
     .label-input:focus {
       outline: none;
-      background: var(--color-surface-primary, #ffffff);
     }
 
     .label-input::placeholder {
@@ -248,52 +273,55 @@ export class ColorInput extends LitElement {
     const isEmpty = !previewColor;
 
     return html`
-      <div
-        class="input-wrapper ${this.isValid ? '' : 'invalid'}"
-        style="--preview-color: ${previewColor || 'transparent'}"
-      >
-        <div class="color-row">
-          <div
-            class="color-preview ${isEmpty ? 'empty' : ''}"
-            role="img"
-            aria-label="${this.parsedColor ? `Color preview: ${this.parsedColor.hex}` : 'No color selected'}"
-          ></div>
-
-          <label class="sr-only" for="color-value">Color value</label>
-          <input
-            id="color-value"
-            type="text"
-            .value="${this.value}"
-            ?disabled="${this.disabled}"
-            @input="${this.handleColorInput}"
-            aria-invalid="${!this.isValid}"
-            aria-describedby="${!this.isValid ? 'color-error' : 'color-help'}"
-          />
+      <div class="input-group" style="--preview-color: ${previewColor || 'transparent'}">
+        <!-- Color Value Field -->
+        <div class="field-wrapper">
+          <label class="field-label" for="color-value">Color value</label>
+          <div class="color-row ${this.isValid ? '' : 'invalid'}">
+            <div
+              class="color-preview ${isEmpty ? 'empty' : ''}"
+              role="img"
+              aria-label="${this.parsedColor ? `Color preview: ${this.parsedColor.hex}` : 'No color selected'}"
+            ></div>
+            <input
+              id="color-value"
+              type="text"
+              .value="${this.value}"
+              ?disabled="${this.disabled}"
+              @input="${this.handleColorInput}"
+              aria-invalid="${!this.isValid}"
+              aria-describedby="${!this.isValid ? 'color-error' : 'color-help'}"
+            />
+          </div>
+          ${!this.isValid ? html`
+            <p id="color-error" class="error-text">
+              Invalid color format. Use hex (#RGB or #RRGGBB), rgb(), or hsl().
+            </p>
+          ` : html`
+            <p id="color-help" class="help-text">
+              Enter a color using hex (#RGB or #RRGGBB), rgb(r, g, b), or hsl(h, s%, l%) format.
+            </p>
+          `}
         </div>
 
+        <!-- Color Label Field -->
         ${this.showLabel ? html`
-          <label class="sr-only" for="color-label">Color label</label>
-          <input
-            id="color-label"
-            type="text"
-            class="label-input"
-            .value="${this.label}"
-            placeholder="Label (optional)"
-            ?disabled="${this.disabled}"
-            @input="${this.handleLabelInput}"
-          />
+          <div class="field-wrapper">
+            <label class="field-label" for="color-label">Color label (optional)</label>
+            <div class="label-input-wrapper">
+              <input
+                id="color-label"
+                type="text"
+                class="label-input"
+                .value="${this.label}"
+                placeholder="e.g., Primary Brand"
+                ?disabled="${this.disabled}"
+                @input="${this.handleLabelInput}"
+              />
+            </div>
+          </div>
         ` : null}
       </div>
-
-      ${!this.isValid ? html`
-        <p id="color-error" class="error-text">
-          Invalid color format. Use hex (#RGB or #RRGGBB), rgb(), or hsl().
-        </p>
-      ` : html`
-        <p id="color-help" class="help-text">
-          Enter a color using hex (#RGB or #RRGGBB), rgb(r, g, b), or hsl(h, s%, l%) format.
-        </p>
-      `}
     `;
   }
 }
