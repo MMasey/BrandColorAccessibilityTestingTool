@@ -51,6 +51,7 @@ export class ColorPalette extends LitElement {
 
     .add-row {
       display: flex;
+      align-items: flex-end;
       gap: var(--space-sm, 0.5rem);
 
       color-input {
@@ -61,6 +62,7 @@ export class ColorPalette extends LitElement {
       /* Mobile: stack input and button */
       @media (max-width: 400px) {
         flex-direction: column;
+        align-items: stretch;
 
         color-input {
           width: 100%;

@@ -17,11 +17,7 @@ export class GridFilters extends LitElement {
     .filters {
       display: flex;
       flex-direction: column;
-      gap: var(--space-lg, 1.5rem);
-      padding: var(--space-md, 1rem);
-      background: var(--color-surface-primary, #ffffff);
-      border: 1px solid var(--color-border-default, #d4d4d4);
-      border-radius: var(--radius-md, 0.5rem);
+      gap: var(--space-xl, 2rem);
     }
 
     .filter-section {
@@ -31,17 +27,22 @@ export class GridFilters extends LitElement {
     }
 
     .section-title {
-      margin: 0;
-      font-size: var(--font-size-md, 1rem);
+      margin: 0 0 var(--space-xs, 0.25rem) 0;
+      font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-primary);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .filter-buttons {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--space-sm, 0.5rem);
-      margin-bottom: var(--space-sm, 0.5rem);
+
+      @media (max-width: 360px) {
+        grid-template-columns: 1fr;
+      }
     }
 
     .filter-btn {
@@ -87,17 +88,10 @@ export class GridFilters extends LitElement {
       }
     }
 
-    .help-text {
-      font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted);
-      line-height: 1.4;
-    }
-
     .size-buttons {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--space-xs, 0.25rem);
-      margin-bottom: var(--space-sm, 0.5rem);
     }
 
     .size-btn {
@@ -212,9 +206,6 @@ export class GridFilters extends LitElement {
             `)}
           </div>
 
-          <p class="help-text">
-            Click to show or hide combinations. All enabled levels will be visible in the contrast grid.
-          </p>
         </section>
 
         <!-- Cell Size Section -->
@@ -235,10 +226,6 @@ export class GridFilters extends LitElement {
               </button>
             `)}
           </div>
-
-          <p class="help-text">
-            Adjust the size of grid cells. Text scales proportionally for accessibility.
-          </p>
         </section>
       </div>
     `;
