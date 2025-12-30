@@ -8,14 +8,12 @@ Each milestone is stored in a timestamped folder for proper chronological orderi
 ```
 docs/visual-history/
 ├── YYYY-MM-DD_HHMM_milestone-name/
-│   ├── desktop-light-empty.png
-│   ├── desktop-light-colors.png
-│   ├── desktop-dark-empty.png
-│   ├── desktop-dark-colors.png
-│   ├── desktop-high-contrast-empty.png
-│   ├── desktop-high-contrast-colors.png
-│   ├── tablet-*.png
-│   ├── mobile-*.png
+│   ├── desktop-empty.png
+│   ├── desktop-colors.png
+│   ├── tablet-empty.png
+│   ├── tablet-colors.png
+│   ├── mobile-empty.png
+│   ├── mobile-colors.png
 │   └── metadata.json
 ```
 
@@ -36,19 +34,19 @@ npm run capture-milestone -- "feature-name"
 ## Screenshot Set
 
 Each milestone captures:
-- **3 viewports**: desktop (1440×900), tablet (768×1024), mobile (375×667)
-- **3 themes**: light, dark, high-contrast
+- **3 viewports**: desktop (1440x900), tablet (768x1024), mobile (375x667)
 - **2 states**: empty, with 4 sample colors
 
-Total: 18 screenshots per milestone
+Total: 6 screenshots per milestone
 
 ## History
 
-| Folder | Milestone | Description |
-|--------|-----------|-------------|
+| Folder | PR | Description |
+|--------|----|-------------|
+| 2025-12-14_1128_pr2-initial-setup | PR #2 | Initial project setup with basic UI |
 | 2025-12-15_0627_pr3-progressive-enhancement | PR #3 | URL state management and progressive enhancement |
+| 2025-12-30_1355_pr5-display-preferences-ux | PR #5 | Display preferences and grid controls |
 | 2025-12-30_1510_pr6-filter-url-sync | PR #6 | Grid filter state in URL parameters |
-| 2025-12-30_1837_current-state | Current | Grid keyboard nav, visual history, CI automation |
 
 ## Historical Captures
 
@@ -60,8 +58,8 @@ git worktree add ../historical-capture <commit-hash>
 # Install dependencies and start server
 cd ../historical-capture && npm install && npm run dev
 
-# Capture from main repo using simple script
-cd <main-repo> && npx tsx scripts/capture-simple.ts "milestone-name"
+# Capture from main repo using simple script (with timestamp prefix)
+cd <main-repo> && npx tsx scripts/capture-simple.ts "HHMM_milestone-name"
 
 # Clean up worktree when done
 git worktree remove ../historical-capture
