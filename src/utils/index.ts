@@ -49,3 +49,13 @@ export {
   generateContrastMatrix,
   getWCAGLevelDescription,
 } from './contrast';
+
+// WCAG Badge Config
+export {
+  WCAG_BADGE_COLORS,
+  WCAG_BADGE_LABELS,
+  WCAG_BADGE_TITLES,
+  getBadgeClass,
+  getBadgeLabel,
+  getBadgeTitle,
+} from './wcag-config';

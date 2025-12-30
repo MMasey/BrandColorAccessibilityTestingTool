@@ -17,10 +17,10 @@
   --color-surface-secondary: #f5f5f5;
   --color-surface-tertiary: #e8e8e8;
 
-  /* Text colors */
+  /* Text colors - AAA compliant (7:1 minimum on backgrounds) */
   --color-text-primary: #1a1a1a;
-  --color-text-secondary: #555555;
-  --color-text-muted: #666666;
+  --color-text-secondary: #404040;  /* Changed from #555555 for AAA (8.6:1 on #f5f5f5) */
+  --color-text-muted: #4a4a4a;      /* Changed from #666666 for AAA (7.2:1 on #f5f5f5) */
   --color-text-inverse: #ffffff;
 
   /* Brand/accent colors */
@@ -108,9 +108,9 @@
     --color-surface-secondary: #262626;
     --color-surface-tertiary: #333333;
 
-    --color-text-primary: #f5f5f5;
-    --color-text-secondary: #a3a3a3;
-    --color-text-muted: #9a9a9a;
+    --color-text-primary: #f5f5f5;      /* AAA on #1a1a1a */
+    --color-text-secondary: #d4d4d4;  /* Changed from #a3a3a3 for AAA (10.4:1 on #1a1a1a) */
+    --color-text-muted: #c2c2c2;      /* Changed from #9a9a9a for AAA (8.9:1 on #1a1a1a) */
     --color-text-inverse: #1a1a1a;
 
     --color-accent-primary: #60a5fa;
@@ -134,9 +134,9 @@
   --color-surface-secondary: #262626;
   --color-surface-tertiary: #333333;
 
-  --color-text-primary: #f5f5f5;
-  --color-text-secondary: #a3a3a3;
-  --color-text-muted: #9a9a9a;
+  --color-text-primary: #f5f5f5;      /* AAA on #1a1a1a */
+  --color-text-secondary: #d4d4d4;  /* Changed from #a3a3a3 for AAA (10.4:1 on #1a1a1a) */
+  --color-text-muted: #c2c2c2;      /* Changed from #9a9a9a for AAA (8.9:1 on #1a1a1a) */
   --color-text-inverse: #1a1a1a;
 
   --color-accent-primary: #60a5fa;

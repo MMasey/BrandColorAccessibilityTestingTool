@@ -8,11 +8,19 @@
 import type { Color, TextSize } from '../utils/color-types';
 import { createColor } from '../utils/color-converter';
 
+/** Grid filter levels for WCAG compliance */
+export type GridFilterLevel = 'aaa' | 'aa' | 'aa-large' | 'failed';
+
+/** Grid cell size options */
+export type GridCellSize = 'small' | 'medium' | 'large';
+
 /** Store state shape */
 export interface ColorStoreState {
   colors: Color[];
   textSize: TextSize;
   selectedAlgorithm: 'wcag' | 'apca' | 'both';
+  gridFilters: Set<GridFilterLevel>;
+  gridCellSize: GridCellSize;
 }
 
 /** Event types emitted by the store */
@@ -20,6 +28,8 @@ export type ColorStoreEvent =
   | { type: 'colors-changed'; colors: Color[] }
   | { type: 'text-size-changed'; textSize: TextSize }
   | { type: 'algorithm-changed'; algorithm: 'wcag' | 'apca' | 'both' }
+  | { type: 'grid-filters-changed'; filters: Set<GridFilterLevel> }
+  | { type: 'grid-cell-size-changed'; size: GridCellSize }
   | { type: 'state-reset' };
 
 type Listener = (event: ColorStoreEvent) => void;
@@ -33,6 +43,8 @@ function createColorStore() {
     colors: [],
     textSize: 'normal',
     selectedAlgorithm: 'wcag',
+    gridFilters: new Set(['aaa', 'aa', 'aa-large']),
+    gridCellSize: 'medium',
   };
 
   // Subscribers
@@ -84,6 +96,21 @@ function createColorStore() {
       state = {
         ...state,
         colors: [...state.colors, color],
+      };
+
+      emit({ type: 'colors-changed', colors: state.colors });
+      return color;
+    },
+
+    /**
+     * Add a Color object directly to the palette
+     * @param color - Color object to add
+     * @returns The added color
+     */
+    addColorObject(color: Color): Color {
+      state = {
+        ...state,
+        colors: [...state.colors, { ...color }],
       };
 
       emit({ type: 'colors-changed', colors: state.colors });
@@ -249,6 +276,51 @@ function createColorStore() {
     },
 
     /**
+     * Get active grid filters
+     */
+    getGridFilters(): ReadonlySet<GridFilterLevel> {
+      return new Set(state.gridFilters);
+    },
+
+    /**
+     * Toggle a grid filter on/off
+     */
+    toggleGridFilter(level: GridFilterLevel): void {
+      const newFilters = new Set(state.gridFilters);
+      if (newFilters.has(level)) {
+        newFilters.delete(level);
+      } else {
+        newFilters.add(level);
+      }
+      state = { ...state, gridFilters: newFilters };
+      emit({ type: 'grid-filters-changed', filters: state.gridFilters });
+    },
+
+    /**
+     * Set all grid filters at once
+     */
+    setGridFilters(filters: Set<GridFilterLevel>): void {
+      state = { ...state, gridFilters: new Set(filters) };
+      emit({ type: 'grid-filters-changed', filters: state.gridFilters });
+    },
+
+    /**
+     * Get current grid cell size
+     */
+    getGridCellSize(): GridCellSize {
+      return state.gridCellSize;
+    },
+
+    /**
+     * Set grid cell size
+     */
+    setGridCellSize(size: GridCellSize): void {
+      if (state.gridCellSize === size) return;
+      state = { ...state, gridCellSize: size };
+      emit({ type: 'grid-cell-size-changed', size });
+    },
+
+    /**
      * Reset store to initial state
      */
     reset(): void {
@@ -256,6 +328,8 @@ function createColorStore() {
         colors: [],
         textSize: 'normal',
         selectedAlgorithm: 'wcag',
+        gridFilters: new Set(['aaa', 'aa', 'aa-large']),
+        gridCellSize: 'medium',
       };
       emit({ type: 'state-reset' });
     },

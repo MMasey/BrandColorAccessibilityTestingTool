@@ -4,8 +4,7 @@ import { ThemeStoreController } from '../state';
 import type { Theme } from '../state';
 
 /**
- * Theme switcher component for selecting light/dark/high-contrast modes
- * and adjusting font size.
+ * Theme switcher component for selecting light/dark/high-contrast modes.
  */
 @customElement('theme-switcher')
 export class ThemeSwitcher extends LitElement {
@@ -16,25 +15,28 @@ export class ThemeSwitcher extends LitElement {
 
     .switcher {
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md, 1rem);
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-lg, 1.5rem);
     }
 
     .section {
       display: flex;
-      flex-direction: column;
-      gap: var(--space-xs, 0.25rem);
+      align-items: center;
+      gap: var(--space-sm, 0.5rem);
     }
 
     .section-label {
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
+      white-space: nowrap;
     }
 
     /* Theme buttons */
     .theme-buttons {
       display: flex;
+      flex-wrap: wrap;
       gap: 2px;
       background: var(--color-surface-secondary, #f5f5f5);
       border: 1px solid var(--color-border-default, #d4d4d4);
@@ -43,124 +45,48 @@ export class ThemeSwitcher extends LitElement {
     }
 
     .theme-btn {
-      flex: 1;
+      flex: 1 1 auto;
+      min-width: fit-content;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: var(--space-xs, 0.25rem);
-      padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+      padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
       min-height: var(--touch-target-min, 44px);
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
-    }
+      white-space: nowrap;
 
-    .theme-btn:hover:not(.active) {
-      background: var(--color-surface-tertiary, #e8e8e8);
-    }
-
-    .theme-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-      z-index: 1;
-    }
-
-    .theme-btn.active {
-      background: var(--color-accent-primary, #0066cc);
-      color: var(--color-text-inverse, #ffffff);
-    }
-
-    .theme-btn svg {
-      width: 1rem;
-      height: 1rem;
-      flex-shrink: 0;
-    }
-
-    .theme-btn .label {
-      display: none;
-    }
-
-    @media (min-width: 400px) {
-      .theme-btn .label {
-        display: inline;
+      &:hover:not(.active) {
+        background: var(--color-surface-tertiary, #e8e8e8);
       }
-    }
 
-    /* Font size controls */
-    .font-controls {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm, 0.5rem);
-    }
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+        z-index: 1;
+      }
 
-    .font-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--touch-target-min, 44px);
-      height: var(--touch-target-min, 44px);
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
-      border-radius: var(--radius-md, 0.5rem);
-      font-size: var(--font-size-lg, 1.125rem);
-      font-weight: var(--font-weight-bold, 700);
-      color: var(--color-text-secondary, #555555);
-      cursor: pointer;
-      transition: all var(--transition-fast, 150ms ease);
-    }
+      &.active {
+        background: var(--color-accent-primary, #0066cc);
+        color: var(--color-text-inverse, #ffffff);
+      }
 
-    .font-btn:hover:not(:disabled) {
-      background: var(--color-surface-tertiary, #e8e8e8);
-      border-color: var(--color-border-strong, #a3a3a3);
-    }
+      svg {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+      }
 
-    .font-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
-
-    .font-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .font-display {
-      flex: 1;
-      text-align: center;
-      font-size: var(--font-size-sm, 0.875rem);
-      font-family: var(--font-family-mono, monospace);
-      color: var(--color-text-secondary, #555555);
-    }
-
-    .reset-btn {
-      padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
-      min-height: var(--touch-target-min, 44px);
-      background: transparent;
-      border: 1px solid var(--color-border-default, #d4d4d4);
-      border-radius: var(--radius-sm, 0.25rem);
-      font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #666666);
-      cursor: pointer;
-      transition: all var(--transition-fast, 150ms ease);
-    }
-
-    .reset-btn:hover {
-      background: var(--color-surface-tertiary, #e8e8e8);
-    }
-
-    .reset-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
-
-    .reset-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
+      .label {
+        /* Labels are always visible */
+      }
     }
   `;
 
@@ -197,10 +123,6 @@ export class ThemeSwitcher extends LitElement {
 
   render() {
     const currentTheme = this.themeStore.theme;
-    const fontScale = this.themeStore.fontScale;
-    const isMinScale = fontScale <= this.themeStore.minFontScale;
-    const isMaxScale = fontScale >= this.themeStore.maxFontScale;
-    const isDefaultScale = fontScale === 1;
 
     const themes: { value: Theme; label: string }[] = [
       { value: 'system', label: 'Auto' },
@@ -227,42 +149,6 @@ export class ThemeSwitcher extends LitElement {
                 <span class="label">${label}</span>
               </button>
             `)}
-          </div>
-        </div>
-
-        <div class="section">
-          <span class="section-label" id="font-label">Font size</span>
-          <div class="font-controls" role="group" aria-labelledby="font-label">
-            <button
-              type="button"
-              class="font-btn"
-              ?disabled="${isMinScale}"
-              @click="${() => this.themeStore.decreaseFontScale()}"
-              aria-label="Decrease font size"
-            >
-              A-
-            </button>
-            <span class="font-display" aria-live="polite">
-              ${Math.round(fontScale * 100)}%
-            </span>
-            <button
-              type="button"
-              class="font-btn"
-              ?disabled="${isMaxScale}"
-              @click="${() => this.themeStore.increaseFontScale()}"
-              aria-label="Increase font size"
-            >
-              A+
-            </button>
-            <button
-              type="button"
-              class="reset-btn"
-              ?disabled="${isDefaultScale}"
-              @click="${() => this.themeStore.resetFontScale()}"
-              aria-label="Reset font size to default"
-            >
-              Reset
-            </button>
           </div>
         </div>
       </div>

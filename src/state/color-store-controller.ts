@@ -6,7 +6,7 @@
  */
 
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import { colorStore, type ColorStoreEvent, type ColorStoreState } from './color-store';
+import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize } from './color-store';
 import type { Color, TextSize } from '../utils/color-types';
 
 /**
@@ -66,6 +66,16 @@ export class ColorStoreController implements ReactiveController {
     return colorStore.getAlgorithm();
   }
 
+  /** Get active grid filters */
+  get gridFilters(): ReadonlySet<GridFilterLevel> {
+    return colorStore.getGridFilters();
+  }
+
+  /** Get current grid cell size */
+  get gridCellSize(): GridCellSize {
+    return colorStore.getGridCellSize();
+  }
+
   /** Get full state snapshot */
   get state(): Readonly<ColorStoreState> {
     return colorStore.getState();
@@ -76,6 +86,11 @@ export class ColorStoreController implements ReactiveController {
   /** Add a color */
   addColor(input: string | Color, label?: string): Color | null {
     return colorStore.addColor(input, label);
+  }
+
+  /** Add a Color object directly */
+  addColorObject(color: Color): Color {
+    return colorStore.addColorObject(color);
   }
 
   /** Add multiple colors */
@@ -121,6 +136,21 @@ export class ColorStoreController implements ReactiveController {
   /** Set algorithm */
   setAlgorithm(algorithm: 'wcag' | 'apca' | 'both'): void {
     colorStore.setAlgorithm(algorithm);
+  }
+
+  /** Toggle a grid filter on/off */
+  toggleGridFilter(level: GridFilterLevel): void {
+    colorStore.toggleGridFilter(level);
+  }
+
+  /** Set all grid filters at once */
+  setGridFilters(filters: Set<GridFilterLevel>): void {
+    colorStore.setGridFilters(filters);
+  }
+
+  /** Set grid cell size */
+  setGridCellSize(size: GridCellSize): void {
+    colorStore.setGridCellSize(size);
   }
 
   /** Reset store */

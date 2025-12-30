@@ -19,12 +19,28 @@ export class TextSizeToggle extends LitElement {
     }
 
     .label {
-      font-size: var(--font-size-sm, 0.875rem);
-      color: var(--color-text-secondary, #555555);
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
+      font-weight: var(--font-weight-medium, 500);
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+
+      /* Hide label on very small screens for compact header */
+      @media (max-width: 479px) {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
     }
 
     .toggle-buttons {
       display: flex;
+      gap: 2px;
       background: var(--color-surface-secondary, #f5f5f5);
       border: 1px solid var(--color-border-default, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
@@ -32,43 +48,54 @@ export class TextSizeToggle extends LitElement {
     }
 
     .toggle-btn {
+      flex: 1 1 0;
+      min-width: 0;
       padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
       min-height: var(--touch-target-min, 44px);
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
-    }
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
-    .toggle-btn:hover:not(.active) {
-      background: var(--color-surface-tertiary, #e8e8e8);
-    }
+      &:hover:not(.active) {
+        background: var(--color-surface-tertiary, #e8e8e8);
+      }
 
-    .toggle-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
+      }
 
-    .toggle-btn.active {
-      background: var(--color-accent-primary, #0066cc);
-      color: var(--color-text-inverse, #ffffff);
+      &.active {
+        background: var(--color-accent-primary, #0066cc);
+        color: var(--color-text-inverse, #ffffff);
+      }
     }
 
     .size-info {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #666666);
+      color: var(--color-text-muted);
     }
 
     .thresholds {
-      display: flex;
-      gap: var(--space-md, 1rem);
-      margin-top: var(--space-xs, 0.25rem);
-      font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #666666);
+      display: none; /* Hidden in header for space - info shown in grid */
+    }
+
+    @media (min-width: 768px) {
+      .thresholds {
+        display: flex;
+        gap: var(--space-sm, 0.5rem);
+        font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+        color: var(--color-text-muted);
+        white-space: nowrap;
+      }
     }
 
     .threshold {

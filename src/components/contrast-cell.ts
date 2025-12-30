@@ -1,6 +1,12 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { ContrastResult, WCAGLevel } from '../utils';
+import type { ContrastResult } from '../utils';
+import {
+  WCAG_BADGE_COLORS,
+  getBadgeClass,
+  getBadgeLabel,
+  getBadgeTitle,
+} from '../utils';
 
 /**
  * Contrast cell component showing the contrast ratio and WCAG compliance badge.
@@ -11,6 +17,27 @@ export class ContrastCell extends LitElement {
   static styles = css`
     :host {
       display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Filtered cells are hidden - use visibility to hide content from axe analysis */
+    :host([filtered]) {
+      pointer-events: none;
+    }
+
+    :host([filtered]) .cell {
+      background: var(--color-surface-secondary, #f5f5f5) !important;
+    }
+
+    :host([filtered]) .ratio,
+    :host([filtered]) .badge,
+    :host([filtered]) .sample-text {
+      visibility: hidden;
     }
 
     .cell {
@@ -20,82 +47,78 @@ export class ContrastCell extends LitElement {
       justify-content: center;
       gap: var(--space-xs, 0.25rem);
       padding: var(--space-sm, 0.5rem);
-      min-width: 5rem;
-      min-height: 5rem;
+      /* Fill parent container */
+      width: 100%;
+      height: 100%;
       background: var(--bg-color, #ffffff);
-      border: 1px solid var(--color-border-default, #d4d4d4);
       position: relative;
-      transition: transform var(--transition-fast, 150ms ease);
+      aspect-ratio: 1 / 1;
+
+      &.same-color {
+        background: repeating-linear-gradient(
+          45deg,
+          var(--bg-color, #ffffff),
+          var(--bg-color, #ffffff) 5px,
+          var(--color-surface-secondary, #f5f5f5) 5px,
+          var(--color-surface-secondary, #f5f5f5) 10px
+        );
+      }
     }
 
-    .cell:hover {
-      z-index: 1;
-      transform: scale(1.05);
-      box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+    /* Cell size variations - adjust internal styling */
+    :host([cell-size="small"]) .cell {
+      padding: var(--space-xs, 0.25rem);
     }
 
-    .cell:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
-      z-index: 2;
+    :host([cell-size="small"]) .ratio {
+      font-size: 0.75rem;
     }
 
-    .cell.same-color {
-      background: repeating-linear-gradient(
-        45deg,
-        var(--bg-color, #ffffff),
-        var(--bg-color, #ffffff) 5px,
-        var(--color-surface-secondary, #f5f5f5) 5px,
-        var(--color-surface-secondary, #f5f5f5) 10px
-      );
+    :host([cell-size="small"]) .badge {
+      font-size: 0.5rem;
+      padding: 0.0625rem 0.25rem;
     }
 
-    .ratio {
-      font-family: var(--font-family-mono, monospace);
+    :host([cell-size="small"]) .sample-text {
+      font-size: 0.5rem;
+    }
+
+    :host([cell-size="medium"]) .cell {
+      padding: var(--space-sm, 0.5rem);
+    }
+
+    :host([cell-size="medium"]) .ratio {
       font-size: var(--font-size-md, 1rem);
-      font-weight: var(--font-weight-bold, 700);
-      color: var(--fg-color, #000000);
     }
 
-    .badge {
+    :host([cell-size="medium"]) .badge {
+      font-size: var(--font-size-xs, 0.75rem);
       padding: 0.125rem 0.375rem;
+    }
+
+    :host([cell-size="medium"]) .sample-text {
       font-size: var(--font-size-xs, 0.75rem);
-      font-weight: var(--font-weight-semibold, 600);
-      border-radius: var(--radius-sm, 0.25rem);
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
     }
 
-    .badge.aaa {
-      background: var(--color-success, #15803d);
-      color: #ffffff;
+    :host([cell-size="large"]) .cell {
+      padding: var(--space-md, 1rem);
     }
 
-    .badge.aa {
-      background: var(--color-success, #15803d);
-      color: #ffffff;
+    :host([cell-size="large"]) .ratio {
+      font-size: 1.25rem;
     }
 
-    .badge.aa18 {
-      background: var(--color-warning, #a16207);
-      color: #ffffff;
+    :host([cell-size="large"]) .badge {
+      font-size: var(--font-size-md, 1rem);
+      padding: 0.25rem 0.5rem;
     }
 
-    .badge.dnp {
-      background: var(--color-error, #dc2626);
-      color: #ffffff;
-    }
-
-    .sample-text {
-      font-size: var(--font-size-xs, 0.75rem);
-      color: var(--fg-color, #000000);
-      opacity: 0.8;
+    :host([cell-size="large"]) .sample-text {
+      font-size: var(--font-size-md, 1rem);
     }
 
     /* Compact mode for smaller cells */
     :host([compact]) .cell {
-      min-width: 3.5rem;
-      min-height: 3.5rem;
       padding: var(--space-xs, 0.25rem);
     }
 
@@ -112,26 +135,32 @@ export class ContrastCell extends LitElement {
       display: none;
     }
 
-    /* Mobile: auto-compact mode */
-    @media (max-width: 640px) {
-      .cell {
-        min-width: 3.5rem;
-        min-height: 3.5rem;
-        padding: var(--space-xs, 0.25rem);
-      }
+    .ratio {
+      font-family: var(--font-family-mono, monospace);
+      font-size: var(--font-size-md, 1rem);
+      font-weight: var(--font-weight-bold, 700);
+      color: var(--fg-color, #000000);
+    }
 
-      .ratio {
-        font-size: var(--font-size-sm, 0.875rem);
-      }
+    .badge {
+      padding: 0.125rem 0.375rem;
+      font-size: var(--font-size-xs, 0.75rem);
+      font-weight: var(--font-weight-semibold, 600);
+      border-radius: var(--radius-sm, 0.25rem);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
 
-      .badge {
-        font-size: 0.625rem;
-        padding: 0.0625rem 0.25rem;
-      }
+      /* Badge colors from WCAG_BADGE_COLORS in utils/wcag-config.ts */
+      &.aaa { background: ${unsafeCSS(WCAG_BADGE_COLORS.AAA)}; color: #fff; }
+      &.aa { background: ${unsafeCSS(WCAG_BADGE_COLORS.AA)}; color: #fff; }
+      &.aa18 { background: ${unsafeCSS(WCAG_BADGE_COLORS.AA18)}; color: #fff; }
+      &.dnp { background: ${unsafeCSS(WCAG_BADGE_COLORS.DNP)}; color: #fff; }
+    }
 
-      .sample-text {
-        display: none;
-      }
+    .sample-text {
+      font-size: var(--font-size-xs, 0.75rem);
+      color: var(--fg-color, #000000);
+      opacity: 0.8;
     }
   `;
 
@@ -155,18 +184,13 @@ export class ContrastCell extends LitElement {
   @property({ type: Boolean, reflect: true })
   compact = false;
 
-  private getBadgeClass(level: WCAGLevel): string {
-    return level.toLowerCase();
-  }
+  /** Whether this cell is filtered out by grid filters */
+  @property({ type: Boolean, reflect: true })
+  filtered = false;
 
-  private getBadgeLabel(level: WCAGLevel): string {
-    switch (level) {
-      case 'AAA': return 'AAA';
-      case 'AA': return 'AA';
-      case 'AA18': return 'AA 18+';
-      case 'DNP': return 'Fail';
-    }
-  }
+  /** Grid cell size */
+  @property({ type: String, reflect: true, attribute: 'cell-size' })
+  cellSize: 'small' | 'medium' | 'large' = 'medium';
 
   private getAriaLabel(): string {
     if (!this.result) return 'No contrast data';
@@ -179,19 +203,35 @@ export class ContrastCell extends LitElement {
   }
 
   render() {
-    if (!this.result) return html`<div class="cell">-</div>`;
+    if (!this.result) return html`<div class="cell">—</div>`;
+
+    // For same-color cells (diagonal), show em dash instead of ratio
+    if (this.sameColor) {
+      return html`
+        <div
+          class="cell same-color"
+          style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
+          aria-label="Same color"
+        >
+          <span class="ratio">—</span>
+        </div>
+      `;
+    }
 
     return html`
       <div
-        class="cell ${this.sameColor ? 'same-color' : ''}"
+        class="cell"
         style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
         aria-label="${this.getAriaLabel()}"
       >
         <span class="ratio">${this.result.ratioString}</span>
-        <span class="badge ${this.getBadgeClass(this.result.level)}">
-          ${this.getBadgeLabel(this.result.level)}
+        <span
+          class="badge ${getBadgeClass(this.result.level)}"
+          title="${getBadgeTitle(this.result.level)}"
+        >
+          ${getBadgeLabel(this.result.level)}
         </span>
-        ${!this.compact && !this.sameColor ? html`
+        ${!this.compact ? html`
           <span class="sample-text">Aa</span>
         ` : null}
       </div>

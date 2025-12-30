@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import './color-palette';
-import './text-size-toggle';
 import './contrast-grid';
 import './theme-switcher';
+import './grid-filters';
 
 /**
  * Main application shell component.
@@ -29,10 +29,10 @@ export class AppShell extends LitElement {
       font-weight: var(--font-weight-medium, 500);
       z-index: 9999;
       border-radius: 0 0 var(--radius-md, 0.5rem) 0;
-    }
 
-    .skip-link:focus {
-      top: 0;
+      &:focus {
+        top: 0;
+      }
     }
 
     header {
@@ -45,23 +45,47 @@ export class AppShell extends LitElement {
       max-width: 1400px;
       margin: 0 auto;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: var(--space-md, 1rem);
+      gap: var(--space-lg, 1.5rem);
+
+      /* Responsive header layout */
+      @media (max-width: 767px) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-md, 1rem);
+      }
+    }
+
+    .header-main {
+      flex: 1 1 auto;
+      min-width: 0; /* Allow text to wrap */
+    }
+
+    .header-controls {
+      flex: 0 0 auto;
+      align-self: center;
+
+      @media (max-width: 767px) {
+        align-self: stretch;
+        justify-content: flex-start;
+      }
     }
 
     h1 {
-      margin: 0;
-      font-size: var(--font-size-2xl, 1.5rem);
+      margin: 0 0 var(--space-xs, 0.25rem) 0;
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
       font-weight: var(--font-weight-bold, 700);
       color: var(--color-text-primary, #1a1a1a);
+      line-height: 1.2;
     }
 
     .tagline {
       margin: 0;
-      font-size: var(--font-size-sm, 0.875rem);
-      color: var(--color-text-secondary, #555555);
+      font-size: clamp(0.8125rem, 2vw, 0.875rem);
+      color: var(--color-text-secondary);
+      line-height: 1.4;
     }
 
     main {
@@ -73,34 +97,20 @@ export class AppShell extends LitElement {
     .layout {
       display: grid;
       gap: var(--space-xl, 2rem);
-    }
 
-    /* Desktop: sidebar layout */
-    @media (min-width: 1024px) {
-      .layout {
+      /* Desktop: sidebar layout */
+      @media (min-width: 1024px) {
         grid-template-columns: 320px 1fr;
         grid-template-rows: auto 1fr;
       }
 
-      .sidebar {
-        grid-row: 1 / -1;
-      }
-    }
-
-    /* Tablet: stacked layout */
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .layout {
+      /* Tablet: stacked layout */
+      @media (min-width: 768px) and (max-width: 1023px) {
         grid-template-columns: 1fr 1fr;
       }
 
-      .sidebar {
-        grid-column: 1 / -1;
-      }
-    }
-
-    /* Mobile: single column */
-    @media (max-width: 767px) {
-      .layout {
+      /* Mobile: single column */
+      @media (max-width: 767px) {
         grid-template-columns: 1fr;
       }
     }
@@ -109,6 +119,14 @@ export class AppShell extends LitElement {
       display: flex;
       flex-direction: column;
       gap: var(--space-lg, 1.5rem);
+
+      @media (min-width: 1024px) {
+        grid-row: 1 / -1;
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {
+        grid-column: 1 / -1;
+      }
     }
 
     .controls-section {
@@ -122,13 +140,17 @@ export class AppShell extends LitElement {
       margin: 0 0 var(--space-sm, 0.5rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-secondary, #555555);
+      color: var(--color-text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
     .grid-section {
       min-width: 0;
+
+      @media (min-width: 768px) and (max-width: 1023px) {
+        grid-column: 1 / -1;
+      }
     }
 
     .grid-header {
@@ -158,21 +180,21 @@ export class AppShell extends LitElement {
       max-width: 1400px;
       margin: 0 auto;
       font-size: var(--font-size-sm, 0.875rem);
-      color: var(--color-text-secondary, #555555);
-    }
+      color: var(--color-text-secondary);
 
-    .footer-content a {
-      color: var(--color-accent-primary, #0066cc);
-      text-decoration: underline;
-    }
+      a {
+        color: var(--color-accent-primary, #0066cc);
+        text-decoration: underline;
 
-    .footer-content a:hover {
-      text-decoration-thickness: 2px;
-    }
+        &:hover {
+          text-decoration-thickness: 2px;
+        }
 
-    .footer-content a:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
+        &:focus-visible {
+          outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+          outline-offset: var(--focus-ring-offset, 2px);
+        }
+      }
     }
   `;
 
@@ -182,9 +204,12 @@ export class AppShell extends LitElement {
 
       <header>
         <div class="header-content">
-          <div>
+          <div class="header-main">
             <h1>Brand Color Accessibility Tool</h1>
             <p class="tagline">Validate your color palette against WCAG 2.1 contrast requirements</p>
+          </div>
+          <div class="header-controls">
+            <theme-switcher></theme-switcher>
           </div>
         </div>
       </header>
@@ -195,13 +220,7 @@ export class AppShell extends LitElement {
             <color-palette></color-palette>
 
             <div class="controls-section">
-              <h3 class="section-title">Evaluation Settings</h3>
-              <text-size-toggle></text-size-toggle>
-            </div>
-
-            <div class="controls-section">
-              <h3 class="section-title">Display Preferences</h3>
-              <theme-switcher></theme-switcher>
+              <grid-filters></grid-filters>
             </div>
           </aside>
 

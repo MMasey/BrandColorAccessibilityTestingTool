@@ -57,7 +57,7 @@ test.describe('Color Palette Functionality', () => {
   test('should show contrast grid with two colors', async ({ page }) => {
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     // Add first color
     await textInput.fill('#000000');
@@ -173,7 +173,7 @@ test.describe('Accessibility Audit (axe-core)', () => {
     // Add some colors
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     await textInput.fill('#1a1a1a');
     await addButton.click();
@@ -279,7 +279,7 @@ test.describe('Visual UX Review - Screenshots', () => {
     // Add sample brand colors
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     const colors = ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626', '#15803d'];
     for (const color of colors) {
@@ -305,7 +305,7 @@ test.describe('Visual UX Review - Screenshots', () => {
     // Add sample brand colors
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     const colors = ['#1a1a1a', '#ffffff', '#60a5fa', '#f87171', '#4ade80'];
     for (const color of colors) {
@@ -331,7 +331,7 @@ test.describe('Visual UX Review - Screenshots', () => {
     // Add sample brand colors
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     const colors = ['#000000', '#ffffff', '#ffff00', '#00ff00'];
     for (const color of colors) {
@@ -352,7 +352,7 @@ test.describe('Visual UX Review - Screenshots', () => {
     // Add sample brand colors
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     const colors = ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626'];
     for (const color of colors) {
@@ -373,7 +373,7 @@ test.describe('Visual UX Review - Screenshots', () => {
     // Add colors
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     await textInput.fill('#1a1a1a');
     await addButton.click();
@@ -452,7 +452,7 @@ test.describe('Responsive Design', () => {
     // Add many colors
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     const colors = ['#000', '#333', '#666', '#999', '#ccc', '#fff'];
     for (const color of colors) {
@@ -468,6 +468,161 @@ test.describe('Responsive Design', () => {
       path: 'e2e/screenshots/mobile-many-colors-scroll.png',
       fullPage: true,
     });
+  });
+});
+
+test.describe('Grid Filters', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+
+    // Add test colors with known contrast ratios
+    const colorInput = page.locator('color-palette').locator('color-input');
+    const textInput = colorInput.locator('input[type="text"]').first();
+    const addButton = page.locator('color-palette color-input .add-btn');
+
+    // Black and white have high contrast (AAA)
+    await textInput.fill('#000000');
+    await addButton.click();
+    await textInput.fill('#ffffff');
+    await addButton.click();
+    // Gray on white (lower contrast - likely AA or fail)
+    await textInput.fill('#666666');
+    await addButton.click();
+
+    await page.waitForTimeout(500);
+  });
+
+  test('should toggle AAA filter on/off', async ({ page }) => {
+    const gridFilters = page.locator('grid-filters');
+    const aaaButton = gridFilters.locator('button:has-text("AAA")');
+
+    // Initially should be pressed/active
+    await expect(aaaButton).toHaveAttribute('aria-pressed', 'true');
+
+    // Click to deactivate
+    await aaaButton.click();
+    await page.waitForTimeout(200);
+
+    // Should now be unpressed
+    await expect(aaaButton).toHaveAttribute('aria-pressed', 'false');
+
+    // Click to reactivate
+    await aaaButton.click();
+    await page.waitForTimeout(200);
+
+    // Should be pressed again
+    await expect(aaaButton).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('should toggle AA filter on/off', async ({ page }) => {
+    const gridFilters = page.locator('grid-filters');
+    // Find button that contains a label with exact text "AA"
+    const aaButton = gridFilters.locator('button:has(.label:text-is("AA"))');
+
+    // Initially should be pressed/active
+    await expect(aaButton).toHaveAttribute('aria-pressed', 'true');
+
+    // Click to deactivate
+    await aaButton.click();
+    await page.waitForTimeout(200);
+
+    // Should now be unpressed
+    await expect(aaButton).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('should filter grid cells when filters are toggled', async ({ page }) => {
+    const gridFilters = page.locator('grid-filters');
+    const aaaButton = gridFilters.locator('button:has-text("AAA")');
+    const contrastGrid = page.locator('contrast-grid');
+
+    // Count visible cells initially
+    const initialCells = contrastGrid.locator('contrast-cell');
+    const initialCount = await initialCells.count();
+    expect(initialCount).toBeGreaterThan(0);
+
+    // Deactivate AAA filter
+    await aaaButton.click();
+    await page.waitForTimeout(200);
+
+    // Check that some cells are now filtered (have filtered attribute)
+    const filteredCells = contrastGrid.locator('contrast-cell[filtered]');
+    const filteredCount = await filteredCells.count();
+
+    // There should be at least one AAA combination that gets filtered
+    expect(filteredCount).toBeGreaterThan(0);
+  });
+
+  test('should show all cells when all filters are active', async ({ page }) => {
+    const gridFilters = page.locator('grid-filters');
+    const contrastGrid = page.locator('contrast-grid');
+
+    // Make sure all filters are active
+    const aaaButton = gridFilters.locator('button:has-text("AAA")');
+    const aaButton = gridFilters.locator('button:has(.label:text-is("AA"))');
+    const aaLargeButton = gridFilters.locator('button:has-text("AA Large")');
+    const failedButton = gridFilters.locator('button:has-text("Failed")');
+
+    // Ensure all are active (they should be by default, but let's be sure)
+    for (const button of [aaaButton, aaButton, aaLargeButton, failedButton]) {
+      const isPressed = await button.getAttribute('aria-pressed');
+      if (isPressed !== 'true') {
+        await button.click();
+        await page.waitForTimeout(100);
+      }
+    }
+
+    // No cells should be filtered
+    const filteredCells = contrastGrid.locator('contrast-cell[filtered]');
+    const filteredCount = await filteredCells.count();
+    expect(filteredCount).toBe(0);
+  });
+
+  test('should hide cells when only Failed filter is active', async ({ page }) => {
+    const gridFilters = page.locator('grid-filters');
+    const contrastGrid = page.locator('contrast-grid');
+
+    // Deactivate AAA, AA, and AA Large
+    const aaaButton = gridFilters.locator('button:has-text("AAA")');
+    const aaButton = gridFilters.locator('button:has(.label:text-is("AA"))');
+    const aaLargeButton = gridFilters.locator('button:has-text("AA Large")');
+
+    await aaaButton.click();
+    await page.waitForTimeout(100);
+    await aaButton.click();
+    await page.waitForTimeout(100);
+    await aaLargeButton.click();
+    await page.waitForTimeout(100);
+
+    // Most cells should now be filtered (only failed combinations visible)
+    const filteredCells = contrastGrid.locator('contrast-cell[filtered]');
+    const filteredCount = await filteredCells.count();
+
+    // With black/white/gray, most combinations pass, so filtered count should be high
+    expect(filteredCount).toBeGreaterThan(0);
+  });
+
+  test('filter buttons should have active styling when pressed', async ({ page }) => {
+    const gridFilters = page.locator('grid-filters');
+    const aaaButton = gridFilters.locator('button:has-text("AAA")');
+
+    // Should have active class initially
+    await expect(aaaButton).toHaveClass(/active/);
+
+    // Click to deactivate
+    await aaaButton.click();
+    await page.waitForTimeout(200);
+
+    // Should not have active class
+    const className = await aaaButton.getAttribute('class');
+    expect(className).not.toContain('active');
+
+    // Click to reactivate
+    await aaaButton.click();
+    await page.waitForTimeout(200);
+
+    // Should have active class again
+    await expect(aaaButton).toHaveClass(/active/);
   });
 });
 
@@ -492,7 +647,7 @@ test.describe('URL State Management (Progressive Enhancement)', () => {
     // Add a color
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
+    const addButton = page.locator('color-palette color-input .add-btn');
 
     await textInput.fill('#FF5733');
     await addButton.click();
