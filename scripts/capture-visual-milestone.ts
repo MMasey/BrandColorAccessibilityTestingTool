@@ -100,9 +100,11 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Create output directory with date prefix
-  const date = new Date().toISOString().split('T')[0];
-  const folderName = `${date}_${milestoneName.replace(/\s+/g, '-').toLowerCase()}`;
+  // Create output directory with date and time prefix for proper ordering
+  const now = new Date();
+  const date = now.toISOString().split('T')[0];
+  const time = now.toISOString().split('T')[1].slice(0, 5).replace(':', '');
+  const folderName = `${date}_${time}_${milestoneName.replace(/\s+/g, '-').toLowerCase()}`;
   const outputDir = path.join(process.cwd(), 'docs', 'visual-history', folderName);
 
   if (fs.existsSync(outputDir)) {
