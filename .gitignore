@@ -46,3 +46,7 @@ coverage/
 /blob-report/
 /playwright/.cache/
 e2e/screenshots/
+e2e/visual-review/
+
+# Claude Code
+.claude/settings.local.json

@@ -1,6 +1,12 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { ContrastResult, WCAGLevel } from '../utils';
+import type { ContrastResult } from '../utils';
+import {
+  WCAG_BADGE_COLORS,
+  getBadgeClass,
+  getBadgeLabel,
+  getBadgeTitle,
+} from '../utils';
 
 /**
  * Contrast cell component showing the contrast ratio and WCAG compliance badge.
@@ -11,33 +17,56 @@ export class ContrastCell extends LitElement {
   static styles = css`
     :host {
       display: block;
+      width: 100%;
+      height: 100%;
     }
 
-    /* Compact mode for smaller cells */
-    :host([compact]) .cell {
-      min-width: 4rem;
-      min-height: 4rem;
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Filtered cells are hidden - use visibility to hide content from axe analysis */
+    :host([filtered]) {
+      pointer-events: none;
+    }
+
+    :host([filtered]) .cell {
+      background: var(--color-surface-secondary, #f5f5f5) !important;
+    }
+
+    :host([filtered]) .ratio,
+    :host([filtered]) .badge,
+    :host([filtered]) .sample-text {
+      visibility: hidden;
+    }
+
+    .cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs, 0.25rem);
+      padding: var(--space-sm, 0.5rem);
+      /* Fill parent container */
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color, #ffffff);
+      position: relative;
       aspect-ratio: 1 / 1;
-      padding: var(--space-xs, 0.25rem);
+
+      &.same-color {
+        background: repeating-linear-gradient(
+          45deg,
+          var(--bg-color, #ffffff),
+          var(--bg-color, #ffffff) 5px,
+          var(--color-surface-secondary, #f5f5f5) 5px,
+          var(--color-surface-secondary, #f5f5f5) 10px
+        );
+      }
     }
 
-    :host([compact]) .ratio {
-      font-size: var(--font-size-sm, 0.875rem);
-    }
-
-    :host([compact]) .badge {
-      font-size: 0.625rem;
-      padding: 0.0625rem 0.25rem;
-    }
-
-    :host([compact]) .sample-text {
-      display: none;
-    }
-
-    /* Cell size variations - more pronounced differences */
+    /* Cell size variations - adjust internal styling */
     :host([cell-size="small"]) .cell {
-      min-width: 3.5rem;
-      min-height: 3.5rem;
       padding: var(--space-xs, 0.25rem);
     }
 
@@ -55,8 +84,6 @@ export class ContrastCell extends LitElement {
     }
 
     :host([cell-size="medium"]) .cell {
-      min-width: 5.5rem;
-      min-height: 5.5rem;
       padding: var(--space-sm, 0.5rem);
     }
 
@@ -74,8 +101,6 @@ export class ContrastCell extends LitElement {
     }
 
     :host([cell-size="large"]) .cell {
-      min-width: 8rem;
-      min-height: 8rem;
       padding: var(--space-md, 1rem);
     }
 
@@ -92,44 +117,22 @@ export class ContrastCell extends LitElement {
       font-size: var(--font-size-md, 1rem);
     }
 
-    /* Filtered cells are hidden from view */
-    :host([filtered]) {
-      opacity: 0.2;
-      pointer-events: none;
+    /* Compact mode for smaller cells */
+    :host([compact]) .cell {
+      padding: var(--space-xs, 0.25rem);
     }
 
-    :host([filtered]) .cell {
-      background: var(--color-surface-secondary, #f5f5f5) !important;
-
-      &:hover {
-        transform: none;
-        box-shadow: none;
-      }
+    :host([compact]) .ratio {
+      font-size: var(--font-size-sm, 0.875rem);
     }
 
-    .cell {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-xs, 0.25rem);
-      padding: var(--space-sm, 0.5rem);
-      min-width: 5.5rem;
-      min-height: 5.5rem;
-      aspect-ratio: 1 / 1;
-      background: var(--bg-color, #ffffff);
-      border: 1px solid var(--color-border-default, #d4d4d4);
-      position: relative;
+    :host([compact]) .badge {
+      font-size: 0.625rem;
+      padding: 0.0625rem 0.25rem;
+    }
 
-      &.same-color {
-        background: repeating-linear-gradient(
-          45deg,
-          var(--bg-color, #ffffff),
-          var(--bg-color, #ffffff) 5px,
-          var(--color-surface-secondary, #f5f5f5) 5px,
-          var(--color-surface-secondary, #f5f5f5) 10px
-        );
-      }
+    :host([compact]) .sample-text {
+      display: none;
     }
 
     .ratio {
@@ -147,25 +150,11 @@ export class ContrastCell extends LitElement {
       text-transform: uppercase;
       letter-spacing: 0.025em;
 
-      &.aaa {
-        background: #14532d;  /* Dark green - 10.5:1 on white (AAA) */
-        color: #ffffff;
-      }
-
-      &.aa {
-        background: #15803d;  /* Green - 7.3:1 on white (AAA) - updated from #166534 */
-        color: #ffffff;
-      }
-
-      &.aa18 {
-        background: #713f12;  /* Brown - 8.5:1 on white (AAA) */
-        color: #ffffff;
-      }
-
-      &.dnp {
-        background: #991b1b;  /* Red - 7.1:1 on white (AAA) - updated from #7f1d1d */
-        color: #ffffff;
-      }
+      /* Badge colors from WCAG_BADGE_COLORS in utils/wcag-config.ts */
+      &.aaa { background: ${unsafeCSS(WCAG_BADGE_COLORS.AAA)}; color: #fff; }
+      &.aa { background: ${unsafeCSS(WCAG_BADGE_COLORS.AA)}; color: #fff; }
+      &.aa18 { background: ${unsafeCSS(WCAG_BADGE_COLORS.AA18)}; color: #fff; }
+      &.dnp { background: ${unsafeCSS(WCAG_BADGE_COLORS.DNP)}; color: #fff; }
     }
 
     .sample-text {
@@ -203,28 +192,6 @@ export class ContrastCell extends LitElement {
   @property({ type: String, reflect: true, attribute: 'cell-size' })
   cellSize: 'small' | 'medium' | 'large' = 'medium';
 
-  private getBadgeClass(level: WCAGLevel): string {
-    return level.toLowerCase();
-  }
-
-  private getBadgeLabel(level: WCAGLevel): string {
-    switch (level) {
-      case 'AAA': return 'AAA';
-      case 'AA': return 'AA';
-      case 'AA18': return 'AA 18+';
-      case 'DNP': return 'Fail';
-    }
-  }
-
-  private getBadgeTitle(level: WCAGLevel): string {
-    switch (level) {
-      case 'AAA': return 'Passes AAA (7:1 for normal text, 4.5:1 for large text)';
-      case 'AA': return 'Passes AA (4.5:1 for normal text)';
-      case 'AA18': return 'Passes AA for large text only (18pt+ or 14pt+ bold). Requires 3:1 ratio.';
-      case 'DNP': return 'Does not pass WCAG contrast requirements';
-    }
-  }
-
   private getAriaLabel(): string {
     if (!this.result) return 'No contrast data';
 
@@ -259,10 +226,10 @@ export class ContrastCell extends LitElement {
       >
         <span class="ratio">${this.result.ratioString}</span>
         <span
-          class="badge ${this.getBadgeClass(this.result.level)}"
-          title="${this.getBadgeTitle(this.result.level)}"
+          class="badge ${getBadgeClass(this.result.level)}"
+          title="${getBadgeTitle(this.result.level)}"
         >
-          ${this.getBadgeLabel(this.result.level)}
+          ${getBadgeLabel(this.result.level)}
         </span>
         ${!this.compact ? html`
           <span class="sample-text">Aa</span>

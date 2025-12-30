@@ -103,6 +103,21 @@ function createColorStore() {
     },
 
     /**
+     * Add a Color object directly to the palette
+     * @param color - Color object to add
+     * @returns The added color
+     */
+    addColorObject(color: Color): Color {
+      state = {
+        ...state,
+        colors: [...state.colors, { ...color }],
+      };
+
+      emit({ type: 'colors-changed', colors: state.colors });
+      return color;
+    },
+
+    /**
      * Add multiple colors at once
      * @param inputs - Array of color strings or [color, label] tuples
      * @returns Array of added colors (excludes invalid inputs)

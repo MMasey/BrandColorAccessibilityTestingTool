@@ -88,6 +88,11 @@ export class ColorStoreController implements ReactiveController {
     return colorStore.addColor(input, label);
   }
 
+  /** Add a Color object directly */
+  addColorObject(color: Color): Color {
+    return colorStore.addColorObject(color);
+  }
+
   /** Add multiple colors */
   addColors(inputs: (string | [string, string])[]): Color[] {
     return colorStore.addColors(inputs);

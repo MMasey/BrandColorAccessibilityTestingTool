@@ -74,21 +74,21 @@
 
 ## 9. UI/UX Refinements
 
-- [ ] 9.1 Update diagonal cells (same-color pairs) to show blank/empty or "—" instead of "1:1 FAIL"
-- [ ] 9.2 Move display preferences earlier in DOM (header or top of sidebar) for accessibility
-- [ ] 9.3 Fix theme switcher overflow - ensure "High" label doesn't break layout
-- [ ] 9.4 Add equal width to all theme buttons to prevent layout shifts
-- [ ] 9.5 Add tooltip/help text explaining "AA 18+" badge ("Passes AA for large text only")
-- [ ] 9.6 Improve contrast grid visual hierarchy with subtle row/column guides
+- [x] 9.1 Update diagonal cells (same-color pairs) to show blank/empty or "—" instead of "1:1 FAIL"
+- [x] 9.2 Move display preferences earlier in DOM (header or top of sidebar) for accessibility
+- [x] 9.3 Fix theme switcher overflow - ensure "High" label doesn't break layout
+- [x] 9.4 Add equal width to all theme buttons to prevent layout shifts
+- [x] 9.5 Add tooltip/help text explaining "AA 18+" badge ("Passes AA for large text only")
+- [x] 9.6 Improve contrast grid visual hierarchy with subtle row/column guides
 
 ## 10. Progressive Enhancement
 
-- [ ] 10.1 Add URL state management (read/write colors, labels, theme, text size to URL params)
-- [ ] 10.2 Initialize app state from URL parameters on page load
-- [ ] 10.3 Update URL when state changes (without page reload, using History API)
-- [ ] 10.4 Add static HTML fallback content in index.html (visible before JS loads)
-- [ ] 10.5 Add `<noscript>` block with helpful message and links to alternative tools
-- [ ] 10.6 Ensure `prefers-color-scheme` sets initial theme via CSS (before JS)
+- [x] 10.1 Add URL state management (read/write colors, labels, theme, text size to URL params)
+- [x] 10.2 Initialize app state from URL parameters on page load
+- [x] 10.3 Update URL when state changes (without page reload, using History API)
+- [x] 10.4 Add static HTML fallback content in index.html (visible before JS loads)
+- [x] 10.5 Add `<noscript>` block with helpful message and links to alternative tools
+- [x] 10.6 Ensure `prefers-color-scheme` sets initial theme via CSS (before JS)
 - [ ] 10.7 Add print stylesheet for contrast grid
 - [x] 10.8 ~~Create semantic HTML form structure that could work without JS~~ (removed - doesn't work without SSR)
 - [x] 10.9 Test that page is usable with JavaScript disabled (shows fallback content)
@@ -122,11 +122,19 @@
 
 ## 13. Documentation & Deployment
 
-- [ ] 13.1 Create comprehensive README.md with project overview
-- [ ] 13.2 Document installation and development setup in README
-- [ ] 13.3 Add feature list and screenshots to README
-- [ ] 13.4 Include accessibility statement in README
-- [ ] 13.5 Add contribution guidelines
+- [x] 13.1 Create comprehensive README.md with project overview
+- [x] 13.2 Document installation and development setup in README
+- [x] 13.3 Add feature list and screenshots to README
+- [x] 13.4 Include accessibility statement in README
+- [x] 13.5 Add contribution guidelines (CONTRIBUTING.md exists)
 - [ ] 13.6 Set up GitHub Pages deployment configuration
 - [ ] 13.7 Add project license (MIT)
 - [ ] 13.8 Create CHANGELOG.md for version tracking
+
+## 14. Code Quality & Maintainability (Added)
+
+- [x] 14.1 Centralize WCAG badge colors and labels in utils/wcag-config.ts
+- [x] 14.2 Create shared CSS utilities in styles/shared.ts
+- [x] 14.3 Remove dead CSS (unused hover rules in contrast-cell.ts)
+- [x] 14.4 Remove unused type imports
+- [ ] 14.5 Refactor components to use shared CSS utilities (sr-only pattern)

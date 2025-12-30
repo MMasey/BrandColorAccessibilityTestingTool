@@ -49,54 +49,6 @@ export class ColorPalette extends LitElement {
       gap: var(--space-sm, 0.5rem);
     }
 
-    .add-row {
-      display: flex;
-      align-items: flex-end;
-      gap: var(--space-sm, 0.5rem);
-
-      color-input {
-        flex: 1;
-        min-width: 0;
-      }
-
-      /* Mobile: stack input and button */
-      @media (max-width: 400px) {
-        flex-direction: column;
-        align-items: stretch;
-
-        color-input {
-          width: 100%;
-        }
-      }
-    }
-
-    .add-btn {
-      padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-      min-width: var(--touch-target-min, 44px);
-      background: var(--color-accent-primary, #0066cc);
-      color: var(--color-text-inverse, #ffffff);
-      border: none;
-      border-radius: var(--radius-md, 0.5rem);
-      font-size: var(--font-size-md, 1rem);
-      font-weight: var(--font-weight-medium, 500);
-      cursor: pointer;
-      transition: background var(--transition-fast, 150ms ease);
-
-      &:hover {
-        background: var(--color-accent-primary-hover, #0052a3);
-      }
-
-      &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-        outline-offset: var(--focus-ring-offset, 2px);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
     .colors-list {
       display: flex;
       flex-direction: column;
@@ -169,46 +121,22 @@ export class ColorPalette extends LitElement {
   private store = new ColorStoreController(this);
 
   @state()
-  private newColorValue = '';
-
-  @state()
-  private newColorLabel = '';
-
-  @state()
-  private isNewColorValid = false;
-
-  @state()
   private statusMessage = '';
 
-  private handleColorChange(e: CustomEvent): void {
-    const { value, color } = e.detail;
-    this.newColorValue = value;
-    this.newColorLabel = color?.label || '';
-    this.isNewColorValid = color !== null;
-  }
+  private handleAddColor(e: CustomEvent): void {
+    const { color } = e.detail;
+    if (!color) return;
 
-  private handleColorInvalid(): void {
-    this.isNewColorValid = false;
-  }
-
-  private addColor(): void {
-    if (!this.isNewColorValid) return;
-
-    const added = this.store.addColor(this.newColorValue, this.newColorLabel || undefined);
+    const added = this.store.addColorObject(color);
     if (added) {
       // Announce to screen readers
-      const colorLabel = this.newColorLabel || added.hex;
+      const colorLabel = added.label || added.hex;
       this.statusMessage = `Color ${colorLabel} added to palette`;
 
-      // Clear inputs
-      this.newColorValue = '';
-      this.newColorLabel = '';
-      this.isNewColorValid = false;
-
-      // Focus back on the color input for easy sequential entry
+      // Clear input and focus for next entry
       const colorInput = this.shadowRoot?.querySelector('color-input') as ColorInput | null;
-      if (colorInput && typeof colorInput.focusInput === 'function') {
-        // Use requestAnimationFrame to ensure DOM updates complete
+      if (colorInput) {
+        colorInput.clear();
         requestAnimationFrame(() => {
           colorInput.focusInput();
         });
@@ -216,10 +144,8 @@ export class ColorPalette extends LitElement {
     }
   }
 
-  private handleKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Enter' && this.isNewColorValid) {
-      this.addColor();
-    }
+  private updateColorLabel(index: number, newLabel: string): void {
+    this.store.updateColorLabel(index, newLabel);
   }
 
   private removeColor(index: number): void {
@@ -259,24 +185,11 @@ export class ColorPalette extends LitElement {
         ` : null}
 
         <div class="add-section">
-          <div class="add-row" @keydown="${this.handleKeyDown}">
-            <color-input
-              .value="${this.newColorValue}"
-              .label="${this.newColorLabel}"
-              placeholder="#000000 or rgb() or hsl()"
-              @color-change="${this.handleColorChange}"
-              @color-invalid="${this.handleColorInvalid}"
-            ></color-input>
-            <button
-              type="button"
-              class="add-btn"
-              ?disabled="${!this.isNewColorValid}"
-              @click="${this.addColor}"
-              aria-label="Add color to palette"
-            >
-              Add
-            </button>
-          </div>
+          <color-input
+            placeholder="#000000"
+            label-placeholder="Label (optional)"
+            @add-color="${this.handleAddColor}"
+          ></color-input>
         </div>
 
         ${colors.length > 0 ? html`
@@ -286,7 +199,9 @@ export class ColorPalette extends LitElement {
                 role="listitem"
                 .color="${color}"
                 show-remove
+                editable-label
                 @swatch-remove="${() => this.removeColor(index)}"
+                @label-change="${(e: CustomEvent) => this.updateColorLabel(index, e.detail.label)}"
               ></color-swatch>
             `)}
           </div>

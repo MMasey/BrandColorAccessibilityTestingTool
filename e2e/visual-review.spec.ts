@@ -13,9 +13,44 @@ import { test, expect } from '@playwright/test';
  *
  * Color States:
  * - Empty (no colors)
- * - Ideal (3-5 colors)
+ * - Minimal (2 colors)
+ * - Small (3 colors)
+ * - Ideal (4 colors)
  * - Stress (10+ colors with long labels)
+ *
+ * Input format: "#hex, Label" or just "#hex" (comma-separated)
  */
+
+/** Helper to add colors - color-input now has integrated Add button */
+async function addColors(page: any, colors: string[]) {
+  const hexInput = page.locator('color-palette color-input #hex-input');
+  const labelInput = page.locator('color-palette color-input .label-input');
+  const addButton = page.locator('color-palette color-input .add-btn');
+
+  for (const color of colors) {
+    // Parse "color, label" format
+    const commaIndex = color.indexOf(',');
+    let colorValue: string;
+    let labelValue: string;
+
+    if (commaIndex !== -1) {
+      colorValue = color.slice(0, commaIndex).trim();
+      labelValue = color.slice(commaIndex + 1).trim();
+    } else {
+      colorValue = color.trim();
+      labelValue = '';
+    }
+
+    await hexInput.fill(colorValue);
+    if (labelValue) {
+      await labelInput.fill(labelValue);
+    }
+    await addButton.click();
+    await page.waitForTimeout(50);
+  }
+
+  await page.waitForTimeout(300);
+}
 
 test.describe('Visual Review - Desktop (1440x900)', () => {
   test.beforeEach(async ({ page }) => {
@@ -31,28 +66,29 @@ test.describe('Visual Review - Desktop (1440x900)', () => {
     });
   });
 
+  test('Minimal state - 2 colors', async ({ page }) => {
+    await addColors(page, ['#1a1a1a, Dark', '#ffffff, Light']);
+    await page.screenshot({
+      path: 'e2e/visual-review/desktop-1440-2colors.png',
+      fullPage: true,
+    });
+  });
+
+  test('Small palette - 3 colors', async ({ page }) => {
+    await addColors(page, ['#1a1a1a, Dark Grey', '#ffffff, White', '#0066cc, Primary Blue']);
+    await page.screenshot({
+      path: 'e2e/visual-review/desktop-1440-3colors.png',
+      fullPage: true,
+    });
+  });
+
   test('Ideal state - 4 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    // Add 4 well-labeled colors
-    const colors = [
-      { hex: '#1a1a1a', label: 'Dark Grey' },
-      { hex: '#ffffff', label: 'White' },
-      { hex: '#0066cc', label: 'Primary Blue' },
-      { hex: '#dc2626', label: 'Error Red' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(100);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#1a1a1a, Dark Grey',
+      '#ffffff, White',
+      '#0066cc, Primary Blue',
+      '#dc2626, Error Red',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/desktop-1440-ideal.png',
       fullPage: true,
@@ -60,35 +96,20 @@ test.describe('Visual Review - Desktop (1440x900)', () => {
   });
 
   test('Stress test - 12 colors with long labels', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    // Add many colors with intentionally long labels
-    const colors = [
-      { hex: '#000000', label: 'Extra Dark Charcoal Black' },
-      { hex: '#1a1a1a', label: 'Very Dark Grey Background' },
-      { hex: '#333333', label: 'Medium Dark Grey Text' },
-      { hex: '#666666', label: 'Standard Grey Secondary' },
-      { hex: '#999999', label: 'Light Grey Tertiary Color' },
-      { hex: '#cccccc', label: 'Very Light Grey Border' },
-      { hex: '#ffffff', label: 'Pure White Background' },
-      { hex: '#0066cc', label: 'Primary Interactive Blue' },
-      { hex: '#003d7a', label: 'Dark Primary Blue Hover' },
-      { hex: '#dc2626', label: 'Critical Error Red Alert' },
-      { hex: '#15803d', label: 'Success Green Confirmation' },
-      { hex: '#f59e0b', label: 'Warning Amber Notification' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#000000, Extra Dark Charcoal Black',
+      '#1a1a1a, Very Dark Grey Background',
+      '#333333, Medium Dark Grey Text',
+      '#666666, Standard Grey Secondary',
+      '#999999, Light Grey Tertiary Color',
+      '#cccccc, Very Light Grey Border',
+      '#ffffff, Pure White Background',
+      '#0066cc, Primary Interactive Blue',
+      '#003d7a, Dark Primary Blue Hover',
+      '#dc2626, Critical Error Red Alert',
+      '#15803d, Success Green Confirmation',
+      '#f59e0b, Warning Amber Notification',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/desktop-1440-stress.png',
       fullPage: true,
@@ -104,26 +125,12 @@ test.describe('Visual Review - Desktop Large (1920x1080)', () => {
   });
 
   test('Ideal state - 4 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
-      { hex: '#1a1a1a', label: 'Dark Grey' },
-      { hex: '#ffffff', label: 'White' },
-      { hex: '#0066cc', label: 'Primary Blue' },
-      { hex: '#dc2626', label: 'Error Red' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(100);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#1a1a1a, Dark Grey',
+      '#ffffff, White',
+      '#0066cc, Primary Blue',
+      '#dc2626, Error Red',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/desktop-1920-ideal.png',
       fullPage: true,
@@ -131,34 +138,20 @@ test.describe('Visual Review - Desktop Large (1920x1080)', () => {
   });
 
   test('Stress test - 12 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
-      { hex: '#000000', label: 'Extra Dark Charcoal Black' },
-      { hex: '#1a1a1a', label: 'Very Dark Grey Background' },
-      { hex: '#333333', label: 'Medium Dark Grey Text' },
-      { hex: '#666666', label: 'Standard Grey Secondary' },
-      { hex: '#999999', label: 'Light Grey Tertiary Color' },
-      { hex: '#cccccc', label: 'Very Light Grey Border' },
-      { hex: '#ffffff', label: 'Pure White Background' },
-      { hex: '#0066cc', label: 'Primary Interactive Blue' },
-      { hex: '#003d7a', label: 'Dark Primary Blue Hover' },
-      { hex: '#dc2626', label: 'Critical Error Red Alert' },
-      { hex: '#15803d', label: 'Success Green Confirmation' },
-      { hex: '#f59e0b', label: 'Warning Amber Notification' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#000000, Extra Dark Charcoal Black',
+      '#1a1a1a, Very Dark Grey Background',
+      '#333333, Medium Dark Grey Text',
+      '#666666, Standard Grey Secondary',
+      '#999999, Light Grey Tertiary Color',
+      '#cccccc, Very Light Grey Border',
+      '#ffffff, Pure White Background',
+      '#0066cc, Primary Interactive Blue',
+      '#003d7a, Dark Primary Blue Hover',
+      '#dc2626, Critical Error Red Alert',
+      '#15803d, Success Green Confirmation',
+      '#f59e0b, Warning Amber Notification',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/desktop-1920-stress.png',
       fullPage: true,
@@ -180,27 +173,21 @@ test.describe('Visual Review - Tablet Portrait (768x1024)', () => {
     });
   });
 
+  test('Minimal state - 2 colors', async ({ page }) => {
+    await addColors(page, ['#1a1a1a, Dark', '#ffffff, Light']);
+    await page.screenshot({
+      path: 'e2e/visual-review/tablet-768-2colors.png',
+      fullPage: true,
+    });
+  });
+
   test('Ideal state - 4 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
-      { hex: '#1a1a1a', label: 'Dark Grey' },
-      { hex: '#ffffff', label: 'White' },
-      { hex: '#0066cc', label: 'Primary Blue' },
-      { hex: '#dc2626', label: 'Error Red' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(100);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#1a1a1a, Dark Grey',
+      '#ffffff, White',
+      '#0066cc, Primary Blue',
+      '#dc2626, Error Red',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/tablet-768-ideal.png',
       fullPage: true,
@@ -208,32 +195,18 @@ test.describe('Visual Review - Tablet Portrait (768x1024)', () => {
   });
 
   test('Stress test - 10 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
-      { hex: '#000000', label: 'Extra Dark Charcoal Black' },
-      { hex: '#1a1a1a', label: 'Very Dark Grey Background' },
-      { hex: '#333333', label: 'Medium Dark Grey Text' },
-      { hex: '#666666', label: 'Standard Grey Secondary' },
-      { hex: '#999999', label: 'Light Grey Tertiary' },
-      { hex: '#cccccc', label: 'Very Light Grey Border' },
-      { hex: '#ffffff', label: 'Pure White Background' },
-      { hex: '#0066cc', label: 'Primary Interactive Blue' },
-      { hex: '#dc2626', label: 'Critical Error Red Alert' },
-      { hex: '#15803d', label: 'Success Green Confirm' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#000000, Extra Dark Charcoal Black',
+      '#1a1a1a, Very Dark Grey Background',
+      '#333333, Medium Dark Grey Text',
+      '#666666, Standard Grey Secondary',
+      '#999999, Light Grey Tertiary',
+      '#cccccc, Very Light Grey Border',
+      '#ffffff, Pure White Background',
+      '#0066cc, Primary Interactive Blue',
+      '#dc2626, Critical Error Red Alert',
+      '#15803d, Success Green Confirm',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/tablet-768-stress.png',
       fullPage: true,
@@ -249,26 +222,12 @@ test.describe('Visual Review - Tablet Landscape (1024x768)', () => {
   });
 
   test('Ideal state - 4 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
-      { hex: '#1a1a1a', label: 'Dark Grey' },
-      { hex: '#ffffff', label: 'White' },
-      { hex: '#0066cc', label: 'Primary Blue' },
-      { hex: '#dc2626', label: 'Error Red' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(100);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#1a1a1a, Dark Grey',
+      '#ffffff, White',
+      '#0066cc, Primary Blue',
+      '#dc2626, Error Red',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/tablet-1024-ideal.png',
       fullPage: true,
@@ -276,32 +235,18 @@ test.describe('Visual Review - Tablet Landscape (1024x768)', () => {
   });
 
   test('Stress test - 10 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const labelInput = colorInput.locator('input.label-input');
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
-      { hex: '#000000', label: 'Extra Dark Charcoal Black' },
-      { hex: '#1a1a1a', label: 'Very Dark Grey Background' },
-      { hex: '#333333', label: 'Medium Dark Grey Text' },
-      { hex: '#666666', label: 'Standard Grey Secondary' },
-      { hex: '#999999', label: 'Light Grey Tertiary' },
-      { hex: '#cccccc', label: 'Very Light Grey Border' },
-      { hex: '#ffffff', label: 'Pure White Background' },
-      { hex: '#0066cc', label: 'Primary Interactive Blue' },
-      { hex: '#dc2626', label: 'Critical Error Red Alert' },
-      { hex: '#15803d', label: 'Success Green Confirm' },
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color.hex);
-      await labelInput.fill(color.label);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, [
+      '#000000, Extra Dark Charcoal Black',
+      '#1a1a1a, Very Dark Grey Background',
+      '#333333, Medium Dark Grey Text',
+      '#666666, Standard Grey Secondary',
+      '#999999, Light Grey Tertiary',
+      '#cccccc, Very Light Grey Border',
+      '#ffffff, Pure White Background',
+      '#0066cc, Primary Interactive Blue',
+      '#dc2626, Critical Error Red Alert',
+      '#15803d, Success Green Confirm',
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/tablet-1024-stress.png',
       fullPage: true,
@@ -324,20 +269,8 @@ test.describe('Visual Review - Mobile iPhone SE (375x667)', () => {
   });
 
   test('Ideal state - 4 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    // Note: Label input hidden on mobile < 480px
-    const colors = ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626'];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(100);
-    }
-
-    await page.waitForTimeout(500);
+    // Mobile: shorter labels work better
+    await addColors(page, ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626']);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-375-ideal.png',
       fullPage: true,
@@ -345,22 +278,10 @@ test.describe('Visual Review - Mobile iPhone SE (375x667)', () => {
   });
 
   test('Stress test - 8 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
+    await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#666666',
       '#999999', '#cccccc', '#ffffff', '#0066cc',
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-375-stress.png',
       fullPage: true,
@@ -383,19 +304,7 @@ test.describe('Visual Review - Mobile iPhone 12 (390x844)', () => {
   });
 
   test('Ideal state - 4 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626'];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(100);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626']);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-390-ideal.png',
       fullPage: true,
@@ -403,22 +312,10 @@ test.describe('Visual Review - Mobile iPhone 12 (390x844)', () => {
   });
 
   test('Stress test - 8 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
+    await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#666666',
       '#999999', '#cccccc', '#ffffff', '#0066cc',
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-390-stress.png',
       fullPage: true,
@@ -434,19 +331,7 @@ test.describe('Visual Review - Mobile iPhone 11 Pro Max (414x896)', () => {
   });
 
   test('Ideal state - 4 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626'];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(100);
-    }
-
-    await page.waitForTimeout(500);
+    await addColors(page, ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626']);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-414-ideal.png',
       fullPage: true,
@@ -454,22 +339,10 @@ test.describe('Visual Review - Mobile iPhone 11 Pro Max (414x896)', () => {
   });
 
   test('Stress test - 8 colors', async ({ page }) => {
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
+    await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#666666',
       '#999999', '#cccccc', '#ffffff', '#0066cc',
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-414-stress.png',
       fullPage: true,
@@ -483,24 +356,11 @@ test.describe('Visual Review - Grid Overflow & Scrolling', () => {
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
 
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    // Add 15 colors to test grid overflow
-    const colors = [
+    await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#4a4a4a', '#666666',
       '#808080', '#999999', '#b3b3b3', '#cccccc', '#e0e0e0',
       '#f5f5f5', '#ffffff', '#0066cc', '#dc2626', '#15803d',
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(30);
-    }
-
-    await page.waitForTimeout(500);
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/desktop-grid-overflow.png',
       fullPage: true,
@@ -512,22 +372,10 @@ test.describe('Visual Review - Grid Overflow & Scrolling', () => {
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
 
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette').locator('button:has-text("Add")');
-
-    const colors = [
+    await addColors(page, [
       '#000000', '#333333', '#666666', '#999999',
       '#cccccc', '#ffffff', '#0066cc', '#dc2626',
-    ];
-
-    for (const color of colors) {
-      await textInput.fill(color);
-      await addButton.click();
-      await page.waitForTimeout(50);
-    }
-
-    await page.waitForTimeout(500);
+    ]);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-grid-overflow.png',
       fullPage: true,

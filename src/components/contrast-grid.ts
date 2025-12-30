@@ -1,8 +1,8 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ColorStoreController } from '../state';
 import type { GridFilterLevel } from '../state/color-store';
-import { generateContrastMatrix } from '../utils';
+import { generateContrastMatrix, WCAG_BADGE_COLORS } from '../utils';
 import type { Color, ContrastResult, WCAGLevel } from '../utils';
 import './contrast-cell';
 
@@ -17,17 +17,20 @@ export class ContrastGrid extends LitElement {
       display: block;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     .grid-wrapper {
       overflow: auto;
       max-height: 70vh;
       border: 1px solid var(--color-border-default, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
-      background: var(--color-border-default, #d4d4d4);
+      background: var(--color-surface-primary, #ffffff);
     }
 
     .grid-container {
       display: inline-block;
-      min-width: 100%;
     }
 
     .grid {
@@ -35,25 +38,33 @@ export class ContrastGrid extends LitElement {
       gap: 1px;
       background: var(--color-border-default, #d4d4d4);
       position: relative;
+      width: fit-content;
+    }
+
+    /* Data cell wrappers - constrain to grid cell size */
+    .cell-wrapper {
+      width: var(--cell-size, 5.5rem);
+      height: var(--cell-size, 5.5rem);
+      overflow: hidden;
+    }
+
+    /* Row wrappers for ARIA table structure - display:contents keeps grid layout intact */
+    .grid-row {
+      display: contents;
     }
 
     .header-cell {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: var(--space-sm, 0.5rem);
+      padding: var(--space-xs, 0.25rem);
       background: var(--color-surface-secondary, #f5f5f5);
-      font-size: var(--font-size-sm, 0.875rem);
+      font-size: var(--font-size-xs, 0.75rem);
       font-weight: var(--font-weight-medium, 500);
       color: var(--color-text-secondary, #555555);
-      max-width: 10rem;
       overflow: hidden;
-      min-width: 5rem;
-      min-height: 2.5rem;
       position: sticky;
       z-index: 1;
-      border-right: 2px solid var(--color-border-default, #d4d4d4);
-      border-bottom: 2px solid var(--color-border-default, #d4d4d4);
 
       &.corner {
         background: var(--color-surface-tertiary, #e8e8e8);
@@ -62,48 +73,25 @@ export class ContrastGrid extends LitElement {
         left: 0;
         z-index: 3;
         font-weight: var(--font-weight-semibold, 600);
+        width: var(--row-header-width, 5.5rem);
+        height: var(--header-height, 2.5rem);
       }
 
       &.column-header {
         position: sticky;
         top: 0;
         z-index: 2;
+        width: var(--cell-size, 5.5rem);
+        height: var(--header-height, 2.5rem);
       }
 
       &.row-header {
         justify-content: flex-start;
-        min-width: 8rem;
         position: sticky;
         left: 0;
         z-index: 2;
-
-        @media (max-width: 640px) {
-          min-width: 4rem;
-          max-width: 5rem;
-        }
-
-        @media (min-width: 641px) and (max-width: 1023px) {
-          min-width: 6rem;
-          max-width: 7rem;
-        }
-      }
-
-      /* Mobile: smaller headers */
-      @media (max-width: 640px) {
-        min-width: 3.5rem;
-        max-width: 5rem;
-        padding: var(--space-xs, 0.25rem);
-        font-size: var(--font-size-xs, 0.75rem);
-      }
-
-      /* Tablet: medium adjustments */
-      @media (min-width: 641px) and (max-width: 1023px) {
-        min-width: 4rem;
-        max-width: 7rem;
-
-        &.row-header {
-          min-width: 6rem;
-        }
+        width: var(--row-header-width, 5.5rem);
+        height: var(--cell-size, 5.5rem);
       }
     }
 
@@ -196,10 +184,11 @@ export class ContrastGrid extends LitElement {
       border-radius: var(--radius-sm, 0.25rem);
       text-transform: uppercase;
 
-      &.aaa { background: #14532d; color: #fff; }  /* 10.5:1 AAA */
-      &.aa { background: #15803d; color: #fff; }   /* 7.3:1 AAA - updated from #166534 */
-      &.aa18 { background: #713f12; color: #fff; } /* 8.5:1 AAA */
-      &.dnp { background: #991b1b; color: #fff; }  /* 7.1:1 AAA - updated from #7f1d1d */
+      /* Badge colors from WCAG_BADGE_COLORS in utils/wcag-config.ts */
+      &.aaa { background: ${unsafeCSS(WCAG_BADGE_COLORS.AAA)}; color: #fff; }
+      &.aa { background: ${unsafeCSS(WCAG_BADGE_COLORS.AA)}; color: #fff; }
+      &.aa18 { background: ${unsafeCSS(WCAG_BADGE_COLORS.AA18)}; color: #fff; }
+      &.dnp { background: ${unsafeCSS(WCAG_BADGE_COLORS.DNP)}; color: #fff; }
 
       @media (max-width: 640px) {
         font-size: 0.625rem;
@@ -251,6 +240,30 @@ export class ContrastGrid extends LitElement {
 
   private getColorLabel(color: Color): string {
     return color.label || color.hex;
+  }
+
+  private getCellSize(): string {
+    switch (this.store.gridCellSize) {
+      case 'small': return '3.5rem';
+      case 'large': return '8rem';
+      default: return '5.5rem';
+    }
+  }
+
+  private getRowHeaderWidth(): string {
+    switch (this.store.gridCellSize) {
+      case 'small': return '4rem';
+      case 'large': return '8rem';
+      default: return '5.5rem';
+    }
+  }
+
+  private getHeaderHeight(): string {
+    switch (this.store.gridCellSize) {
+      case 'small': return '2rem';
+      case 'large': return '3rem';
+      default: return '2.5rem';
+    }
   }
 
   private mapWCAGLevelToFilterLevel(level: WCAGLevel): GridFilterLevel {
@@ -333,64 +346,82 @@ export class ContrastGrid extends LitElement {
             class="grid"
             role="table"
             aria-label="Contrast ratios between foreground and background colors"
-            style="grid-template-columns: repeat(${gridSize}, auto)"
+            style="
+              --cell-size: ${this.getCellSize()};
+              --row-header-width: ${this.getRowHeaderWidth()};
+              --header-height: ${this.getHeaderHeight()};
+              grid-template-columns: var(--row-header-width) repeat(${gridSize - 1}, var(--cell-size));
+              grid-template-rows: var(--header-height) repeat(${gridSize - 1}, var(--cell-size));
+            "
           >
-            <!-- Corner cell -->
-            <div class="header-cell corner" role="columnheader">
-              <span aria-label="Foreground versus Background">FG \\ BG</span>
+            <!-- Header row -->
+            <div class="grid-row" role="row">
+              <!-- Corner cell -->
+              <div class="header-cell corner" role="columnheader">
+                <span aria-label="Foreground versus Background">FG \\ BG</span>
+              </div>
+
+              <!-- Column headers (background colors) -->
+              ${colors.map((color) => html`
+                <div
+                  class="header-cell column-header"
+                  role="columnheader"
+                  aria-label="Background: ${this.getColorLabel(color)}"
+                  title="${this.getColorLabel(color)}"
+                >
+                  <div class="color-indicator">
+                    <div class="color-dot" style="background: ${color.hex}" aria-hidden="true"></div>
+                    <span class="color-label">${this.getColorLabel(color)}</span>
+                  </div>
+                </div>
+              `)}
             </div>
 
-            <!-- Column headers (background colors) -->
-            ${colors.map((color) => html`
-              <div
-                class="header-cell column-header"
-                role="columnheader"
-                aria-label="Background: ${this.getColorLabel(color)}"
-                title="${this.getColorLabel(color)}"
-              >
-                <div class="color-indicator">
-                  <div class="color-dot" style="background: ${color.hex}" aria-hidden="true"></div>
-                  <span class="color-label">${this.getColorLabel(color)}</span>
+            <!-- Data rows -->
+            ${colors.map((fgColor, fgIndex) => html`
+              <div class="grid-row" role="row">
+                <!-- Row header (foreground color) -->
+                <div
+                  class="header-cell row-header"
+                  role="rowheader"
+                  aria-label="Foreground: ${this.getColorLabel(fgColor)}"
+                  title="${this.getColorLabel(fgColor)}"
+                >
+                  <div class="color-indicator">
+                    <div class="color-dot" style="background: ${fgColor.hex}" aria-hidden="true"></div>
+                    <span class="color-label">${this.getColorLabel(fgColor)}</span>
+                  </div>
                 </div>
+
+                <!-- Cells -->
+                ${colors.map((bgColor, bgIndex) => {
+                  const result = matrix[fgIndex]?.[bgIndex] ?? null;
+                  const isFiltered = this.isCellFiltered(result);
+                  const cellLabel = result
+                    ? `${this.getColorLabel(fgColor)} on ${this.getColorLabel(bgColor)}: ${result.ratioString}, ${result.level === 'DNP' ? 'Does not pass' : 'Passes ' + result.level}`
+                    : 'No result';
+                  return html`
+                    <div
+                      class="cell-wrapper"
+                      role="${isFiltered ? 'presentation' : 'cell'}"
+                      aria-label="${isFiltered ? '' : cellLabel}"
+                      aria-hidden="${isFiltered ? 'true' : 'false'}"
+                    >
+                      <contrast-cell
+                        .result="${result}"
+                        fg-color="${fgColor.hex}"
+                        bg-color="${bgColor.hex}"
+                        ?same-color="${fgIndex === bgIndex}"
+                        ?compact="${this.compact}"
+                        ?filtered="${isFiltered}"
+                        cell-size="${this.store.gridCellSize}"
+                        aria-hidden="${isFiltered ? 'true' : 'false'}"
+                      ></contrast-cell>
+                    </div>
+                  `;
+                })}
               </div>
             `)}
-
-          <!-- Rows -->
-          ${colors.map((fgColor, fgIndex) => html`
-            <!-- Row header (foreground color) -->
-            <div
-              class="header-cell row-header"
-              role="rowheader"
-              aria-label="Foreground: ${this.getColorLabel(fgColor)}"
-              title="${this.getColorLabel(fgColor)}"
-            >
-              <div class="color-indicator">
-                <div class="color-dot" style="background: ${fgColor.hex}" aria-hidden="true"></div>
-                <span class="color-label">${this.getColorLabel(fgColor)}</span>
-              </div>
-            </div>
-
-            <!-- Cells -->
-            ${colors.map((bgColor, bgIndex) => {
-              const result = matrix[fgIndex]?.[bgIndex] ?? null;
-              const cellLabel = result
-                ? `${this.getColorLabel(fgColor)} on ${this.getColorLabel(bgColor)}: ${result.ratioString}, ${result.level === 'DNP' ? 'Does not pass' : 'Passes ' + result.level}`
-                : 'No result';
-              return html`
-                <div role="cell" aria-label="${cellLabel}">
-                  <contrast-cell
-                  .result="${result}"
-                  fg-color="${fgColor.hex}"
-                  bg-color="${bgColor.hex}"
-                  ?same-color="${fgIndex === bgIndex}"
-                  ?compact="${this.compact}"
-                  ?filtered="${this.isCellFiltered(result)}"
-                  cell-size="${this.store.gridCellSize}"
-                ></contrast-cell>
-                </div>
-              `;
-            })}
-          `)}
           </div>
         </div>
       </div>
