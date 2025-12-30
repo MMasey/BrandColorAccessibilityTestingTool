@@ -4,17 +4,25 @@
  * Handles reading and writing application state to URL parameters
  * for shareable links and progressive enhancement.
  *
- * URL format: ?colors=FF5733,3498DB&labels=Orange,Blue&text=normal&theme=dark
+ * URL format: ?colors=FF5733,3498DB&labels=Orange,Blue&text=normal&theme=dark&show=aaa,aa,aa-large
  */
 
 import type { TextSize } from '../utils/color-types';
 import type { Theme } from './theme-store';
+import type { GridFilterLevel } from './color-store';
 
 /** URL parameter names */
 const PARAM_COLORS = 'colors';
 const PARAM_LABELS = 'labels';
 const PARAM_TEXT = 'text';
 const PARAM_THEME = 'theme';
+const PARAM_SHOW = 'show';
+
+/** Valid filter levels for URL params */
+const VALID_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large', 'failed'];
+
+/** Default active filters (show passing, hide failed) */
+const DEFAULT_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large'];
 
 /** State that can be stored in URL */
 export interface URLState {
@@ -22,6 +30,7 @@ export interface URLState {
   labels: string[];       // Color labels (URL-encoded)
   textSize: TextSize;
   theme: Theme;
+  filters: GridFilterLevel[];  // Active grid filters
 }
 
 /** Default state when no URL params present */
@@ -30,6 +39,7 @@ const DEFAULT_STATE: URLState = {
   labels: [],
   textSize: 'normal',
   theme: 'system',
+  filters: DEFAULT_FILTERS,
 };
 
 /**
@@ -66,6 +76,18 @@ export function parseURLState(search: string = window.location.search): Partial<
     state.theme = themeParam;
   }
 
+  // Parse filters (comma-separated filter levels)
+  const showParam = params.get(PARAM_SHOW);
+  if (showParam) {
+    const filters = showParam
+      .split(',')
+      .map(f => f.trim().toLowerCase() as GridFilterLevel)
+      .filter(f => VALID_FILTERS.includes(f));
+    if (filters.length > 0) {
+      state.filters = filters;
+    }
+  }
+
   return state;
 }
 
@@ -93,6 +115,18 @@ export function serializeURLState(state: Partial<URLState>): string {
   // Serialize theme (only if not system default)
   if (state.theme && state.theme !== 'system') {
     params.set(PARAM_THEME, state.theme);
+  }
+
+  // Serialize filters (only if different from default)
+  if (state.filters) {
+    const sortedFilters = [...state.filters].sort();
+    const sortedDefaults = [...DEFAULT_FILTERS].sort();
+    const isDifferent = sortedFilters.length !== sortedDefaults.length ||
+      sortedFilters.some((f, i) => f !== sortedDefaults[i]);
+
+    if (isDifferent) {
+      params.set(PARAM_SHOW, state.filters.join(','));
+    }
   }
 
   const search = params.toString();
@@ -130,7 +164,7 @@ export function getFullURLState(search?: string): URLState {
  */
 export function hasURLState(search: string = window.location.search): boolean {
   const params = new URLSearchParams(search);
-  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_TEXT);
+  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_TEXT) || params.has(PARAM_SHOW);
 }
 
 /**
