@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Test and validate brand color palettes against WCAG accessibility standards" />
+    <title>Brand Color Accessibility Tool</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <!-- Inline critical styles for no-JS fallback -->
+    <style>
+      /* Fallback content styles - shown before JS loads */
+      .fallback-content {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 1rem;
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+      }
+      .fallback-content .fallback-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+      .fallback-content p {
+        margin-bottom: 1rem;
+        color: #555;
+      }
+      .fallback-loading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: #f5f5f5;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .fallback-loading::before {
+        content: "";
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid #0066cc;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      /* Hide fallback when JS loads and component renders */
+      app-shell:defined .fallback-content {
+        display: none;
+      }
+      /* Noscript styles */
+      .noscript-message {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 0.5rem;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      .noscript-message h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.25rem;
+        color: #856404;
+      }
+      .noscript-message p {
+        margin: 0 0 1rem;
+        color: #856404;
+      }
+      .noscript-message ul {
+        margin: 0;
+        padding-left: 1.5rem;
+      }
+      .noscript-message a {
+        color: #0066cc;
+      }
+      @media (prefers-color-scheme: dark) {
+        .fallback-content p {
+          color: #a3a3a3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <app-shell>
+      <!-- Fallback content shown before JavaScript loads -->
+      <div class="fallback-content">
+        <div class="fallback-title">Brand Color Accessibility Tool</div>
+        <div class="fallback-loading">
+          Loading application...
+        </div>
+        <p>
+          This tool helps you validate your brand color palette against
+          <a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html">WCAG 2.1 accessibility standards</a>.
+        </p>
+      </div>
+    </app-shell>
+
+    <!-- Message for users with JavaScript disabled -->
+    <noscript>
+      <div class="noscript-message">
+        <h2>JavaScript Required</h2>
+        <p>
+          This tool requires JavaScript for real-time contrast calculations.
+          Please enable JavaScript or try one of these alternatives:
+        </p>
+        <ul>
+          <li><a href="https://webaim.org/resources/contrastchecker/">WebAIM Contrast Checker</a> - Simple two-color comparison</li>
+          <li><a href="https://contrast-grid.eightshapes.com/">EightShapes Contrast Grid</a> - Multi-color grid view</li>
+          <li><a href="https://coolors.co/contrast-checker">Coolors Contrast Checker</a> - Visual color picker</li>
+        </ul>
+      </div>
+    </noscript>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

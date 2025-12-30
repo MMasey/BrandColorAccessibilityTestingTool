@@ -39,3 +39,14 @@ coverage/
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+e2e/screenshots/
+e2e/visual-review/
+
+# Claude Code
+.claude/settings.local.json

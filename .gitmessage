@@ -1,0 +1,34 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+#
+# --- CONVENTIONAL COMMITS ---
+# Types:
+#   feat:     New feature
+#   fix:      Bug fix
+#   docs:     Documentation only
+#   style:    Formatting, no code change
+#   refactor: Code change, no new feature or fix
+#   perf:     Performance improvement
+#   test:     Adding/updating tests
+#   chore:    Build, config, tooling
+#
+# Scope (optional): component or area affected
+#   e.g., color-utils, contrast-grid, theme
+#
+# Subject: imperative, lowercase, no period
+#   e.g., "add color parser for hex format"
+#
+# Body (optional): explain what and why
+#
+# Footer (optional): breaking changes, issue refs
+#   BREAKING CHANGE: <description>
+#   Closes #123
+#
+# --- EXAMPLES ---
+# feat(color-utils): add HSL color parsing
+# fix(contrast-grid): correct ratio calculation for dark colors
+# docs: update README with setup instructions
+# chore: configure vite for production build
