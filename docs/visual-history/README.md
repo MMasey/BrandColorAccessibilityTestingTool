@@ -8,12 +8,14 @@ Each milestone is stored in a timestamped folder for proper chronological orderi
 ```
 docs/visual-history/
 ├── YYYY-MM-DD_HHMM_milestone-name/
-│   ├── desktop-empty.png
-│   ├── desktop-colors.png
-│   ├── tablet-empty.png
-│   ├── tablet-colors.png
-│   ├── mobile-empty.png
-│   ├── mobile-colors.png
+│   ├── desktop-light-empty.png
+│   ├── desktop-light-colors.png
+│   ├── desktop-dark-empty.png
+│   ├── desktop-dark-colors.png
+│   ├── desktop-high-contrast-empty.png
+│   ├── desktop-high-contrast-colors.png
+│   ├── tablet-*.png
+│   ├── mobile-*.png
 │   └── metadata.json
 ```
 
@@ -35,9 +37,10 @@ npm run capture-milestone -- "feature-name"
 
 Each milestone captures:
 - **3 viewports**: desktop (1440x900), tablet (768x1024), mobile (375x667)
+- **3 themes**: light, dark, high-contrast (via Playwright colorScheme/forcedColors)
 - **2 states**: empty, with 4 sample colors
 
-Total: 6 screenshots per milestone
+Total: 18 screenshots per milestone
 
 ## History
 
