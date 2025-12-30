@@ -73,13 +73,6 @@ test.describe('Color Palette Functionality', () => {
     await expect(cells).toHaveCount(4); // 2x2 matrix
   });
 
-  test('should toggle text size evaluation', async ({ page }) => {
-    const textSizeToggle = page.locator('text-size-toggle');
-    const largeButton = textSizeToggle.locator('button:has-text("Large")');
-
-    await largeButton.click();
-    await expect(largeButton).toHaveAttribute('aria-checked', 'true');
-  });
 });
 
 test.describe('Keyboard Navigation', () => {
@@ -115,11 +108,11 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('should have visible focus indicators', async ({ page }) => {
-    // Tab to first interactive element
-    await page.keyboard.press('Tab');
-
-    // Check that the skip link has focus (first focusable element)
+    // Focus the skip link directly (webkit/safari handle Tab differently)
     const skipLink = page.getByRole('link', { name: 'Skip to main content' });
+    await skipLink.focus();
+
+    // Verify it's focused
     await expect(skipLink).toBeFocused();
 
     // Screenshot for visual verification
@@ -367,45 +360,6 @@ test.describe('Visual UX Review - Screenshots', () => {
     });
   });
 
-  test('capture large text mode', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-
-    // Add colors
-    const colorInput = page.locator('color-palette').locator('color-input');
-    const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette color-input .add-btn');
-
-    await textInput.fill('#1a1a1a');
-    await addButton.click();
-    await textInput.fill('#ffffff');
-    await addButton.click();
-
-    // Switch to large text mode
-    const largeButton = page.locator('text-size-toggle').locator('button:has-text("Large")');
-    await largeButton.click();
-
-    await page.waitForTimeout(300);
-    await page.screenshot({
-      path: 'e2e/screenshots/desktop-large-text-mode.png',
-      fullPage: true,
-    });
-  });
-
-  test('capture font size scaling', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-
-    // Increase font size
-    const increaseFontButton = page.locator('theme-switcher').locator('button:has-text("A+")');
-    await increaseFontButton.click();
-    await increaseFontButton.click();
-    await increaseFontButton.click();
-
-    await page.waitForTimeout(300);
-    await page.screenshot({
-      path: 'e2e/screenshots/desktop-large-font-scale.png',
-      fullPage: true,
-    });
-  });
 });
 
 test.describe('Responsive Design', () => {
@@ -460,9 +414,9 @@ test.describe('Responsive Design', () => {
       await addButton.click();
     }
 
-    // Grid container should have overflow
-    const gridContainer = page.locator('contrast-grid');
-    await expect(gridContainer).toHaveCSS('overflow-x', 'auto');
+    // Grid wrapper inside shadow DOM should have overflow: auto
+    const gridWrapper = page.locator('contrast-grid').locator('.grid-wrapper');
+    await expect(gridWrapper).toHaveCSS('overflow', 'auto');
 
     await page.screenshot({
       path: 'e2e/screenshots/mobile-many-colors-scroll.png',
@@ -674,22 +628,9 @@ test.describe('URL State Management (Progressive Enhancement)', () => {
     await expect(html).toHaveAttribute('data-theme', 'dark');
   });
 
-  test('should load text size from URL parameters', async ({ page }) => {
-    // Navigate with large text in URL
-    await page.goto('/?text=large');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
-
-    // Wait for text size to be applied
-    await page.waitForTimeout(300);
-
-    // Check that the text size toggle shows large is selected
-    const largeTextButton = page.locator('text-size-toggle').locator('button[aria-checked="true"]');
-    await expect(largeTextButton).toContainText(/large/i);
-  });
-
   test('shareable URL should work correctly with full state', async ({ page }) => {
     // Navigate with full state in URL
-    await page.goto('/?colors=000000,FFFFFF&labels=Black,White&theme=high-contrast&text=large');
+    await page.goto('/?colors=000000,FFFFFF&labels=Black,White&theme=high-contrast');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
 
     // Wait for state to be applied
@@ -702,10 +643,6 @@ test.describe('URL State Management (Progressive Enhancement)', () => {
     // Verify theme
     const html = page.locator('html');
     await expect(html).toHaveAttribute('data-theme', 'high-contrast');
-
-    // Verify text size toggle is on large
-    const largeTextBtn = page.locator('text-size-toggle').locator('button[aria-checked="true"]');
-    await expect(largeTextBtn).toContainText(/large/i);
   });
 
   test('fallback content and noscript message exist in HTML', async ({ page }) => {

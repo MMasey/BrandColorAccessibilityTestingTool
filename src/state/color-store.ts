@@ -5,7 +5,7 @@
  * Uses a simple pub/sub pattern compatible with Lit's reactive system.
  */
 
-import type { Color, TextSize } from '../utils/color-types';
+import type { Color } from '../utils/color-types';
 import { createColor } from '../utils/color-converter';
 
 /** Grid filter levels for WCAG compliance */
@@ -17,7 +17,6 @@ export type GridCellSize = 'small' | 'medium' | 'large';
 /** Store state shape */
 export interface ColorStoreState {
   colors: Color[];
-  textSize: TextSize;
   selectedAlgorithm: 'wcag' | 'apca' | 'both';
   gridFilters: Set<GridFilterLevel>;
   gridCellSize: GridCellSize;
@@ -26,7 +25,6 @@ export interface ColorStoreState {
 /** Event types emitted by the store */
 export type ColorStoreEvent =
   | { type: 'colors-changed'; colors: Color[] }
-  | { type: 'text-size-changed'; textSize: TextSize }
   | { type: 'algorithm-changed'; algorithm: 'wcag' | 'apca' | 'both' }
   | { type: 'grid-filters-changed'; filters: Set<GridFilterLevel> }
   | { type: 'grid-cell-size-changed'; size: GridCellSize }
@@ -41,7 +39,6 @@ function createColorStore() {
   // Initial state
   let state: ColorStoreState = {
     colors: [],
-    textSize: 'normal',
     selectedAlgorithm: 'wcag',
     gridFilters: new Set(['aaa', 'aa', 'aa-large']),
     gridCellSize: 'medium',
@@ -64,11 +61,6 @@ function createColorStore() {
     /** Get all colors */
     getColors(): readonly Color[] {
       return state.colors;
-    },
-
-    /** Get current text size setting */
-    getTextSize(): TextSize {
-      return state.textSize;
     },
 
     /** Get selected algorithm */
@@ -247,25 +239,6 @@ function createColorStore() {
     },
 
     /**
-     * Set text size for WCAG evaluation
-     */
-    setTextSize(textSize: TextSize): void {
-      if (state.textSize === textSize) return;
-
-      state = { ...state, textSize };
-      emit({ type: 'text-size-changed', textSize });
-    },
-
-    /**
-     * Toggle text size between normal and large
-     */
-    toggleTextSize(): TextSize {
-      const newSize = state.textSize === 'normal' ? 'large' : 'normal';
-      this.setTextSize(newSize);
-      return newSize;
-    },
-
-    /**
      * Set algorithm for contrast calculation
      */
     setAlgorithm(algorithm: 'wcag' | 'apca' | 'both'): void {
@@ -326,7 +299,6 @@ function createColorStore() {
     reset(): void {
       state = {
         colors: [],
-        textSize: 'normal',
         selectedAlgorithm: 'wcag',
         gridFilters: new Set(['aaa', 'aa', 'aa-large']),
         gridCellSize: 'medium',

@@ -45,11 +45,6 @@ export function initializeFromURL(): void {
     });
   }
 
-  // Initialize text size from URL
-  if (urlState.textSize) {
-    colorStore.setTextSize(urlState.textSize);
-  }
-
   // Initialize theme from URL (if specified, overrides localStorage)
   if (urlState.theme) {
     themeStore.setTheme(urlState.theme);
@@ -58,6 +53,11 @@ export function initializeFromURL(): void {
   // Initialize filters from URL
   if (urlState.filters && urlState.filters.length > 0) {
     colorStore.setGridFilters(new Set(urlState.filters));
+  }
+
+  // Initialize cell size from URL
+  if (urlState.cellSize) {
+    colorStore.setGridCellSize(urlState.cellSize);
   }
 
   // Set up state change listeners to update URL
@@ -75,7 +75,7 @@ function setupURLUpdateListeners(): void {
   colorStore.subscribe((event) => {
     if (isSyncing) return;
 
-    if (event.type === 'colors-changed' || event.type === 'text-size-changed' || event.type === 'grid-filters-changed') {
+    if (event.type === 'colors-changed' || event.type === 'grid-filters-changed' || event.type === 'grid-cell-size-changed') {
       syncStateToURL();
     }
   });
@@ -92,16 +92,16 @@ function setupURLUpdateListeners(): void {
  */
 function syncStateToURL(): void {
   const colors = colorStore.getColors();
-  const textSize = colorStore.getTextSize();
   const theme = themeStore.theme;
   const filters = colorStore.getGridFilters();
+  const cellSize = colorStore.getGridCellSize();
 
   const urlState: Partial<URLState> = {
     colors: colors.map(c => hexToURLColor(c.hex)),
     labels: colors.map(c => c.label || ''),
-    textSize,
     theme,
     filters: [...filters],
+    cellSize,
   };
 
   // Only include labels if any color has a label
@@ -133,11 +133,6 @@ function setupPopStateHandler(): void {
         colorStore.clearColors();
       }
 
-      // Sync text size
-      if (urlState.textSize) {
-        colorStore.setTextSize(urlState.textSize);
-      }
-
       // Sync theme
       if (urlState.theme) {
         themeStore.setTheme(urlState.theme);
@@ -146,6 +141,11 @@ function setupPopStateHandler(): void {
       // Sync filters
       if (urlState.filters && urlState.filters.length > 0) {
         colorStore.setGridFilters(new Set(urlState.filters));
+      }
+
+      // Sync cell size
+      if (urlState.cellSize) {
+        colorStore.setGridCellSize(urlState.cellSize);
       }
     } finally {
       isSyncing = false;
@@ -158,15 +158,15 @@ function setupPopStateHandler(): void {
  */
 export function getShareableURL(): string {
   const colors = colorStore.getColors();
-  const textSize = colorStore.getTextSize();
   const theme = themeStore.theme;
   const filters = colorStore.getGridFilters();
+  const cellSize = colorStore.getGridCellSize();
 
   const urlState: Partial<URLState> = {
     colors: colors.map(c => hexToURLColor(c.hex)),
-    textSize,
     theme,
     filters: [...filters],
+    cellSize,
   };
 
   // Include labels if any exist
