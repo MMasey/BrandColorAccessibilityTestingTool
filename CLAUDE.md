@@ -27,6 +27,28 @@ src/
 - **URL State**: Colors and filters sync to URL for shareability
 - **Progressive Enhancement**: Works without JavaScript for basic display
 
+## Roadmap & Specifications
+
+See [spec/PROJECT.md](spec/PROJECT.md) for the full roadmap.
+
+### Phases (001-005)
+| Phase | Name | Status |
+|-------|------|--------|
+| 1 | Core Contrast Checker | In Progress |
+| 2 | APCA & Exports | Planned |
+| 3 | Visual Exports | Planned |
+| 4 | AI Color Generation | Planned |
+| 5 | AI Mockups (Paid) | Planned |
+
+### Feature Specs (100+)
+Standalone features use 100+ numbering to avoid collision with phases.
+
+| ID | Name | Status |
+|----|------|--------|
+| 100 | Theme Contrast Testing | Planned |
+
+All specs follow the SPECKL format with `README.md` + `spec.md`.
+
 ## Design Values
 
 1. **Accessibility First**: The tool tests accessibility, so it must be fully accessible itself
