@@ -115,7 +115,12 @@ jobs:
         run: echo "name=${GITHUB_HEAD_REF##*/}" >> $GITHUB_OUTPUT
 
       - name: Run Lighthouse audit
-        run: npm run lighthouse -- "${{ steps.branch.outputs.name }}"
+        id: lighthouse
+        run: |
+          npm run lighthouse -- "${{ steps.branch.outputs.name }}"
+          # Find the report folder just created (most recent matching branch name)
+          REPORT_DIR=$(ls -dt docs/performance-history/*${{ steps.branch.outputs.name }}* 2>/dev/null | head -1)
+          echo "report_dir=$REPORT_DIR" >> $GITHUB_OUTPUT
         env:
           BASE_URL: http://localhost:4173
 
@@ -131,19 +136,16 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const path = require('path');
 
-            // Find the latest report using @actions/glob
-            const globber = await glob.create('docs/performance-history/*/report.md');
-            const reports = await globber.glob();
-            if (reports.length === 0) {
-              console.log('No report found');
+            // Use the report directory from the lighthouse step
+            const reportDir = '${{ steps.lighthouse.outputs.report_dir }}';
+            const reportPath = `${reportDir}/report.md`;
+
+            if (!fs.existsSync(reportPath)) {
+              console.log('No report found at:', reportPath);
               return;
             }
 
-            // Sort to get the latest (by folder name which includes timestamp)
-            reports.sort();
-            const reportPath = reports[reports.length - 1];
             const reportContent = fs.readFileSync(reportPath, 'utf8');
 
             // Post comment to PR
