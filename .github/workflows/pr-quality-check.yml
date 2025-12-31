@@ -127,10 +127,9 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const glob = require('glob');
 
-            // Find the latest report
-            const reports = glob.sync('docs/performance-history/*/report.md');
+            // Find the latest report (glob is provided by github-script)
+            const reports = await glob.glob('docs/performance-history/*/report.md');
             if (reports.length === 0) {
               console.log('No report found');
               return;
@@ -140,7 +139,7 @@ jobs:
             const reportContent = fs.readFileSync(reportPath, 'utf8');
 
             // Post comment to PR
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
