@@ -23,6 +23,16 @@ test.describe('Brand Color Accessibility Tool', () => {
     await expect(skipLink).toBeFocused();
   });
 
+  test('skip link should navigate to main content when activated', async ({ page }) => {
+    // Focus and activate skip link
+    await page.keyboard.press('Tab'); // First tab should focus skip link
+    await page.keyboard.press('Enter');
+
+    // Main content should now be focused or visible at top
+    const mainContent = page.locator('#main-content');
+    await expect(mainContent).toBeInViewport();
+  });
+
   test('should have proper landmark regions', async ({ page }) => {
     const main = page.locator('main, [role="main"]');
     await expect(main).toHaveCount(1);
@@ -139,6 +149,67 @@ test.describe('Keyboard Navigation', () => {
 
     // Press Enter/Space to activate
     await page.keyboard.press('Enter');
+  });
+
+  test('contrast grid should be keyboard focusable and support arrow keys', async ({ page }) => {
+    // Use small viewport to ensure grid needs scrolling
+    await page.setViewportSize({ width: 400, height: 400 });
+
+    // Add multiple colors to make grid scrollable
+    const colorInput = page.locator('color-palette').locator('color-input');
+    const textInput = colorInput.locator('input[type="text"]').first();
+    const addButton = page.locator('color-palette color-input .add-btn');
+
+    const colors = ['#000', '#333', '#666', '#999', '#ccc', '#fff', '#f00', '#0f0', '#00f', '#ff0'];
+    for (const color of colors) {
+      await textInput.fill(color);
+      await addButton.click();
+    }
+    await page.waitForTimeout(300);
+
+    // Focus the grid wrapper - it should have tabindex="0"
+    const gridWrapper = page.locator('contrast-grid .grid-wrapper');
+    await expect(gridWrapper).toHaveAttribute('tabindex', '0');
+
+    // Focus and verify it accepts focus
+    await gridWrapper.focus();
+    await expect(gridWrapper).toBeFocused();
+
+    // Press arrow keys - should not throw errors
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowUp');
+
+    // Grid wrapper should still be focused after arrow keys
+    await expect(gridWrapper).toBeFocused();
+  });
+
+  test('contrast grid should support Home/End keys without errors', async ({ page }) => {
+    // Add colors
+    const colorInput = page.locator('color-palette').locator('color-input');
+    const textInput = colorInput.locator('input[type="text"]').first();
+    const addButton = page.locator('color-palette color-input .add-btn');
+
+    const colors = ['#000', '#333', '#666', '#999', '#ccc', '#fff'];
+    for (const color of colors) {
+      await textInput.fill(color);
+      await addButton.click();
+    }
+    await page.waitForTimeout(300);
+
+    // Focus the grid wrapper
+    const gridWrapper = page.locator('contrast-grid .grid-wrapper');
+    await gridWrapper.focus();
+    await expect(gridWrapper).toBeFocused();
+
+    // Press Home/End keys - should not throw errors
+    await page.keyboard.press('End');
+    await page.keyboard.press('Home');
+
+    // Verify Home scrolls to start (scrollLeft should be 0)
+    const scrollAfterHome = await gridWrapper.evaluate((el) => el.scrollLeft);
+    expect(scrollAfterHome).toBe(0);
   });
 });
 

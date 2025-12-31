@@ -298,9 +298,12 @@ body {
    -------------------------------------------------------------------------- */
 
 .skip-link {
+  /* Visually hidden but focusable - uses transform instead of top positioning
+     to ensure the link remains in the accessibility tree and is focusable */
   position: absolute;
-  top: -100%;
+  top: 0;
   left: 0;
+  transform: translateY(-100%);
   padding: var(--space-sm) var(--space-md);
   background: var(--color-accent-primary);
   color: var(--color-text-inverse);
@@ -310,7 +313,9 @@ body {
 }
 
 .skip-link:focus {
-  top: 0;
+  transform: translateY(0);
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* --------------------------------------------------------------------------

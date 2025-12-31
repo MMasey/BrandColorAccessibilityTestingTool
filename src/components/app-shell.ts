@@ -19,9 +19,12 @@ export class AppShell extends LitElement {
     }
 
     .skip-link {
+      /* Visually hidden but focusable - uses transform instead of top positioning
+         to ensure the link remains in the accessibility tree and is focusable */
       position: absolute;
-      top: -100%;
+      top: 0;
       left: 0;
+      transform: translateY(-100%);
       padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
       background: var(--color-accent-primary, #0066cc);
       color: var(--color-text-inverse, #ffffff);
@@ -31,7 +34,9 @@ export class AppShell extends LitElement {
       border-radius: 0 0 var(--radius-md, 0.5rem) 0;
 
       &:focus {
-        top: 0;
+        transform: translateY(0);
+        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline-offset: var(--focus-ring-offset, 2px);
       }
     }
 
