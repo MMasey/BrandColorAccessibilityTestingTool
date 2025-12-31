@@ -193,7 +193,7 @@ async function main(): Promise<void> {
 
     // Start dev server
     console.log('  Starting dev server...');
-    const server = execSync('npm run dev &', { stdio: 'pipe' });
+    execSync('npm run dev &', { stdio: 'pipe' });
 
     // Wait for server
     await new Promise(resolve => setTimeout(resolve, 5000));
