@@ -127,14 +127,18 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+            const path = require('path');
 
-            // Find the latest report (glob is provided by github-script)
-            const reports = await glob.glob('docs/performance-history/*/report.md');
+            // Find the latest report using @actions/glob
+            const globber = await glob.create('docs/performance-history/*/report.md');
+            const reports = await globber.glob();
             if (reports.length === 0) {
               console.log('No report found');
               return;
             }
 
+            // Sort to get the latest (by folder name which includes timestamp)
+            reports.sort();
             const reportPath = reports[reports.length - 1];
             const reportContent = fs.readFileSync(reportPath, 'utf8');
 
