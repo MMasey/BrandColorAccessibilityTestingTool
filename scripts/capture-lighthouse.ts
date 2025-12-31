@@ -4,7 +4,7 @@
  * Captures Lighthouse metrics for tracking performance over time.
  * Run with: npx tsx scripts/capture-lighthouse.ts "milestone-name"
  *
- * Output: docs/performance-history/YYYY-MM-DD_milestone-name/
+ * Output: docs/performance-history/YYYY-MM-DD_HHMM_milestone-name/
  */
 
 import lighthouse from 'lighthouse';
@@ -123,9 +123,11 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Create output directory
-  const date = new Date().toISOString().split('T')[0];
-  const folderName = `${date}_${milestoneName.replace(/\s+/g, '-').toLowerCase()}`;
+  // Create output directory with timestamp to avoid collisions
+  const now = new Date();
+  const date = now.toISOString().split('T')[0];
+  const time = now.toTimeString().slice(0, 5).replace(':', ''); // HHMM format
+  const folderName = `${date}_${time}_${milestoneName.replace(/\s+/g, '-').toLowerCase()}`;
   const outputDir = path.join(process.cwd(), 'docs', 'performance-history', folderName);
 
   if (fs.existsSync(outputDir)) {
