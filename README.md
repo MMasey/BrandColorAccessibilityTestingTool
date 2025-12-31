@@ -124,6 +124,23 @@ This tool is built with accessibility as a core feature:
 - Respects `prefers-reduced-motion`
 - Respects `prefers-color-scheme`
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [CLAUDE.md](CLAUDE.md) | Project context for AI assistants |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Development workflow and commit conventions |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Architectural Decision Records (ADRs) |
+| [spec/PROJECT.md](spec/PROJECT.md) | Product roadmap and specifications |
+
+### Docs Folder
+
+```
+docs/
+  DECISIONS.md       # Architectural decisions (Lit, pub/sub, etc.)
+  visual-history/    # Visual milestone screenshots
+```
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow and commit conventions.

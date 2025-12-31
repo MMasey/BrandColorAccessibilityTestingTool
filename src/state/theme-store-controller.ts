@@ -3,7 +3,7 @@ import { themeStore, Theme, ThemeStoreState } from './theme-store';
 
 /**
  * Reactive controller for theme store integration with Lit components.
- * Automatically triggers component updates when theme or font scale changes.
+ * Automatically triggers component updates when theme changes.
  */
 export class ThemeStoreController implements ReactiveController {
   private host: ReactiveControllerHost;
@@ -30,40 +30,12 @@ export class ThemeStoreController implements ReactiveController {
     return themeStore.theme;
   }
 
-  get fontScale(): number {
-    return themeStore.fontScale;
-  }
-
   get resolvedTheme(): 'light' | 'dark' | 'high-contrast' {
     return themeStore.resolvedTheme;
   }
 
-  get minFontScale(): number {
-    return themeStore.minFontScale;
-  }
-
-  get maxFontScale(): number {
-    return themeStore.maxFontScale;
-  }
-
   setTheme(theme: Theme): void {
     themeStore.setTheme(theme);
-  }
-
-  setFontScale(scale: number): void {
-    themeStore.setFontScale(scale);
-  }
-
-  increaseFontScale(): void {
-    themeStore.increaseFontScale();
-  }
-
-  decreaseFontScale(): void {
-    themeStore.decreaseFontScale();
-  }
-
-  resetFontScale(): void {
-    themeStore.resetFontScale();
   }
 
   getState(): ThemeStoreState {

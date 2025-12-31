@@ -264,6 +264,9 @@ test.describe('Touch Target Validation', () => {
 });
 
 test.describe('Visual Regression', () => {
+  // Skip visual regression tests in CI - baselines are platform-specific
+  // and we only have Windows baselines committed. Run locally for visual testing.
+  test.skip(!!process.env.CI, 'Visual regression tests skipped in CI (platform-specific baselines)');
   test('empty state matches baseline', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');

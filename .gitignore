@@ -48,5 +48,8 @@ coverage/
 e2e/screenshots/
 e2e/visual-review/
 
+# Visual regression snapshots (platform-specific, auto-generated)
+e2e/**/*-snapshots/
+
 # Claude Code
 .claude/settings.local.json

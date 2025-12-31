@@ -28,13 +28,21 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 
 | Phase | Name | Description |
 |-------|------|-------------|
-| 1 | [Core Contrast Checker](001-core-contrast-checker/speck.md) | Color input, contrast grid, WCAG badges |
-| 2 | [APCA & Exports](002-apca-exports/speck.md) | APCA algorithm, CSS/SCSS export |
-| 3 | [Visual Exports](003-visual-exports/speck.md) | Image, PDF, HTML exports |
-| 4 | [AI Color Generation](004-ai-color-gen/speck.md) | AI-generated accessible palettes |
-| 5 | [AI Mockups](005-ai-mockups/speck.md) | Paid AI mockup generation |
+| 1 | [Core Contrast Checker](001-core-contrast-checker/spec.md) | Color input, contrast grid, WCAG badges |
+| 2 | [APCA & Exports](002-apca-exports/spec.md) | APCA algorithm, CSS/SCSS export |
+| 3 | [Visual Exports](003-visual-exports/spec.md) | Image, PDF, HTML exports |
+| 4 | [AI Color Generation](004-ai-color-gen/spec.md) | AI-generated accessible palettes |
+| 5 | [AI Mockups](005-ai-mockups/spec.md) | Paid AI mockup generation |
+
+## Feature Specs
+
+Feature specs use 100+ numbering to avoid collision with roadmap phases:
+
+| ID | Name | Status |
+|----|------|--------|
+| 100 | [Theme Contrast Testing](100-theme-contrast-testing/spec.md) | Planned |
 
 ## Current Status
 
 **Active Phase**: 1 - Core Contrast Checker
-**See**: [001-core-contrast-checker/speck.md](001-core-contrast-checker/speck.md)
+**See**: [001-core-contrast-checker/spec.md](001-core-contrast-checker/spec.md)

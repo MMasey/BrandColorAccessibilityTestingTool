@@ -4,32 +4,44 @@
  * Handles reading and writing application state to URL parameters
  * for shareable links and progressive enhancement.
  *
- * URL format: ?colors=FF5733,3498DB&labels=Orange,Blue&text=normal&theme=dark
+ * URL format: ?colors=FF5733,3498DB&labels=Orange,Blue&theme=dark&show=aaa,aa,aa-large&size=small
  */
 
-import type { TextSize } from '../utils/color-types';
 import type { Theme } from './theme-store';
+import type { GridFilterLevel, GridCellSize } from './color-store';
 
 /** URL parameter names */
 const PARAM_COLORS = 'colors';
 const PARAM_LABELS = 'labels';
-const PARAM_TEXT = 'text';
 const PARAM_THEME = 'theme';
+const PARAM_SHOW = 'show';
+const PARAM_SIZE = 'size';
+
+/** Valid filter levels for URL params */
+const VALID_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large', 'failed'];
+
+/** Valid cell sizes for URL params */
+const VALID_CELL_SIZES: GridCellSize[] = ['small', 'medium', 'large'];
+
+/** Default active filters (show passing, hide failed) */
+const DEFAULT_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large'];
 
 /** State that can be stored in URL */
 export interface URLState {
   colors: string[];       // Hex values without #
   labels: string[];       // Color labels (URL-encoded)
-  textSize: TextSize;
   theme: Theme;
+  filters: GridFilterLevel[];  // Active grid filters
+  cellSize: GridCellSize;      // Grid cell size
 }
 
 /** Default state when no URL params present */
 const DEFAULT_STATE: URLState = {
   colors: [],
   labels: [],
-  textSize: 'normal',
   theme: 'system',
+  filters: DEFAULT_FILTERS,
+  cellSize: 'medium',
 };
 
 /**
@@ -54,16 +66,28 @@ export function parseURLState(search: string = window.location.search): Partial<
     state.labels = labelsParam.split(',').map(l => decodeURIComponent(l.trim()));
   }
 
-  // Parse text size
-  const textParam = params.get(PARAM_TEXT);
-  if (textParam === 'normal' || textParam === 'large') {
-    state.textSize = textParam;
-  }
-
   // Parse theme
   const themeParam = params.get(PARAM_THEME);
   if (themeParam === 'light' || themeParam === 'dark' || themeParam === 'high-contrast' || themeParam === 'system') {
     state.theme = themeParam;
+  }
+
+  // Parse filters (comma-separated filter levels)
+  const showParam = params.get(PARAM_SHOW);
+  if (showParam) {
+    const filters = showParam
+      .split(',')
+      .map(f => f.trim().toLowerCase() as GridFilterLevel)
+      .filter(f => VALID_FILTERS.includes(f));
+    if (filters.length > 0) {
+      state.filters = filters;
+    }
+  }
+
+  // Parse cell size
+  const sizeParam = params.get(PARAM_SIZE);
+  if (sizeParam && VALID_CELL_SIZES.includes(sizeParam as GridCellSize)) {
+    state.cellSize = sizeParam as GridCellSize;
   }
 
   return state;
@@ -85,14 +109,26 @@ export function serializeURLState(state: Partial<URLState>): string {
     params.set(PARAM_LABELS, state.labels.map(l => encodeURIComponent(l)).join(','));
   }
 
-  // Serialize text size (only if not default)
-  if (state.textSize && state.textSize !== 'normal') {
-    params.set(PARAM_TEXT, state.textSize);
-  }
-
   // Serialize theme (only if not system default)
   if (state.theme && state.theme !== 'system') {
     params.set(PARAM_THEME, state.theme);
+  }
+
+  // Serialize filters (only if different from default)
+  if (state.filters) {
+    const sortedFilters = [...state.filters].sort();
+    const sortedDefaults = [...DEFAULT_FILTERS].sort();
+    const isDifferent = sortedFilters.length !== sortedDefaults.length ||
+      sortedFilters.some((f, i) => f !== sortedDefaults[i]);
+
+    if (isDifferent) {
+      params.set(PARAM_SHOW, state.filters.join(','));
+    }
+  }
+
+  // Serialize cell size (only if not default)
+  if (state.cellSize && state.cellSize !== 'medium') {
+    params.set(PARAM_SIZE, state.cellSize);
   }
 
   const search = params.toString();
@@ -130,7 +166,7 @@ export function getFullURLState(search?: string): URLState {
  */
 export function hasURLState(search: string = window.location.search): boolean {
   const params = new URLSearchParams(search);
-  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_TEXT);
+  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_SHOW) || params.has(PARAM_SIZE);
 }
 
 /**

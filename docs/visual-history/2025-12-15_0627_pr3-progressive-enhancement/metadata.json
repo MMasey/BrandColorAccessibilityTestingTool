@@ -1,0 +1,34 @@
+{
+  "milestone": "0627_pr3-progressive-enhancement",
+  "capturedAt": "2025-12-30T19:18:47.643Z",
+  "themes": [
+    "light",
+    "dark",
+    "high-contrast"
+  ],
+  "viewports": [
+    "desktop",
+    "tablet",
+    "mobile"
+  ],
+  "screenshots": [
+    "desktop-dark-colors.png",
+    "desktop-dark-empty.png",
+    "desktop-high-contrast-colors.png",
+    "desktop-high-contrast-empty.png",
+    "desktop-light-colors.png",
+    "desktop-light-empty.png",
+    "mobile-dark-colors.png",
+    "mobile-dark-empty.png",
+    "mobile-high-contrast-colors.png",
+    "mobile-high-contrast-empty.png",
+    "mobile-light-colors.png",
+    "mobile-light-empty.png",
+    "tablet-dark-colors.png",
+    "tablet-dark-empty.png",
+    "tablet-high-contrast-colors.png",
+    "tablet-high-contrast-empty.png",
+    "tablet-light-colors.png",
+    "tablet-light-empty.png"
+  ]
+}
