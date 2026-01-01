@@ -295,6 +295,11 @@ body {
 
 /* --------------------------------------------------------------------------
    Skip Link (Accessibility)
+
+   The skip link is in index.html (light DOM). When clicked, app-shell
+   intercepts the event and focuses the semantic <main> element inside its
+   shadow DOM. This is necessary because native hash navigation cannot target
+   elements inside shadow roots (browser resolves IDs at document level only).
    -------------------------------------------------------------------------- */
 
 .skip-link {

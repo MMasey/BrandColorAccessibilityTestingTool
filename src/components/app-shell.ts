@@ -11,33 +11,43 @@ import './grid-filters';
  */
 @customElement('app-shell')
 export class AppShell extends LitElement {
+  /**
+   * Set up skip link handler to focus the internal <main> element.
+   * The skip link is in light DOM (index.html) for native hash navigation,
+   * but we enhance it to focus the semantic <main> inside shadow DOM.
+   */
+  connectedCallback() {
+    super.connectedCallback();
+    const skipLink = document.querySelector('a[href="#main-content"]');
+    if (skipLink) {
+      skipLink.addEventListener('click', this.handleSkipLink);
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    const skipLink = document.querySelector('a[href="#main-content"]');
+    if (skipLink) {
+      skipLink.removeEventListener('click', this.handleSkipLink);
+    }
+  }
+
+  private handleSkipLink = (e: Event) => {
+    e.preventDefault();
+    // Focus the semantic <main> element inside shadow DOM and scroll to it
+    const main = this.shadowRoot?.querySelector('main');
+    if (main) {
+      main.setAttribute('tabindex', '-1');
+      main.focus();
+      main.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+  };
+
   static styles = css`
     :host {
       display: block;
       min-height: 100vh;
       background: var(--color-surface-primary, #ffffff);
-    }
-
-    .skip-link {
-      /* Visually hidden but focusable - uses transform instead of top positioning
-         to ensure the link remains in the accessibility tree and is focusable */
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform: translateY(-100%);
-      padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-      background: var(--color-accent-primary, #0066cc);
-      color: var(--color-text-inverse, #ffffff);
-      text-decoration: none;
-      font-weight: var(--font-weight-medium, 500);
-      z-index: 9999;
-      border-radius: 0 0 var(--radius-md, 0.5rem) 0;
-
-      &:focus {
-        transform: translateY(0);
-        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-        outline-offset: var(--focus-ring-offset, 2px);
-      }
     }
 
     header {
@@ -205,8 +215,6 @@ export class AppShell extends LitElement {
 
   render() {
     return html`
-      <a href="#main-content" class="skip-link">Skip to main content</a>
-
       <header>
         <div class="header-content">
           <div class="header-main">
@@ -219,7 +227,7 @@ export class AppShell extends LitElement {
         </div>
       </header>
 
-      <main id="main-content" role="main">
+      <main>
         <div class="layout">
           <aside class="sidebar" aria-label="Color palette controls">
             <color-palette></color-palette>

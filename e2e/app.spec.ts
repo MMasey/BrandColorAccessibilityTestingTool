@@ -24,17 +24,19 @@ test.describe('Brand Color Accessibility Tool', () => {
   });
 
   test('skip link should navigate to main content when activated', async ({ page }) => {
-    // Focus and activate skip link
+    // Focus and activate skip link (in light DOM, enhanced by app-shell to focus <main>)
     await page.keyboard.press('Tab'); // First tab should focus skip link
     await page.keyboard.press('Enter');
 
-    // Main content should now be focused or visible at top
-    const mainContent = page.locator('#main-content');
+    // The <main> element inside shadow DOM should be focused and visible
+    const mainContent = page.locator('app-shell').locator('main');
     await expect(mainContent).toBeInViewport();
+    await expect(mainContent).toBeFocused();
   });
 
   test('should have proper landmark regions', async ({ page }) => {
-    const main = page.locator('main, [role="main"]');
+    // Use semantic <main> element (no need for role="main" - it's implicit)
+    const main = page.locator('app-shell').locator('main');
     await expect(main).toHaveCount(1);
 
     const header = page.locator('header');
