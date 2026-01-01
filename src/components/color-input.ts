@@ -107,7 +107,8 @@ export class ColorInput extends LitElement {
       outline: none;
       border-bottom-style: solid;
       border-bottom-color: var(--color-primary, #0066cc);
-      border-bottom-width: 2px;
+      /* Use box-shadow for thicker appearance without layout shift */
+      box-shadow: 0 1px 0 0 var(--color-primary, #0066cc);
       background: rgba(0, 102, 204, 0.04);
     }
 
@@ -141,7 +142,8 @@ export class ColorInput extends LitElement {
       outline: none;
       border-bottom-style: solid;
       border-bottom-color: var(--color-primary, #0066cc);
-      border-bottom-width: 2px;
+      /* Use box-shadow for thicker appearance without layout shift */
+      box-shadow: 0 1px 0 0 var(--color-primary, #0066cc);
       background: rgba(0, 102, 204, 0.04);
     }
 
