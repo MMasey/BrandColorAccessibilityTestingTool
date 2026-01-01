@@ -118,9 +118,9 @@ jobs:
         id: lighthouse
         run: |
           npm run lighthouse -- "${{ steps.branch.outputs.name }}"
-          # Find the report folder just created (most recent matching branch name)
-          REPORT_DIR=$(ls -dt docs/performance-history/*${{ steps.branch.outputs.name }}* 2>/dev/null | head -1)
-          echo "report_dir=$REPORT_DIR" >> $GITHUB_OUTPUT
+          # Folder name is now just the sanitized branch name (no timestamp in CI)
+          SANITIZED_NAME=$(echo "${{ steps.branch.outputs.name }}" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+          echo "report_dir=docs/performance-history/$SANITIZED_NAME" >> $GITHUB_OUTPUT
         env:
           BASE_URL: http://localhost:4173
 

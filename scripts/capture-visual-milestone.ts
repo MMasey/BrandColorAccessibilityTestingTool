@@ -100,17 +100,36 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Create output directory with date and time prefix for proper ordering
-  const now = new Date();
-  const date = now.toISOString().split('T')[0];
-  const time = now.toISOString().split('T')[1].slice(0, 5).replace(':', '');
-  const folderName = `${date}_${time}_${milestoneName.replace(/\s+/g, '-').toLowerCase()}`;
+  // Create output directory
+  // In CI, use just the milestone name so each push overwrites the previous snapshot
+  // Locally, use timestamp prefix for historical tracking
+  const isCI = process.env.CI === 'true';
+  const sanitizedName = milestoneName.replace(/\s+/g, '-').toLowerCase();
+
+  let folderName: string;
+  if (isCI) {
+    // CI: Use just milestone name (overwrites on each push to same PR)
+    folderName = sanitizedName;
+  } else {
+    // Local: Use timestamp prefix for historical tracking
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const time = now.toISOString().split('T')[1].slice(0, 5).replace(':', '');
+    folderName = `${date}_${time}_${sanitizedName}`;
+  }
+
   const outputDir = path.join(process.cwd(), 'docs', 'visual-history', folderName);
 
+  // In CI, overwrite existing folder; locally, error to prevent accidental overwrites
   if (fs.existsSync(outputDir)) {
-    console.error(`Error: Directory already exists: ${outputDir}`);
-    console.error('Choose a different milestone name or delete the existing directory.');
-    process.exit(1);
+    if (isCI) {
+      fs.rmSync(outputDir, { recursive: true });
+      console.log(`Overwriting existing snapshot: ${folderName}`);
+    } else {
+      console.error(`Error: Directory already exists: ${outputDir}`);
+      console.error('Choose a different milestone name or delete the existing directory.');
+      process.exit(1);
+    }
   }
 
   fs.mkdirSync(outputDir, { recursive: true });
