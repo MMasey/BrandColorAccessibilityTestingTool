@@ -7,7 +7,7 @@
 
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
 import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize } from './color-store';
-import type { Color, TextSize } from '../utils/color-types';
+import type { Color } from '../utils/color-types';
 
 /**
  * Reactive controller for connecting Lit components to the color store
@@ -54,11 +54,6 @@ export class ColorStoreController implements ReactiveController {
   /** Get all colors in the palette */
   get colors(): readonly Color[] {
     return colorStore.getColors();
-  }
-
-  /** Get current text size setting */
-  get textSize(): TextSize {
-    return colorStore.getTextSize();
   }
 
   /** Get selected algorithm */
@@ -121,16 +116,6 @@ export class ColorStoreController implements ReactiveController {
   /** Clear all colors */
   clearColors(): void {
     colorStore.clearColors();
-  }
-
-  /** Set text size */
-  setTextSize(textSize: TextSize): void {
-    colorStore.setTextSize(textSize);
-  }
-
-  /** Toggle text size */
-  toggleTextSize(): TextSize {
-    return colorStore.toggleTextSize();
   }
 
   /** Set algorithm */

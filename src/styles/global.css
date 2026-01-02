@@ -154,7 +154,69 @@
 }
 
 /* --------------------------------------------------------------------------
-   High Contrast Theme
+   High Contrast Theme - System Preferences
+   Responds to OS-level high contrast / increased contrast settings
+   -------------------------------------------------------------------------- */
+
+/* Windows High Contrast Mode (forced-colors) */
+@media (forced-colors: active) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --color-surface-primary: Canvas;
+    --color-surface-secondary: Canvas;
+    --color-surface-tertiary: Canvas;
+
+    --color-text-primary: CanvasText;
+    --color-text-secondary: CanvasText;
+    --color-text-muted: GrayText;
+    --color-text-inverse: Canvas;
+
+    --color-accent-primary: LinkText;
+    --color-accent-primary-hover: LinkText;
+
+    --color-success: CanvasText;
+    --color-success-bg: Canvas;
+    --color-warning: CanvasText;
+    --color-warning-bg: Canvas;
+    --color-error: CanvasText;
+    --color-error-bg: Canvas;
+
+    --color-border-default: CanvasText;
+    --color-border-strong: CanvasText;
+    --color-border-focus: Highlight;
+    --focus-ring-color: Highlight;
+  }
+}
+
+/* Increased contrast preference (prefers-contrast: more) */
+@media (prefers-contrast: more) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --color-surface-primary: #000000;
+    --color-surface-secondary: #1a1a1a;
+    --color-surface-tertiary: #333333;
+
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #ffffff;
+    --color-text-muted: #e5e5e5;
+    --color-text-inverse: #000000;
+
+    --color-accent-primary: #ffff00;
+    --color-accent-primary-hover: #ffff66;
+
+    --color-success: #00ff00;
+    --color-success-bg: #003300;
+    --color-warning: #ffff00;
+    --color-warning-bg: #333300;
+    --color-error: #ff0000;
+    --color-error-bg: #330000;
+
+    --color-border-default: #ffffff;
+    --color-border-strong: #ffffff;
+    --color-border-focus: #ffff00;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   High Contrast Theme - Explicit Selection
    -------------------------------------------------------------------------- */
 
 :root[data-theme="high-contrast"] {
@@ -233,12 +295,20 @@ body {
 
 /* --------------------------------------------------------------------------
    Skip Link (Accessibility)
+
+   The skip link is in index.html (light DOM). When clicked, app-shell
+   intercepts the event and focuses the semantic <main> element inside its
+   shadow DOM. This is necessary because native hash navigation cannot target
+   elements inside shadow roots (browser resolves IDs at document level only).
    -------------------------------------------------------------------------- */
 
 .skip-link {
+  /* Visually hidden but focusable - uses transform instead of top positioning
+     to ensure the link remains in the accessibility tree and is focusable */
   position: absolute;
-  top: -100%;
+  top: 0;
   left: 0;
+  transform: translateY(-100%);
   padding: var(--space-sm) var(--space-md);
   background: var(--color-accent-primary);
   color: var(--color-text-inverse);
@@ -248,7 +318,9 @@ body {
 }
 
 .skip-link:focus {
-  top: 0;
+  transform: translateY(0);
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* --------------------------------------------------------------------------

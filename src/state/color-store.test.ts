@@ -16,10 +16,6 @@ describe('colorStore', () => {
       expect(colorStore.getColors()).toEqual([]);
     });
 
-    it('starts with normal text size', () => {
-      expect(colorStore.getTextSize()).toBe('normal');
-    });
-
     it('starts with wcag algorithm', () => {
       expect(colorStore.getAlgorithm()).toBe('wcag');
     });
@@ -275,52 +271,6 @@ describe('colorStore', () => {
     });
   });
 
-  describe('setTextSize', () => {
-    it('changes text size', () => {
-      colorStore.setTextSize('large');
-
-      expect(colorStore.getTextSize()).toBe('large');
-    });
-
-    it('emits text-size-changed event', () => {
-      const listener = vi.fn();
-      colorStore.subscribe(listener);
-
-      colorStore.setTextSize('large');
-
-      expect(listener).toHaveBeenCalledWith({
-        type: 'text-size-changed',
-        textSize: 'large',
-      });
-    });
-
-    it('does not emit if value unchanged', () => {
-      const listener = vi.fn();
-      colorStore.subscribe(listener);
-
-      colorStore.setTextSize('normal'); // Already normal
-
-      expect(listener).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('toggleTextSize', () => {
-    it('toggles from normal to large', () => {
-      const result = colorStore.toggleTextSize();
-
-      expect(result).toBe('large');
-      expect(colorStore.getTextSize()).toBe('large');
-    });
-
-    it('toggles from large to normal', () => {
-      colorStore.setTextSize('large');
-      const result = colorStore.toggleTextSize();
-
-      expect(result).toBe('normal');
-      expect(colorStore.getTextSize()).toBe('normal');
-    });
-  });
-
   describe('setAlgorithm', () => {
     it('changes algorithm', () => {
       colorStore.setAlgorithm('apca');
@@ -353,13 +303,11 @@ describe('colorStore', () => {
   describe('reset', () => {
     it('resets all state to initial values', () => {
       colorStore.addColors(['#FF0000', '#00FF00']);
-      colorStore.setTextSize('large');
       colorStore.setAlgorithm('apca');
 
       colorStore.reset();
 
       expect(colorStore.getColors()).toHaveLength(0);
-      expect(colorStore.getTextSize()).toBe('normal');
       expect(colorStore.getAlgorithm()).toBe('wcag');
     });
 
@@ -403,13 +351,11 @@ describe('colorStore', () => {
   describe('getState', () => {
     it('returns snapshot of current state', () => {
       colorStore.addColor('#FF0000', 'Red');
-      colorStore.setTextSize('large');
       colorStore.setAlgorithm('apca');
 
       const state = colorStore.getState();
 
       expect(state.colors).toHaveLength(1);
-      expect(state.textSize).toBe('large');
       expect(state.selectedAlgorithm).toBe('apca');
     });
 

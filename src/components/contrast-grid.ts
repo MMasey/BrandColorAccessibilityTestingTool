@@ -27,6 +27,17 @@ export class ContrastGrid extends LitElement {
       border: 1px solid var(--color-border-default, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
       background: var(--color-surface-primary, #ffffff);
+
+      /* Keyboard focus styles for scrollable region */
+      &:focus {
+        outline: 3px solid var(--color-focus-ring, #2563eb);
+        outline-offset: 2px;
+      }
+
+      &:focus-visible {
+        outline: 3px solid var(--color-focus-ring, #2563eb);
+        outline-offset: 2px;
+      }
     }
 
     .grid-container {
@@ -235,7 +246,7 @@ export class ContrastGrid extends LitElement {
   private getContrastMatrix(): ContrastResult[][] {
     const colors = this.store.colors;
     if (colors.length === 0) return [];
-    return generateContrastMatrix([...colors], this.store.textSize);
+    return generateContrastMatrix([...colors], 'normal');
   }
 
   private getColorLabel(color: Color): string {
@@ -281,6 +292,52 @@ export class ContrastGrid extends LitElement {
     return !this.store.gridFilters.has(filterLevel);
   }
 
+  /**
+   * Handle keyboard navigation within the grid wrapper.
+   * Arrow keys scroll the grid content.
+   */
+  private handleGridKeydown(e: KeyboardEvent): void {
+    const wrapper = e.currentTarget as HTMLElement;
+    const scrollAmount = 100;
+
+    switch (e.key) {
+      case 'ArrowUp':
+        wrapper.scrollTop -= scrollAmount;
+        e.preventDefault();
+        break;
+      case 'ArrowDown':
+        wrapper.scrollTop += scrollAmount;
+        e.preventDefault();
+        break;
+      case 'ArrowLeft':
+        wrapper.scrollLeft -= scrollAmount;
+        e.preventDefault();
+        break;
+      case 'ArrowRight':
+        wrapper.scrollLeft += scrollAmount;
+        e.preventDefault();
+        break;
+      case 'Home':
+        if (e.ctrlKey) {
+          wrapper.scrollTop = 0;
+          wrapper.scrollLeft = 0;
+        } else {
+          wrapper.scrollLeft = 0;
+        }
+        e.preventDefault();
+        break;
+      case 'End':
+        if (e.ctrlKey) {
+          wrapper.scrollTop = wrapper.scrollHeight;
+          wrapper.scrollLeft = wrapper.scrollWidth;
+        } else {
+          wrapper.scrollLeft = wrapper.scrollWidth;
+        }
+        e.preventDefault();
+        break;
+    }
+  }
+
   private getAccessibilitySummary(matrix: ContrastResult[][]): string {
     let aaa = 0;
     let aa = 0;
@@ -308,7 +365,6 @@ export class ContrastGrid extends LitElement {
 
   render() {
     const colors = this.store.colors as Color[];
-    const textSize = this.store.textSize;
 
     if (colors.length === 0) {
       return html`
@@ -340,7 +396,13 @@ export class ContrastGrid extends LitElement {
         ↓ Foreground (text) &nbsp;&nbsp;|&nbsp;&nbsp; Background →
       </div>
 
-      <div class="grid-wrapper">
+      <div
+        class="grid-wrapper"
+        tabindex="0"
+        role="region"
+        aria-label="Contrast grid. Use arrow keys to scroll when focused."
+        @keydown="${this.handleGridKeydown}"
+      >
         <div class="grid-container">
           <div
             class="grid"
@@ -429,11 +491,11 @@ export class ContrastGrid extends LitElement {
       <div class="legend" aria-label="WCAG compliance legend">
         <div class="legend-item">
           <span class="legend-badge aaa">AAA</span>
-          <span>Enhanced (7:1${textSize === 'large' ? ', 4.5:1 large' : ''})</span>
+          <span>Enhanced (7:1)</span>
         </div>
         <div class="legend-item">
           <span class="legend-badge aa">AA</span>
-          <span>Minimum (4.5:1${textSize === 'large' ? ', 3:1 large' : ''})</span>
+          <span>Minimum (4.5:1)</span>
         </div>
         <div class="legend-item">
           <span class="legend-badge aa18">AA 18+</span>
