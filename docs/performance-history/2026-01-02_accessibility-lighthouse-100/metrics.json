@@ -1,0 +1,37 @@
+{
+  "milestone": "accessibility-lighthouse-100",
+  "capturedAt": "2026-01-02T09:46:17.980Z",
+  "url": "http://localhost:4173",
+  "scores": {
+    "performance": 0.79,
+    "accessibility": 1,
+    "bestPractices": 0.96,
+    "seo": 0.91
+  },
+  "metrics": {
+    "firstContentfulPaint": {
+      "value": 2162.08715,
+      "display": "2.2 s"
+    },
+    "largestContentfulPaint": {
+      "value": 2406.58715,
+      "display": "2.4 s"
+    },
+    "totalBlockingTime": {
+      "value": 658,
+      "display": "660 ms"
+    },
+    "cumulativeLayoutShift": {
+      "value": 0.038882138517618466,
+      "display": "0.039"
+    },
+    "speedIndex": {
+      "value": 2456.2048840459056,
+      "display": "2.5 s"
+    },
+    "timeToInteractive": {
+      "value": 3054.63715,
+      "display": "3.1 s"
+    }
+  }
+}
