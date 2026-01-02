@@ -124,19 +124,19 @@ async function main(): Promise<void> {
   }
 
   // Create output directory
-  // In CI, use just the milestone name so each push overwrites the previous snapshot
-  // Locally, use timestamp prefix for historical tracking
+  // In CI: Use date + branch name for chronological ordering (overwrites same-day pushes)
+  // Locally: Use date + time for more granular historical tracking
   const isCI = process.env.CI === 'true';
   const sanitizedName = milestoneName.replace(/\s+/g, '-').toLowerCase();
+  const now = new Date();
+  const date = now.toISOString().split('T')[0];
 
   let folderName: string;
   if (isCI) {
-    // CI: Use just milestone name (overwrites on each push to same PR)
-    folderName = sanitizedName;
+    // CI: Date + branch name (same-day pushes overwrite, maintains date ordering)
+    folderName = `${date}_${sanitizedName}`;
   } else {
-    // Local: Use timestamp prefix for historical tracking
-    const now = new Date();
-    const date = now.toISOString().split('T')[0];
+    // Local: Date + time for more granular historical tracking
     const time = now.toTimeString().slice(0, 5).replace(':', ''); // HHMM format
     folderName = `${date}_${time}_${sanitizedName}`;
   }

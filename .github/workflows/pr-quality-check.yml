@@ -118,9 +118,10 @@ jobs:
         id: lighthouse
         run: |
           npm run lighthouse -- "${{ steps.branch.outputs.name }}"
-          # Folder name is now just the sanitized branch name (no timestamp in CI)
+          # Folder name is YYYY-MM-DD_branch-name for chronological ordering
+          DATE=$(date -u +%Y-%m-%d)
           SANITIZED_NAME=$(echo "${{ steps.branch.outputs.name }}" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
-          echo "report_dir=docs/performance-history/$SANITIZED_NAME" >> $GITHUB_OUTPUT
+          echo "report_dir=docs/performance-history/${DATE}_${SANITIZED_NAME}" >> $GITHUB_OUTPUT
         env:
           BASE_URL: http://localhost:4173
 
