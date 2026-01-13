@@ -411,11 +411,13 @@ export class ColorInput extends LitElement {
               placeholder="${this.placeholder}"
               ?disabled="${this.disabled}"
               @input="${this.handleColorInput}"
-              aria-label="Color value"
               aria-invalid="${showError ? 'true' : 'false'}"
               autocomplete="off"
               spellcheck="false"
             />
+            <!-- aria-invalid: Required for custom validation. Native :invalid only works with
+                 HTML5 validation attributes (required, pattern). Since we validate programmatically,
+                 aria-invalid tells assistive tech when the input has an error. -->
             <input
               type="text"
               class="label-input"

@@ -55,6 +55,10 @@ export class ColorPalette extends LitElement {
       gap: var(--space-xs, 0.25rem);
       max-height: 400px;
       overflow-y: auto;
+      /* Reset native list styles - using semantic ul for accessibility */
+      list-style: none;
+      margin: 0;
+      padding: 0;
       overflow-x: hidden;
     }
 
@@ -212,18 +216,20 @@ export class ColorPalette extends LitElement {
         </div>
 
         ${colors.length > 0 ? html`
-          <div class="colors-list" role="list" aria-label="Color palette">
+          <!-- Using native ul/li instead of ARIA roles for better semantics -->
+          <ul class="colors-list">
             ${colors.map((color: Color, index: number) => html`
-              <color-swatch
-                role="listitem"
-                .color="${color}"
-                show-remove
-                editable-label
-                @swatch-remove="${() => this.removeColor(index)}"
-                @label-change="${(e: CustomEvent) => this.updateColorLabel(index, e.detail.label)}"
-              ></color-swatch>
+              <li>
+                <color-swatch
+                  .color="${color}"
+                  show-remove
+                  editable-label
+                  @swatch-remove="${() => this.removeColor(index)}"
+                  @label-change="${(e: CustomEvent) => this.updateColorLabel(index, e.detail.label)}"
+                ></color-swatch>
+              </li>
             `)}
-          </div>
+          </ul>
 
           <div class="actions">
             <button

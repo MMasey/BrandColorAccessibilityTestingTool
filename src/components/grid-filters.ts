@@ -220,8 +220,8 @@ export class GridFilters extends LitElement {
         <!-- Show in Grid Section -->
         <section class="filter-section" aria-labelledby="show-in-grid-heading">
           <h3 id="show-in-grid-heading" class="section-title">Show in Grid</h3>
-
-          <div class="filter-buttons" role="group" aria-label="Filter contrast grid by WCAG level">
+          <!-- No role="group" needed - section with aria-labelledby provides context -->
+          <div class="filter-buttons">
             ${filters.map(({ id, label, description, icon }) => html`
               <button
                 type="button"
@@ -230,6 +230,7 @@ export class GridFilters extends LitElement {
                 aria-pressed="${activeFilters.has(id)}"
                 title="${description}"
               >
+                <!-- aria-pressed: Required - no native HTML equivalent for toggle button state -->
                 ${icon}
                 <span class="label">${label}</span>
               </button>
@@ -241,17 +242,18 @@ export class GridFilters extends LitElement {
         <!-- Cell Size Section -->
         <section class="filter-section" aria-labelledby="cell-size-heading">
           <h3 id="cell-size-heading" class="section-title">Cell Size</h3>
-
-          <div class="size-buttons" role="group" aria-label="Adjust grid cell size">
+          <!-- No role="group" needed - section with aria-labelledby provides context -->
+          <div class="size-buttons">
             ${sizes.map(({ id, label, description }) => html`
               <button
                 type="button"
                 class="size-btn"
                 @click="${() => this.handleCellSizeChange(id)}"
                 aria-pressed="${currentSize === id}"
-                aria-label="${description}"
                 title="${description}"
               >
+                <!-- aria-pressed: Required - no native HTML equivalent for toggle button state -->
+                <!-- No aria-label needed - visible text "S/M/L" is the accessible name, title provides detail -->
                 ${label}
               </button>
             `)}

@@ -313,7 +313,7 @@ export class ColorSwatch extends LitElement {
       <div class="swatch-container" style="--swatch-color: ${this.color.hex}">
         <div class="color-box" aria-hidden="true"></div>
 
-        <div class="info" role="group" aria-label="${hasLabel ? `${label}: ${this.color.hex}` : this.color.hex}">
+        <div class="info">
           <!-- Hex value - primary, larger text -->
           <div class="hex">${this.color.hex}</div>
 
