@@ -431,6 +431,15 @@ export class ContrastGrid extends LitElement {
         ↓ Foreground (text) &nbsp;&nbsp;|&nbsp;&nbsp; Background →
       </div>
 
+      <!--
+        tabindex="0": Required for keyboard accessibility. The grid can overflow with many colors,
+        and scrollable containers are not keyboard-focusable by default. This allows keyboard users
+        to focus the container and scroll with arrow keys (handled by handleGridKeydown).
+        Without this, keyboard users cannot access off-screen content.
+
+        role="region": Landmark role for significant content section. Combined with aria-label,
+        allows screen reader users to navigate directly to the grid.
+      -->
       <div
         class="grid-wrapper"
         tabindex="0"
