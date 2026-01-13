@@ -1,0 +1,86 @@
+/**
+ * Theme Color Token Structure
+ *
+ * This file documents the structure of all theme color variables.
+ * Each theme must define all these variables with appropriate values.
+ *
+ * Naming convention: --theme-[component]-[property]-[state]
+ *
+ * Examples:
+ *   --theme-button-bg-color           (default state)
+ *   --theme-button-bg-color-hover     (hover state)
+ *   --theme-button-bg-color-focus     (focus state)
+ *
+ * Design Decision: Full Explicitness
+ * All state-specific variables are explicitly defined, even when values are
+ * duplicated. This prioritizes clarity and maintainability over file size.
+ * It makes changing a specific state trivial without refactoring.
+ */
+
+:root {
+  /* ==========================================================================
+     Page & Cards - Background surfaces
+     ========================================================================== */
+
+  --theme-page-bg-color: ;          /* Main page background */
+  --theme-card-bg-color: ;          /* Cards, panels, input backgrounds */
+  --theme-card-bg-color-hover: ;    /* Hovered cards/buttons */
+
+  /* ==========================================================================
+     Text & Headings - Content hierarchy
+     ========================================================================== */
+
+  --theme-text-color: ;             /* Main body text */
+  --theme-text-secondary-color: ;   /* Labels, descriptions */
+  --theme-text-muted-color: ;       /* Hints, placeholders */
+  --theme-heading-color: ;          /* Headings (h1-h6) */
+
+  /* ==========================================================================
+     Buttons - Interactive elements
+     ========================================================================== */
+
+  /* Button backgrounds */
+  --theme-button-bg-color: ;        /* Default button background */
+  --theme-button-bg-color-hover: ;  /* Button background on hover */
+  --theme-button-bg-color-focus: ;  /* Button background on focus */
+
+  /* Button text */
+  --theme-button-text-color: ;      /* Default button text */
+  --theme-button-text-color-hover: ;/* Button text on hover */
+  --theme-button-text-color-focus: ;/* Button text on focus */
+
+  /* Button borders */
+  --theme-button-border-color: ;    /* Default button border */
+  --theme-button-border-color-hover: ;/* Button border on hover */
+  --theme-button-border-color-focus: ;/* Button border on focus */
+
+  /* ==========================================================================
+     Inputs/Forms - Form elements
+     ========================================================================== */
+
+  --theme-input-border-color: ;       /* Default input border */
+  --theme-input-border-color-hover: ; /* Input border on hover */
+  --theme-input-border-color-focus: ; /* Input border on focus */
+
+  /* ==========================================================================
+     Semantic Feedback - Success/Warning/Error states
+     ========================================================================== */
+
+  /* Success */
+  --theme-success-text-color: ;     /* Success message text */
+  --theme-success-bg-color: ;       /* Success message background */
+
+  /* Warning */
+  --theme-warning-text-color: ;     /* Warning message text */
+  --theme-warning-bg-color: ;       /* Warning message background */
+
+  /* Error */
+  --theme-error-text-color: ;       /* Error message text */
+  --theme-error-bg-color: ;         /* Error message background */
+
+  /* ==========================================================================
+     Focus Indicators - Global focus ring
+     ========================================================================== */
+
+  --theme-focus-ring-color: ;       /* Focus ring color for all elements */
+}

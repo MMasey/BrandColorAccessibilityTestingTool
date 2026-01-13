@@ -29,7 +29,7 @@ export const srOnlyStyles = css`
  */
 export const focusRingStyles = css`
   .focus-ring:focus-visible {
-    outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+    outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color, #0066cc);
     outline-offset: var(--focus-ring-offset, 2px);
   }
 `;
@@ -54,7 +54,7 @@ export const buttonBaseStyles = css`
   }
 
   .btn:focus-visible {
-    outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+    outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color, #0066cc);
     outline-offset: var(--focus-ring-offset, 2px);
   }
 
@@ -64,22 +64,39 @@ export const buttonBaseStyles = css`
   }
 
   .btn-primary {
-    background: var(--color-accent-primary, #0066cc);
-    color: var(--color-text-inverse, #ffffff);
+    background: var(--theme-button-bg-color);
+    color: var(--theme-button-text-color);
+    border: 1px solid var(--theme-button-border-color);
   }
 
   .btn-primary:hover:not(:disabled) {
-    background: var(--color-accent-primary-hover, #0052a3);
+    background: var(--theme-button-bg-color-hover);
+    color: var(--theme-button-text-color-hover);
+    border-color: var(--theme-button-border-color-hover);
+  }
+
+  .btn-primary:focus-visible:not(:disabled) {
+    background: var(--theme-button-bg-color-focus);
+    color: var(--theme-button-text-color-focus);
+    border-color: var(--theme-button-border-color-focus);
   }
 
   .btn-secondary {
     background: transparent;
-    color: var(--color-text-secondary);
-    border: 1px solid var(--color-border-default, #d4d4d4);
+    color: var(--theme-text-secondary-color);
+    border: 1px solid var(--theme-input-border-color);
   }
 
   .btn-secondary:hover:not(:disabled) {
-    background: var(--color-surface-secondary, #f5f5f5);
+    background: var(--theme-card-bg-color-hover);
+    color: var(--theme-text-secondary-color);
+    border-color: var(--theme-input-border-color-hover);
+  }
+
+  .btn-secondary:focus-visible:not(:disabled) {
+    background: var(--theme-card-bg-color-hover);
+    color: var(--theme-text-secondary-color);
+    border-color: var(--theme-input-border-color-focus);
   }
 `;
 

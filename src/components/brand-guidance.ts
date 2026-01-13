@@ -13,8 +13,8 @@ export class BrandGuidance extends LitElement {
 
     .guidance {
       padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-      background: var(--color-warning-bg, #fffbeb);
-      border: 1px solid var(--color-warning-border, #fbbf24);
+      background: var(--theme-warning-bg-color);
+      border: 1px solid var(--theme-warning-text-color);
       border-radius: var(--radius-md, 0.5rem);
       display: flex;
       align-items: flex-start;
@@ -25,7 +25,7 @@ export class BrandGuidance extends LitElement {
       flex-shrink: 0;
       width: 1.25rem;
       height: 1.25rem;
-      color: var(--color-warning, #f59e0b);
+      color: var(--theme-warning-text-color, #f59e0b);
     }
 
     .content {
@@ -36,7 +36,7 @@ export class BrandGuidance extends LitElement {
     .message {
       margin: 0;
       font-size: var(--font-size-sm, 0.875rem);
-      color: var(--color-text-primary, #1a1a1a);
+      color: var(--theme-text-color, #1a1a1a);
       line-height: 1.4;
     }
 
@@ -50,7 +50,7 @@ export class BrandGuidance extends LitElement {
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
-      color: var(--color-text-muted, #666666);
+      color: var(--theme-text-muted-color);
       cursor: pointer;
       transition: background var(--transition-fast, 150ms ease);
     }
@@ -60,7 +60,7 @@ export class BrandGuidance extends LitElement {
     }
 
     .dismiss-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
       outline-offset: var(--focus-ring-offset, 2px);
     }
 
@@ -71,6 +71,17 @@ export class BrandGuidance extends LitElement {
 
     :host([hidden]) {
       display: none;
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling. Just add visible borders.
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .guidance {
+        border: 2px solid CanvasText;
+      }
     }
   `;
 

@@ -250,14 +250,14 @@ test.describe('Touch Target Validation', () => {
     expect(removeBtnBox?.width).toBeGreaterThanOrEqual(44);
     expect(removeBtnBox?.height).toBeGreaterThanOrEqual(44);
 
-    // Check theme buttons
-    const themeButtons = page.locator('theme-switcher button');
-    const themeButtonCount = await themeButtons.count();
-    for (let i = 0; i < themeButtonCount; i++) {
-      const btnBox = await themeButtons.nth(i).boundingBox();
-      if (btnBox) {
-        // Theme buttons should have adequate touch target (width * height >= 44*44 area)
-        expect(btnBox.width * btnBox.height).toBeGreaterThanOrEqual(44 * 44 * 0.8); // 80% tolerance
+    // Check theme options (label elements containing radio inputs)
+    const themeOptions = page.locator('theme-switcher label.theme-option');
+    const themeOptionCount = await themeOptions.count();
+    for (let i = 0; i < themeOptionCount; i++) {
+      const optionBox = await themeOptions.nth(i).boundingBox();
+      if (optionBox) {
+        // Theme options should have adequate touch target (width * height >= 44*44 area)
+        expect(optionBox.width * optionBox.height).toBeGreaterThanOrEqual(44 * 44 * 0.8); // 80% tolerance
       }
     }
   });

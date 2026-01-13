@@ -47,13 +47,13 @@ export class AppShell extends LitElement {
     :host {
       display: block;
       min-height: 100vh;
-      background: var(--color-surface-primary, #ffffff);
+      background: var(--theme-page-bg-color, #ffffff);
     }
 
     header {
       padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
-      background: var(--color-surface-secondary, #f5f5f5);
-      border-bottom: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border-bottom: 1px solid var(--theme-input-border-color, #d4d4d4);
     }
 
     .header-content {
@@ -92,14 +92,14 @@ export class AppShell extends LitElement {
       margin: 0 0 var(--space-xs, 0.25rem) 0;
       font-size: clamp(1.25rem, 4vw, 1.5rem);
       font-weight: var(--font-weight-bold, 700);
-      color: var(--color-text-primary, #1a1a1a);
+      color: var(--theme-text-color, #1a1a1a);
       line-height: 1.2;
     }
 
     .tagline {
       margin: 0;
       font-size: clamp(0.8125rem, 2vw, 0.875rem);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
       line-height: 1.4;
     }
 
@@ -146,8 +146,8 @@ export class AppShell extends LitElement {
 
     .controls-section {
       padding: var(--space-md, 1rem);
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
     }
 
@@ -155,7 +155,7 @@ export class AppShell extends LitElement {
       margin: 0 0 var(--space-sm, 0.5rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -181,13 +181,13 @@ export class AppShell extends LitElement {
       margin: 0;
       font-size: var(--font-size-lg, 1.125rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-primary, #1a1a1a);
+      color: var(--theme-text-color, #1a1a1a);
     }
 
     footer {
       padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
-      background: var(--color-surface-secondary, #f5f5f5);
-      border-top: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border-top: 1px solid var(--theme-input-border-color, #d4d4d4);
       text-align: center;
     }
 
@@ -195,10 +195,10 @@ export class AppShell extends LitElement {
       max-width: 1400px;
       margin: 0 auto;
       font-size: var(--font-size-sm, 0.875rem);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
 
       a {
-        color: var(--color-accent-primary, #0066cc);
+        color: var(--theme-focus-ring-color);
         text-decoration: underline;
 
         &:hover {
@@ -206,9 +206,28 @@ export class AppShell extends LitElement {
         }
 
         &:focus-visible {
-          outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+          outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
           outline-offset: var(--focus-ring-offset, 2px);
         }
+      }
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling. Just add visible borders.
+       ======================================================================== */
+    @media (forced-colors: active) {
+      header {
+        border-bottom: 2px solid CanvasText;
+      }
+
+      .controls-section {
+        border: 2px solid CanvasText;
+      }
+
+      footer {
+        border-top: 2px solid CanvasText;
       }
     }
   `;

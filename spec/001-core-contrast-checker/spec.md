@@ -47,6 +47,12 @@ Build a web-based tool that validates brand color palettes against WCAG 2.1 acce
 - **No visual color picker** → Deferred
 - **No bulk paste** → Deferred
 
+# UX Improvements (Deferred)
+- **Add button always enabled**: Allow clicking add button with invalid color, show validation message instead of disabling
+- **Remove button focus ring**: Focus indicator shows as line to left of button instead of around button - needs CSS fix
+- **Focus states with overflow:hidden**: Containers like swatch-container have overflow:hidden which clips child focus outlines - need alternative focus indicator approach
+- **ARIA audit**: Review all ARIA usage - remove where native HTML semantics suffice, document remaining usage with justification
+
 # Done
 - User can input colors in hex, RGB, or HSL
 - User sees contrast grid with all combinations

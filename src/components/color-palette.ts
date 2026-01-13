@@ -35,12 +35,12 @@ export class ColorPalette extends LitElement {
       margin: 0;
       font-size: var(--font-size-lg, 1.125rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-primary, #1a1a1a);
+      color: var(--theme-text-color, #1a1a1a);
     }
 
     .color-count {
       font-size: var(--font-size-sm, 0.875rem);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
     }
 
     .add-section {
@@ -61,10 +61,10 @@ export class ColorPalette extends LitElement {
     .empty-state {
       padding: var(--space-xl, 2rem);
       text-align: center;
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 2px dashed var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border: 2px dashed var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
 
       p {
         margin: 0 0 var(--space-sm, 0.5rem);
@@ -72,7 +72,7 @@ export class ColorPalette extends LitElement {
 
       code {
         font-family: var(--font-family-mono, monospace);
-        background: var(--color-surface-tertiary, #e8e8e8);
+        background: var(--theme-card-bg-color-hover);
         padding: 0.1em 0.3em;
         border-radius: var(--radius-sm, 0.25rem);
       }
@@ -86,21 +86,21 @@ export class ColorPalette extends LitElement {
     .clear-btn {
       padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
       background: transparent;
-      color: var(--color-text-secondary);
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      color: var(--theme-text-secondary-color);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
 
       &:hover {
-        background: var(--color-error-bg, #fee2e2);
-        border-color: var(--color-error, #dc2626);
-        color: var(--color-error, #dc2626);
+        background: var(--theme-error-bg-color);
+        border-color: var(--theme-error-text-color);
+        color: var(--theme-error-text-color);
       }
 
       &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
         outline-offset: var(--focus-ring-offset, 2px);
       }
     }
@@ -115,6 +115,25 @@ export class ColorPalette extends LitElement {
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling. Just add visible borders.
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .empty-state {
+        border: 2px dashed CanvasText;
+      }
+
+      .empty-state code {
+        border: 2px solid CanvasText;
+      }
+
+      .clear-btn {
+        border: 2px solid CanvasText;
+      }
     }
   `;
 

@@ -30,7 +30,7 @@ export class GridFilters extends LitElement {
       margin: 0 0 var(--space-xs, 0.25rem) 0;
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-semibold, 600);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -52,29 +52,30 @@ export class GridFilters extends LitElement {
       gap: var(--space-xs, 0.25rem);
       padding: var(--space-sm, 0.5rem);
       min-height: var(--touch-target-min, 44px);
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
 
       &:hover {
-        background: var(--color-surface-tertiary, #e8e8e8);
-        border-color: var(--color-border-strong, #a3a3a3);
+        background: var(--theme-card-bg-color-hover);
+        border-color: var(--theme-input-border-color-hover);
       }
 
       &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
         outline-offset: var(--focus-ring-offset, 2px);
       }
 
-      &.active {
-        background: var(--color-accent-primary, #0066cc);
-        color: var(--color-text-inverse, #ffffff);
-        border-color: var(--color-accent-primary, #0066cc);
+      /* Active/pressed state using aria-pressed attribute */
+      &[aria-pressed="true"] {
+        background: var(--theme-button-bg-color);
+        color: var(--theme-button-text-color);
+        border-color: var(--theme-button-bg-color);
       }
 
       .label {
@@ -100,29 +101,58 @@ export class GridFilters extends LitElement {
       justify-content: center;
       padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
       min-height: var(--touch-target-min, 44px);
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color);
+      border: 1px solid var(--theme-input-border-color);
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
 
       &:hover {
-        background: var(--color-surface-tertiary, #e8e8e8);
-        border-color: var(--color-border-strong, #a3a3a3);
+        background: var(--theme-card-bg-color-hover);
+        border-color: var(--theme-input-border-color-hover);
       }
 
       &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+        outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
         outline-offset: var(--focus-ring-offset, 2px);
       }
 
-      &.active {
-        background: var(--color-accent-primary, #0066cc);
-        color: var(--color-text-inverse, #ffffff);
-        border-color: var(--color-accent-primary, #0066cc);
+      /* Active/pressed state using aria-pressed attribute */
+      &[aria-pressed="true"] {
+        background: var(--theme-button-bg-color);
+        color: var(--theme-button-text-color);
+        border-color: var(--theme-button-bg-color);
+      }
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling automatically. We only need to:
+       1. Ensure visible borders
+       2. Indicate selected state with inset box-shadow (so outline is free for focus)
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .filter-btn,
+      .size-btn {
+        border: 2px solid CanvasText;
+      }
+
+      /* Focus state - use outline (outer) */
+      .filter-btn:focus-visible,
+      .size-btn:focus-visible {
+        outline: 3px solid Highlight;
+        outline-offset: 2px;
+      }
+
+      /* Selected state - use inset box-shadow so it doesn't conflict with focus outline */
+      .filter-btn[aria-pressed="true"],
+      .size-btn[aria-pressed="true"] {
+        border-color: Highlight;
+        box-shadow: inset 0 0 0 2px Highlight;
       }
     }
   `;
@@ -195,7 +225,7 @@ export class GridFilters extends LitElement {
             ${filters.map(({ id, label, description, icon }) => html`
               <button
                 type="button"
-                class="filter-btn ${activeFilters.has(id) ? 'active' : ''}"
+                class="filter-btn"
                 @click="${() => this.handleFilterToggle(id)}"
                 aria-pressed="${activeFilters.has(id)}"
                 title="${description}"
@@ -216,7 +246,7 @@ export class GridFilters extends LitElement {
             ${sizes.map(({ id, label, description }) => html`
               <button
                 type="button"
-                class="size-btn ${currentSize === id ? 'active' : ''}"
+                class="size-btn"
                 @click="${() => this.handleCellSizeChange(id)}"
                 aria-pressed="${currentSize === id}"
                 aria-label="${description}"
