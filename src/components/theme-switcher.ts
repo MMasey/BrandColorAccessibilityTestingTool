@@ -66,9 +66,9 @@ export class ThemeSwitcher extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: var(--space-xs, 0.25rem);
-      padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-      min-height: var(--touch-target-min, 44px);
+      gap: 0.375rem;
+      padding: 0 0.75rem;
+      height: 44px;
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
