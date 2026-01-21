@@ -100,12 +100,9 @@ export class ColorInput extends LitElement {
     }
 
     .hex-input:focus-visible {
-      outline: none;
-      border-bottom-style: solid;
-      border-bottom-color: var(--theme-focus-ring-color);
-      /* Use box-shadow for thicker appearance without layout shift */
-      box-shadow: 0 1px 0 0 var(--theme-focus-ring-color);
-      background: rgba(0, 102, 204, 0.04);
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+      outline-offset: 1px;
+      border-bottom-color: transparent;
     }
 
     .hex-input::placeholder {
@@ -135,12 +132,9 @@ export class ColorInput extends LitElement {
     }
 
     .label-input:focus-visible {
-      outline: none;
-      border-bottom-style: solid;
-      border-bottom-color: var(--theme-focus-ring-color);
-      /* Use box-shadow for thicker appearance without layout shift */
-      box-shadow: 0 1px 0 0 var(--theme-focus-ring-color);
-      background: rgba(0, 102, 204, 0.04);
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+      outline-offset: 1px;
+      border-bottom-color: transparent;
     }
 
     .label-input::placeholder {
