@@ -31,7 +31,9 @@ export class ColorInput extends LitElement {
       transition: border-color var(--transition-fast, 150ms ease);
     }
 
-    .swatch-container:focus-within {
+    /* Only highlight container when inputs are focused, not the button */
+    .swatch-container:has(.hex-input:focus),
+    .swatch-container:has(.label-input:focus) {
       border-color: var(--theme-input-border-color-focus, #0066cc);
     }
 
