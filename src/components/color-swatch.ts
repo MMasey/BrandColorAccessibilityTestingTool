@@ -158,8 +158,9 @@ export class ColorSwatch extends LitElement {
     }
 
     .remove-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
-      outline-offset: var(--focus-ring-offset, 2px);
+      /* Use inset box-shadow instead of outline to avoid clipping by parent's overflow:hidden */
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--theme-focus-ring-color);
     }
 
     .remove-btn svg {

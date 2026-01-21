@@ -174,8 +174,9 @@ export class ColorInput extends LitElement {
     }
 
     .add-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
-      outline-offset: var(--focus-ring-offset, 2px);
+      /* Use inset box-shadow instead of outline to avoid clipping by parent's overflow:hidden */
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--theme-focus-ring-color);
     }
 
     .add-btn:disabled {
@@ -354,7 +355,13 @@ export class ColorInput extends LitElement {
   }
 
   private handleAdd(): void {
-    if (!this.parsedColor) return;
+    // If no valid color, trigger validation feedback instead of silently failing
+    if (!this.parsedColor) {
+      this.hasInput = true; // Triggers error display
+      // Focus the input so user can correct the value
+      this.focusInput();
+      return;
+    }
 
     this.dispatchEvent(new CustomEvent('add-color', {
       detail: { color: this.parsedColor },
@@ -381,7 +388,8 @@ export class ColorInput extends LitElement {
 
   render() {
     const previewColor = this.parsedColor?.hex ?? '';
-    const showError = this.hasInput && !this.isValid && this.value.trim();
+    // Show error when user has interacted AND there's no valid color
+    const showError = this.hasInput && !this.parsedColor;
 
     return html`
       <div>
@@ -430,14 +438,14 @@ export class ColorInput extends LitElement {
             />
           </div>
 
-          <!-- Add button - matches remove button position in color-swatch -->
+          <!-- Add button - always enabled to allow validation feedback on click -->
           <button
             type="button"
             class="add-btn"
-            ?disabled="${!this.parsedColor || this.disabled}"
+            ?disabled="${this.disabled}"
             @click="${this.handleAdd}"
             aria-label="Add color to palette"
-            title="${this.parsedColor ? 'Add color' : 'Enter a valid color first'}"
+            title="Add color to palette"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M12 5v14M5 12h14" />
@@ -447,7 +455,7 @@ export class ColorInput extends LitElement {
 
         ${showError ? html`
           <p class="error-text" role="alert">
-            Invalid color format
+            ${this.value.trim() ? 'Invalid color format' : 'Enter a color value'}
           </p>
         ` : null}
       </div>
