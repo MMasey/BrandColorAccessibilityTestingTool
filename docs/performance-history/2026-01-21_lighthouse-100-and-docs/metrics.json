@@ -1,0 +1,37 @@
+{
+  "milestone": "lighthouse-100-and-docs",
+  "capturedAt": "2026-01-21T13:48:00.568Z",
+  "url": "http://localhost:4173",
+  "scores": {
+    "performance": 0.97,
+    "accessibility": 1,
+    "bestPractices": 1,
+    "seo": 1
+  },
+  "metrics": {
+    "firstContentfulPaint": {
+      "value": 1312.532,
+      "display": "1.3 s"
+    },
+    "largestContentfulPaint": {
+      "value": 1445.5320000000002,
+      "display": "1.4 s"
+    },
+    "totalBlockingTime": {
+      "value": 196.13300000000004,
+      "display": "200 ms"
+    },
+    "cumulativeLayoutShift": {
+      "value": 0.038882138517618466,
+      "display": "0.039"
+    },
+    "speedIndex": {
+      "value": 2354.5572842323604,
+      "display": "2.4 s"
+    },
+    "timeToInteractive": {
+      "value": 1600.3857000000003,
+      "display": "1.6 s"
+    }
+  }
+}
