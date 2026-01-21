@@ -1,14 +1,14 @@
 # Lighthouse Performance Report
 
 **Milestone:** 101-color-token-refactoring
-**Captured:** 2026-01-21T10:07:16.535Z
+**Captured:** 2026-01-21T10:35:22.298Z
 **URL:** http://localhost:4173
 
 ## Scores
 
 | Category | Score |
 |----------|-------|
-| Performance | 98 (Good) |
+| Performance | 100 (Good) |
 | Accessibility | 100 (Good) |
 | Best Practices | 96 (Good) |
 | SEO | 91 (Good) |
@@ -17,12 +17,12 @@
 
 | Metric | Value |
 |--------|-------|
-| First Contentful Paint (FCP) | 1.9 s |
-| Largest Contentful Paint (LCP) | 1.9 s |
-| Total Blocking Time (TBT) | 0 ms |
-| Cumulative Layout Shift (CLS) | 0 |
-| Speed Index | 2.5 s |
-| Time to Interactive | 1.9 s |
+| First Contentful Paint (FCP) | 1.1 s |
+| Largest Contentful Paint (LCP) | 1.2 s |
+| Total Blocking Time (TBT) | 40 ms |
+| Cumulative Layout Shift (CLS) | 0.039 |
+| Speed Index | 1.1 s |
+| Time to Interactive | 1.2 s |
 
 ## Performance Goals
 
