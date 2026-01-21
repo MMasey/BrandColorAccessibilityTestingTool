@@ -1,7 +1,7 @@
 # Lighthouse Performance Report
 
 **Milestone:** lighthouse-100-and-docs
-**Captured:** 2026-01-21T13:38:49.585Z
+**Captured:** 2026-01-21T13:48:00.568Z
 **URL:** http://localhost:4173
 
 ## Scores
@@ -19,10 +19,10 @@
 |--------|-------|
 | First Contentful Paint (FCP) | 1.3 s |
 | Largest Contentful Paint (LCP) | 1.4 s |
-| Total Blocking Time (TBT) | 190 ms |
+| Total Blocking Time (TBT) | 200 ms |
 | Cumulative Layout Shift (CLS) | 0.039 |
-| Speed Index | 2.3 s |
-| Time to Interactive | 1.5 s |
+| Speed Index | 2.4 s |
+| Time to Interactive | 1.6 s |
 
 ## Performance Goals
 
