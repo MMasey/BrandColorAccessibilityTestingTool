@@ -1,0 +1,160 @@
+/**
+ * High Contrast Theme
+ *
+ * WCAG 2.1 Level AAA minimum:
+ * - Normal text: 7:1 contrast ratio
+ * - Large text / UI components: 4.5:1 contrast ratio
+ *
+ * This theme provides maximum contrast for users with low vision
+ * or visual impairments.
+ *
+ * This theme is activated by:
+ * - OS preference: prefers-contrast: more
+ * - Windows: forced-colors: active (browser handles this automatically)
+ * - Explicit selection: data-theme="high-contrast"
+ *
+ * NOTE: For forced-colors: active (Windows High Contrast Mode), we let the
+ * browser handle styling automatically. Component-level CSS only adds borders
+ * and preserves actual colors where needed (color preview boxes). We do NOT
+ * try to set CSS variables for forced-colors since the browser overrides them.
+ */
+
+/* Increased contrast preference (prefers-contrast: more) */
+@media (prefers-contrast: more) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    /* ==========================================================================
+       Page & Cards
+       ========================================================================== */
+
+    --theme-page-bg-color: #000000;
+    --theme-card-bg-color: #1a1a1a;
+    --theme-card-bg-color-hover: #333333;
+
+    /* ==========================================================================
+       Text & Headings
+       ========================================================================== */
+
+    --theme-text-color: #ffffff;
+    --theme-text-secondary-color: #ffffff;
+    --theme-text-muted-color: #e5e5e5;
+    --theme-heading-color: #ffffff;
+
+    /* ==========================================================================
+       Buttons - Explicit states for full control
+       ========================================================================== */
+
+    /* Button backgrounds */
+    --theme-button-bg-color: #ffff00;
+    --theme-button-bg-color-hover: #ffff66;
+    --theme-button-bg-color-focus: #ffff66;
+
+    /* Button text */
+    --theme-button-text-color: #000000;
+    --theme-button-text-color-hover: #000000;
+    --theme-button-text-color-focus: #000000;
+
+    /* Button borders */
+    --theme-button-border-color: #ffff00;
+    --theme-button-border-color-hover: #ffff66;
+    --theme-button-border-color-focus: #ffff66;
+
+    /* ==========================================================================
+       Inputs/Forms - Hover and focus are different states
+       ========================================================================== */
+
+    --theme-input-border-color: #ffffff;
+    --theme-input-border-color-hover: #ffffff;
+    --theme-input-border-color-focus: #ffff00;
+
+    /* ==========================================================================
+       Semantic Feedback
+       ========================================================================== */
+
+    /* Success */
+    --theme-success-text-color: #00ff00;
+    --theme-success-bg-color: #003300;
+
+    /* Warning */
+    --theme-warning-text-color: #ffff00;
+    --theme-warning-bg-color: #333300;
+
+    /* Error */
+    --theme-error-text-color: #ff0000;
+    --theme-error-bg-color: #330000;
+
+    /* ==========================================================================
+       Focus Indicators
+       ========================================================================== */
+
+    --theme-focus-ring-color: #ffff00;
+  }
+}
+
+/* Explicit high-contrast theme selection */
+:root[data-theme="high-contrast"] {
+  /* ==========================================================================
+     Page & Cards
+     ========================================================================== */
+
+  --theme-page-bg-color: #000000;
+  --theme-card-bg-color: #1a1a1a;
+  --theme-card-bg-color-hover: #333333;
+
+  /* ==========================================================================
+     Text & Headings
+     ========================================================================== */
+
+  --theme-text-color: #ffffff;
+  --theme-text-secondary-color: #ffffff;
+  --theme-text-muted-color: #e5e5e5;
+  --theme-heading-color: #ffffff;
+
+  /* ==========================================================================
+     Buttons - Explicit states for full control
+     ========================================================================== */
+
+  /* Button backgrounds */
+  --theme-button-bg-color: #ffff00;
+  --theme-button-bg-color-hover: #ffff66;
+  --theme-button-bg-color-focus: #ffff66;
+
+  /* Button text */
+  --theme-button-text-color: #000000;
+  --theme-button-text-color-hover: #000000;
+  --theme-button-text-color-focus: #000000;
+
+  /* Button borders */
+  --theme-button-border-color: #ffff00;
+  --theme-button-border-color-hover: #ffff66;
+  --theme-button-border-color-focus: #ffff66;
+
+  /* ==========================================================================
+     Inputs/Forms - Hover and focus are different states
+     ========================================================================== */
+
+  --theme-input-border-color: #ffffff;
+  --theme-input-border-color-hover: #ffffff;
+  --theme-input-border-color-focus: #ffff00;
+
+  /* ==========================================================================
+     Semantic Feedback
+     ========================================================================== */
+
+  /* Success */
+  --theme-success-text-color: #00ff00;
+  --theme-success-bg-color: #003300;
+
+  /* Warning */
+  --theme-warning-text-color: #ffff00;
+  --theme-warning-bg-color: #333300;
+
+  /* Error */
+  --theme-error-text-color: #ff0000;
+  --theme-error-bg-color: #330000;
+
+  /* ==========================================================================
+     Focus Indicators
+     ========================================================================== */
+
+  --theme-focus-ring-color: #ffff00;
+}

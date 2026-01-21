@@ -53,3 +53,6 @@ Build a web-based tool that validates brand color palettes against WCAG 2.1 acce
 - User sees WCAG AA/AAA pass/fail badges
 - Shareable URLs work correctly
 - Tool passes WCAG AA audit
+- Add button shows validation feedback when clicked with invalid color
+- Button focus states use outline with negative offset to avoid clipping by overflow:hidden
+- Input focus states use proper outline rings (focus-visible only)

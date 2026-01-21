@@ -270,9 +270,9 @@ test.describe('Accessibility Audit (axe-core)', () => {
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
 
-    // Click dark mode button
-    const darkButton = page.locator('theme-switcher').locator('button[title="Dark"]');
-    await darkButton.click();
+    // Click dark mode option
+    const darkOption = page.locator('theme-switcher').locator('label', { hasText: 'Dark' });
+    await darkOption.click();
 
     await page.waitForTimeout(300);
 
@@ -291,9 +291,9 @@ test.describe('Accessibility Audit (axe-core)', () => {
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
 
-    // Click high contrast mode button
-    const highContrastButton = page.locator('theme-switcher').locator('button[title="High"]');
-    await highContrastButton.click();
+    // Click high contrast mode option
+    const highContrastOption = page.locator('theme-switcher').locator('label', { hasText: 'High' });
+    await highContrastOption.click();
 
     await page.waitForTimeout(300);
 
@@ -364,8 +364,8 @@ test.describe('Visual UX Review - Screenshots', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // Enable dark mode
-    const darkButton = page.locator('theme-switcher').locator('button[title="Dark"]');
-    await darkButton.click();
+    const darkOption = page.locator('theme-switcher').locator('label', { hasText: 'Dark' });
+    await darkOption.click();
     await page.waitForTimeout(300);
 
     // Add sample brand colors
@@ -390,8 +390,8 @@ test.describe('Visual UX Review - Screenshots', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // Enable high contrast mode
-    const highContrastButton = page.locator('theme-switcher').locator('button[title="High"]');
-    await highContrastButton.click();
+    const highContrastOption = page.locator('theme-switcher').locator('label', { hasText: 'High' });
+    await highContrastOption.click();
     await page.waitForTimeout(300);
 
     // Add sample brand colors
@@ -633,23 +633,22 @@ test.describe('Grid Filters', () => {
     const gridFilters = page.locator('grid-filters');
     const aaaButton = gridFilters.locator('button:has-text("AAA")');
 
-    // Should have active class initially
-    await expect(aaaButton).toHaveClass(/active/);
+    // Should be pressed initially (use aria-pressed attribute for semantic check)
+    await expect(aaaButton).toHaveAttribute('aria-pressed', 'true');
 
     // Click to deactivate
     await aaaButton.click();
     await page.waitForTimeout(200);
 
-    // Should not have active class
-    const className = await aaaButton.getAttribute('class');
-    expect(className).not.toContain('active');
+    // Should not be pressed
+    await expect(aaaButton).toHaveAttribute('aria-pressed', 'false');
 
     // Click to reactivate
     await aaaButton.click();
     await page.waitForTimeout(200);
 
-    // Should have active class again
-    await expect(aaaButton).toHaveClass(/active/);
+    // Should be pressed again
+    await expect(aaaButton).toHaveAttribute('aria-pressed', 'true');
   });
 });
 

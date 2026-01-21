@@ -31,7 +31,7 @@ export class ContrastCell extends LitElement {
     }
 
     :host([filtered]) .cell {
-      background: var(--color-surface-secondary, #f5f5f5) !important;
+      background: var(--theme-card-bg-color) !important;
     }
 
     :host([filtered]) .ratio,
@@ -59,8 +59,8 @@ export class ContrastCell extends LitElement {
           45deg,
           var(--bg-color, #ffffff),
           var(--bg-color, #ffffff) 5px,
-          var(--color-surface-secondary, #f5f5f5) 5px,
-          var(--color-surface-secondary, #f5f5f5) 10px
+          var(--theme-card-bg-color) 5px,
+          var(--theme-card-bg-color) 10px
         );
       }
     }
@@ -161,6 +161,42 @@ export class ContrastCell extends LitElement {
       font-size: var(--font-size-xs, 0.75rem);
       color: var(--fg-color, #000000);
       opacity: 0.8;
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       In forced-colors mode, the browser strips most colors. For a color
+       contrast testing tool, we MUST preserve the actual colors being tested.
+       We use forced-color-adjust: none on color preview elements and add
+       visible borders using system colors.
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .cell {
+        /* Preserve actual colors for contrast testing */
+        forced-color-adjust: none;
+        /* Add visible border since backgrounds may blend */
+        outline: 3px solid CanvasText;
+        outline-offset: -3px;
+      }
+
+      .ratio {
+        /* Preserve foreground color for demonstration */
+        forced-color-adjust: none;
+      }
+
+      .badge {
+        /* Use system colors for badges since they're UI, not color samples */
+        forced-color-adjust: auto;
+        border: 2px solid CanvasText;
+        background: Canvas;
+        color: CanvasText;
+      }
+
+      .sample-text {
+        /* Preserve foreground color for demonstration */
+        forced-color-adjust: none;
+      }
     }
   `;
 

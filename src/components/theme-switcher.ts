@@ -24,58 +24,76 @@ export class ThemeSwitcher extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--space-sm, 0.5rem);
+      border: none;
+      padding: 0;
+      margin: 0;
     }
 
     .section-label {
       font-size: clamp(0.75rem, 2vw, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
       white-space: nowrap;
     }
 
-    /* Theme buttons */
-    .theme-buttons {
+    /* Visually hidden but accessible to screen readers */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Theme options container */
+    .theme-options {
       display: flex;
       flex-wrap: wrap;
       gap: 2px;
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
       padding: 2px;
     }
 
-    .theme-btn {
+    .theme-option {
       flex: 1 1 auto;
       min-width: fit-content;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: var(--space-xs, 0.25rem);
-      padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-      min-height: var(--touch-target-min, 44px);
+      gap: 0.375rem;
+      padding: 0 0.75rem;
+      height: 44px;
       background: transparent;
       border: none;
       border-radius: var(--radius-sm, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary);
+      color: var(--theme-text-secondary-color);
       cursor: pointer;
       transition: all var(--transition-fast, 150ms ease);
       white-space: nowrap;
 
-      &:hover:not(.active) {
-        background: var(--color-surface-tertiary, #e8e8e8);
+      &:hover:not(:has(input:checked)) {
+        background: var(--theme-card-bg-color-hover);
       }
 
-      &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+      /* Show focus ring when the radio input inside is focused */
+      &:has(input:focus-visible) {
+        outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
         outline-offset: var(--focus-ring-offset, 2px);
         z-index: 1;
       }
 
-      &.active {
-        background: var(--color-accent-primary, #0066cc);
-        color: var(--color-text-inverse, #ffffff);
+      /* Checked/selected state using :has() for pure CSS selection */
+      &:has(input:checked) {
+        background: var(--theme-button-bg-color, #0066cc);
+        color: var(--theme-button-text-color, #ffffff);
       }
 
       svg {
@@ -86,6 +104,32 @@ export class ThemeSwitcher extends LitElement {
 
       .label {
         /* Labels are always visible */
+      }
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling automatically. We only need to:
+       1. Ensure visible borders
+       2. Indicate selected state with inset box-shadow (so outline is free for focus)
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .theme-options {
+        border: 2px solid CanvasText;
+      }
+
+      /* Focus state - use outline (outer) */
+      .theme-option:has(input:focus-visible) {
+        outline: 3px solid Highlight;
+        outline-offset: 2px;
+        z-index: 1;
+      }
+
+      /* Selected state - use inset box-shadow so it doesn't conflict with focus outline */
+      .theme-option:has(input:checked) {
+        border: 2px solid Highlight;
+        box-shadow: inset 0 0 0 2px Highlight;
       }
     }
   `;
@@ -133,24 +177,25 @@ export class ThemeSwitcher extends LitElement {
 
     return html`
       <div class="switcher">
-        <div class="section">
-          <span class="section-label" id="theme-label">Theme</span>
-          <div class="theme-buttons" role="radiogroup" aria-labelledby="theme-label">
+        <fieldset class="section">
+          <legend class="section-label">Theme</legend>
+          <div class="theme-options">
             ${themes.map(({ value, label }) => html`
-              <button
-                type="button"
-                role="radio"
-                class="theme-btn ${currentTheme === value ? 'active' : ''}"
-                aria-checked="${currentTheme === value}"
-                @click="${() => this.handleThemeChange(value)}"
-                title="${label}"
-              >
+              <label class="theme-option">
+                <input
+                  type="radio"
+                  name="theme"
+                  class="sr-only"
+                  .value="${value}"
+                  .checked="${currentTheme === value}"
+                  @change="${() => this.handleThemeChange(value)}"
+                />
                 ${this.getThemeIcon(value)}
                 <span class="label">${label}</span>
-              </button>
+              </label>
             `)}
           </div>
-        </div>
+        </fieldset>
       </div>
     `;
   }

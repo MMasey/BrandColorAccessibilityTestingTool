@@ -3,43 +3,21 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   CSS Custom Properties - Theme Tokens
+   Theme Imports
+   -------------------------------------------------------------------------- */
+
+/* Import theme color definitions (light theme is default) */
+@import './themes/light.css';
+@import './themes/dark.css';
+@import './themes/high-contrast.css';
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties - Non-Color Design Tokens
    -------------------------------------------------------------------------- */
 
 :root {
   /* Color scheme preference */
   color-scheme: light dark;
-
-  /* ---------- Light Theme (default) ---------- */
-
-  /* Surface colors */
-  --color-surface-primary: #ffffff;
-  --color-surface-secondary: #f5f5f5;
-  --color-surface-tertiary: #e8e8e8;
-
-  /* Text colors - AAA compliant (7:1 minimum on backgrounds) */
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #404040;  /* Changed from #555555 for AAA (8.6:1 on #f5f5f5) */
-  --color-text-muted: #4a4a4a;      /* Changed from #666666 for AAA (7.2:1 on #f5f5f5) */
-  --color-text-inverse: #ffffff;
-
-  /* Brand/accent colors */
-  --color-accent-primary: #0066cc;
-  --color-accent-primary-hover: #0052a3;
-  --color-accent-secondary: #6b21a8;
-
-  /* Semantic colors */
-  --color-success: #15803d;
-  --color-success-bg: #dcfce7;
-  --color-warning: #a16207;
-  --color-warning-bg: #fef3c7;
-  --color-error: #dc2626;
-  --color-error-bg: #fee2e2;
-
-  /* Border colors */
-  --color-border-default: #d4d4d4;
-  --color-border-strong: #a3a3a3;
-  --color-border-focus: var(--color-accent-primary);
 
   /* ---------- Spacing Scale ---------- */
   --space-xs: 0.25rem;   /* 4px */
@@ -84,7 +62,7 @@
   /* ---------- Focus Ring ---------- */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-  --focus-ring-color: var(--color-accent-primary);
+  --focus-ring-color: var(--theme-focus-ring-color);
 
   /* ---------- Transitions ---------- */
   --transition-fast: 150ms ease;
@@ -96,152 +74,6 @@
 
   /* ---------- User Font Size Adjustment ---------- */
   --user-font-scale: 1;
-}
-
-/* --------------------------------------------------------------------------
-   Dark Theme
-   -------------------------------------------------------------------------- */
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --color-surface-primary: #1a1a1a;
-    --color-surface-secondary: #262626;
-    --color-surface-tertiary: #333333;
-
-    --color-text-primary: #f5f5f5;      /* AAA on #1a1a1a */
-    --color-text-secondary: #d4d4d4;  /* Changed from #a3a3a3 for AAA (10.4:1 on #1a1a1a) */
-    --color-text-muted: #c2c2c2;      /* Changed from #9a9a9a for AAA (8.9:1 on #1a1a1a) */
-    --color-text-inverse: #1a1a1a;
-
-    --color-accent-primary: #60a5fa;
-    --color-accent-primary-hover: #93c5fd;
-
-    --color-success: #4ade80;
-    --color-success-bg: #14532d;
-    --color-warning: #fbbf24;
-    --color-warning-bg: #713f12;
-    --color-error: #f87171;
-    --color-error-bg: #7f1d1d;
-
-    --color-border-default: #404040;
-    --color-border-strong: #525252;
-  }
-}
-
-/* Explicit dark theme */
-:root[data-theme="dark"] {
-  --color-surface-primary: #1a1a1a;
-  --color-surface-secondary: #262626;
-  --color-surface-tertiary: #333333;
-
-  --color-text-primary: #f5f5f5;      /* AAA on #1a1a1a */
-  --color-text-secondary: #d4d4d4;  /* Changed from #a3a3a3 for AAA (10.4:1 on #1a1a1a) */
-  --color-text-muted: #c2c2c2;      /* Changed from #9a9a9a for AAA (8.9:1 on #1a1a1a) */
-  --color-text-inverse: #1a1a1a;
-
-  --color-accent-primary: #60a5fa;
-  --color-accent-primary-hover: #93c5fd;
-
-  --color-success: #4ade80;
-  --color-success-bg: #14532d;
-  --color-warning: #fbbf24;
-  --color-warning-bg: #713f12;
-  --color-error: #f87171;
-  --color-error-bg: #7f1d1d;
-
-  --color-border-default: #404040;
-  --color-border-strong: #525252;
-}
-
-/* --------------------------------------------------------------------------
-   High Contrast Theme - System Preferences
-   Responds to OS-level high contrast / increased contrast settings
-   -------------------------------------------------------------------------- */
-
-/* Windows High Contrast Mode (forced-colors) */
-@media (forced-colors: active) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) {
-    --color-surface-primary: Canvas;
-    --color-surface-secondary: Canvas;
-    --color-surface-tertiary: Canvas;
-
-    --color-text-primary: CanvasText;
-    --color-text-secondary: CanvasText;
-    --color-text-muted: GrayText;
-    --color-text-inverse: Canvas;
-
-    --color-accent-primary: LinkText;
-    --color-accent-primary-hover: LinkText;
-
-    --color-success: CanvasText;
-    --color-success-bg: Canvas;
-    --color-warning: CanvasText;
-    --color-warning-bg: Canvas;
-    --color-error: CanvasText;
-    --color-error-bg: Canvas;
-
-    --color-border-default: CanvasText;
-    --color-border-strong: CanvasText;
-    --color-border-focus: Highlight;
-    --focus-ring-color: Highlight;
-  }
-}
-
-/* Increased contrast preference (prefers-contrast: more) */
-@media (prefers-contrast: more) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) {
-    --color-surface-primary: #000000;
-    --color-surface-secondary: #1a1a1a;
-    --color-surface-tertiary: #333333;
-
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #ffffff;
-    --color-text-muted: #e5e5e5;
-    --color-text-inverse: #000000;
-
-    --color-accent-primary: #ffff00;
-    --color-accent-primary-hover: #ffff66;
-
-    --color-success: #00ff00;
-    --color-success-bg: #003300;
-    --color-warning: #ffff00;
-    --color-warning-bg: #333300;
-    --color-error: #ff0000;
-    --color-error-bg: #330000;
-
-    --color-border-default: #ffffff;
-    --color-border-strong: #ffffff;
-    --color-border-focus: #ffff00;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   High Contrast Theme - Explicit Selection
-   -------------------------------------------------------------------------- */
-
-:root[data-theme="high-contrast"] {
-  --color-surface-primary: #000000;
-  --color-surface-secondary: #1a1a1a;
-  --color-surface-tertiary: #333333;
-
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #ffffff;
-  --color-text-muted: #e5e5e5;
-  --color-text-inverse: #000000;
-
-  --color-accent-primary: #ffff00;
-  --color-accent-primary-hover: #ffff66;
-
-  --color-success: #00ff00;
-  --color-success-bg: #003300;
-  --color-warning: #ffff00;
-  --color-warning-bg: #333300;
-  --color-error: #ff0000;
-  --color-error-bg: #330000;
-
-  --color-border-default: #ffffff;
-  --color-border-strong: #ffffff;
-  --color-border-focus: #ffff00;
 }
 
 /* --------------------------------------------------------------------------
@@ -264,8 +96,8 @@ body {
   font-family: var(--font-family-base);
   font-size: var(--font-size-md);
   line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-primary);
+  color: var(--theme-text-color);
+  background-color: var(--theme-page-bg-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -310,8 +142,8 @@ body {
   left: 0;
   transform: translateY(-100%);
   padding: var(--space-sm) var(--space-md);
-  background: var(--color-accent-primary);
-  color: var(--color-text-inverse);
+  background: var(--theme-button-bg-color);
+  color: var(--theme-button-text-color);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   z-index: 9999;
@@ -330,10 +162,10 @@ body {
 @media print {
   /* Reset to light colors for printing */
   :root {
-    --color-surface-primary: #ffffff !important;
-    --color-surface-secondary: #f5f5f5 !important;
-    --color-text-primary: #000000 !important;
-    --color-text-secondary: #333333 !important;
+    --theme-page-bg-color: #ffffff !important;
+    --theme-card-bg-color: #f5f5f5 !important;
+    --theme-text-color: #000000 !important;
+    --theme-text-secondary-color: #333333 !important;
   }
 
   body {

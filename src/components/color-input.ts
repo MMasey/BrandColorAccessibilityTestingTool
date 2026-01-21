@@ -23,20 +23,16 @@ export class ColorInput extends LitElement {
       display: flex;
       align-items: stretch;
       gap: 0;
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
       overflow: hidden;
       min-height: var(--touch-target-min, 44px);
       transition: border-color var(--transition-fast, 150ms ease);
     }
 
-    .swatch-container:focus-within {
-      border-color: var(--color-border-focus, #0066cc);
-    }
-
     .swatch-container.invalid {
-      border-color: var(--color-error, #dc2626);
+      border-color: var(--theme-error-text-color, #dc2626);
     }
 
     /* Color preview box - matches color-swatch */
@@ -85,12 +81,12 @@ export class ColorInput extends LitElement {
       width: 100%;
       padding: 0.125rem 0;
       border: none;
-      border-bottom: 1px dashed var(--color-border-default, #d4d4d4);
+      border-bottom: 1px dashed var(--theme-input-border-color, #d4d4d4);
       background: transparent;
       font-family: var(--font-family-mono, monospace);
       font-size: var(--font-size-md, 1rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-primary, #1a1a1a);
+      color: var(--theme-text-color, #1a1a1a);
       line-height: 1.2;
       transition: border-color var(--transition-fast, 150ms ease),
                   background-color var(--transition-fast, 150ms ease);
@@ -99,21 +95,18 @@ export class ColorInput extends LitElement {
 
     .hex-input:hover {
       border-bottom-style: solid;
-      border-bottom-color: var(--color-text-muted, #888888);
+      border-bottom-color: var(--theme-text-muted-color, #888888);
       background: rgba(0, 0, 0, 0.02);
     }
 
-    .hex-input:focus {
-      outline: none;
-      border-bottom-style: solid;
-      border-bottom-color: var(--color-primary, #0066cc);
-      /* Use box-shadow for thicker appearance without layout shift */
-      box-shadow: 0 1px 0 0 var(--color-primary, #0066cc);
-      background: rgba(0, 102, 204, 0.04);
+    .hex-input:focus-visible {
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+      outline-offset: 1px;
+      border-bottom-color: transparent;
     }
 
     .hex-input::placeholder {
-      color: var(--color-text-muted, #888888);
+      color: var(--theme-text-muted-color, #888888);
       font-weight: var(--font-weight-normal, 400);
     }
 
@@ -122,10 +115,10 @@ export class ColorInput extends LitElement {
       width: 100%;
       padding: 0.125rem 0;
       border: none;
-      border-bottom: 1px dashed var(--color-border-default, #d4d4d4);
+      border-bottom: 1px dashed var(--theme-input-border-color, #d4d4d4);
       background: transparent;
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-secondary, #555555);
+      color: var(--theme-text-secondary-color, #555555);
       line-height: 1.3;
       transition: border-color var(--transition-fast, 150ms ease),
                   background-color var(--transition-fast, 150ms ease);
@@ -134,21 +127,18 @@ export class ColorInput extends LitElement {
 
     .label-input:hover {
       border-bottom-style: solid;
-      border-bottom-color: var(--color-text-muted, #888888);
+      border-bottom-color: var(--theme-text-muted-color, #888888);
       background: rgba(0, 0, 0, 0.02);
     }
 
-    .label-input:focus {
-      outline: none;
-      border-bottom-style: solid;
-      border-bottom-color: var(--color-primary, #0066cc);
-      /* Use box-shadow for thicker appearance without layout shift */
-      box-shadow: 0 1px 0 0 var(--color-primary, #0066cc);
-      background: rgba(0, 102, 204, 0.04);
+    .label-input:focus-visible {
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+      outline-offset: 1px;
+      border-bottom-color: transparent;
     }
 
     .label-input::placeholder {
-      color: var(--color-text-muted, #888888);
+      color: var(--theme-text-muted-color, #888888);
       font-style: italic;
     }
 
@@ -159,10 +149,10 @@ export class ColorInput extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--color-primary, #0066cc);
+      background: var(--theme-button-bg-color);
       border: none;
-      border-left: 1px solid var(--color-border-default, #d4d4d4);
-      color: white;
+      border-left: 1px solid var(--theme-input-border-color);
+      color: var(--theme-button-text-color);
       cursor: pointer;
       font-size: var(--font-size-sm, 0.875rem);
       font-weight: var(--font-weight-medium, 500);
@@ -170,17 +160,18 @@ export class ColorInput extends LitElement {
     }
 
     .add-btn:hover:not(:disabled) {
-      background: var(--color-primary-hover, #0052a3);
+      background: var(--theme-button-bg-color-hover);
     }
 
     .add-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
+      /* Use outline with negative offset to draw inside element, avoiding overflow:hidden clipping */
+      outline: var(--focus-ring-width, 2px) solid var(--theme-button-text-color);
+      outline-offset: -4px;
     }
 
     .add-btn:disabled {
-      background: var(--color-surface-tertiary, #e0e0e0);
-      color: var(--color-text-muted, #888888);
+      background: var(--theme-card-bg-color-hover);
+      color: var(--theme-text-muted-color);
       cursor: not-allowed;
     }
 
@@ -192,7 +183,7 @@ export class ColorInput extends LitElement {
     /* Error message - only shown when invalid */
     .error-text {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-error, #dc2626);
+      color: var(--theme-error-text-color, #dc2626);
       margin-top: var(--space-xs, 0.25rem);
       padding-left: calc(3rem + var(--space-sm, 0.5rem));
     }
@@ -207,6 +198,40 @@ export class ColorInput extends LitElement {
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling automatically. We only need to:
+       1. Preserve actual colors in the color preview box
+       2. Add visible borders for structure
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .swatch-container {
+        border: 2px solid CanvasText;
+      }
+
+      .color-box {
+        /* MUST preserve actual color for the preview */
+        forced-color-adjust: none;
+        border-right: 2px solid CanvasText;
+      }
+
+      .color-box::before {
+        /* Checkerboard needs visible pattern */
+        background: repeating-conic-gradient(Canvas 0% 25%, CanvasText 0% 50%) 50% / 8px 8px;
+      }
+
+      /* Let browser handle input styling - just ensure visible borders */
+      .hex-input,
+      .label-input {
+        border-bottom: 2px solid GrayText;
+      }
+
+      .add-btn {
+        border-left: 2px solid CanvasText;
+      }
     }
   `;
 
@@ -234,10 +259,6 @@ export class ColorInput extends LitElement {
   @state()
   private parsedColor: Color | null = null;
 
-  /** Whether current color input is valid */
-  @state()
-  private isValid = true;
-
   /** Whether user has typed something (for showing errors) */
   @state()
   private hasInput = false;
@@ -257,7 +278,6 @@ export class ColorInput extends LitElement {
     this.value = '';
     this.label = '';
     this.parsedColor = null;
-    this.isValid = true;
     this.hasInput = false;
   }
 
@@ -284,16 +304,13 @@ export class ColorInput extends LitElement {
 
     if (!colorValue) {
       this.parsedColor = null;
-      this.isValid = true;
       return;
     }
 
     if (isValidColor(colorValue)) {
       this.parsedColor = createColor(colorValue, this.label.trim());
-      this.isValid = true;
     } else {
       this.parsedColor = null;
-      this.isValid = false;
     }
   }
 
@@ -320,7 +337,13 @@ export class ColorInput extends LitElement {
   }
 
   private handleAdd(): void {
-    if (!this.parsedColor) return;
+    // If no valid color, trigger validation feedback instead of silently failing
+    if (!this.parsedColor) {
+      this.hasInput = true; // Triggers error display
+      // Focus the input so user can correct the value
+      this.focusInput();
+      return;
+    }
 
     this.dispatchEvent(new CustomEvent('add-color', {
       detail: { color: this.parsedColor },
@@ -347,7 +370,8 @@ export class ColorInput extends LitElement {
 
   render() {
     const previewColor = this.parsedColor?.hex ?? '';
-    const showError = this.hasInput && !this.isValid && this.value.trim();
+    // Show error when user has interacted AND there's no valid color
+    const showError = this.hasInput && !this.parsedColor;
 
     return html`
       <div>
@@ -377,11 +401,13 @@ export class ColorInput extends LitElement {
               placeholder="${this.placeholder}"
               ?disabled="${this.disabled}"
               @input="${this.handleColorInput}"
-              aria-label="Color value"
               aria-invalid="${showError ? 'true' : 'false'}"
               autocomplete="off"
               spellcheck="false"
             />
+            <!-- aria-invalid: Required for custom validation. Native :invalid only works with
+                 HTML5 validation attributes (required, pattern). Since we validate programmatically,
+                 aria-invalid tells assistive tech when the input has an error. -->
             <input
               type="text"
               class="label-input"
@@ -394,14 +420,14 @@ export class ColorInput extends LitElement {
             />
           </div>
 
-          <!-- Add button - matches remove button position in color-swatch -->
+          <!-- Add button - always enabled to allow validation feedback on click -->
           <button
             type="button"
             class="add-btn"
-            ?disabled="${!this.parsedColor || this.disabled}"
+            ?disabled="${this.disabled}"
             @click="${this.handleAdd}"
             aria-label="Add color to palette"
-            title="${this.parsedColor ? 'Add color' : 'Enter a valid color first'}"
+            title="Add color to palette"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M12 5v14M5 12h14" />
@@ -411,7 +437,7 @@ export class ColorInput extends LitElement {
 
         ${showError ? html`
           <p class="error-text" role="alert">
-            Invalid color format
+            ${this.value.trim() ? 'Invalid color format' : 'Enter a color value'}
           </p>
         ` : null}
       </div>

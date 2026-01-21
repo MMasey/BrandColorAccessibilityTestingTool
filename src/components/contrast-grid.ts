@@ -24,18 +24,18 @@ export class ContrastGrid extends LitElement {
     .grid-wrapper {
       overflow: auto;
       max-height: 70vh;
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
-      background: var(--color-surface-primary, #ffffff);
+      background: var(--theme-page-bg-color);
 
       /* Keyboard focus styles for scrollable region */
       &:focus {
-        outline: 3px solid var(--color-focus-ring, #2563eb);
+        outline: 3px solid var(--theme-focus-ring-color);
         outline-offset: 2px;
       }
 
       &:focus-visible {
-        outline: 3px solid var(--color-focus-ring, #2563eb);
+        outline: 3px solid var(--theme-focus-ring-color);
         outline-offset: 2px;
       }
     }
@@ -47,7 +47,7 @@ export class ContrastGrid extends LitElement {
     .grid {
       display: grid;
       gap: 1px;
-      background: var(--color-border-default, #d4d4d4);
+      background: var(--theme-input-border-color, #d4d4d4);
       position: relative;
       width: fit-content;
     }
@@ -69,16 +69,16 @@ export class ContrastGrid extends LitElement {
       align-items: center;
       justify-content: center;
       padding: var(--space-xs, 0.25rem);
-      background: var(--color-surface-secondary, #f5f5f5);
+      background: var(--theme-card-bg-color, #f5f5f5);
       font-size: var(--font-size-xs, 0.75rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-secondary, #555555);
+      color: var(--theme-text-secondary-color, #555555);
       overflow: hidden;
       position: sticky;
       z-index: 1;
 
       &.corner {
-        background: var(--color-surface-tertiary, #e8e8e8);
+        background: var(--theme-card-bg-color-hover);
         position: sticky;
         top: 0;
         left: 0;
@@ -118,7 +118,7 @@ export class ContrastGrid extends LitElement {
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       flex-shrink: 0;
 
       @media (max-width: 640px) {
@@ -156,10 +156,10 @@ export class ContrastGrid extends LitElement {
     .empty-state {
       padding: var(--space-xl, 2rem);
       text-align: center;
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 2px dashed var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border: 2px dashed var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
-      color: var(--color-text-secondary, #555555);
+      color: var(--theme-text-secondary-color, #555555);
     }
 
     .legend {
@@ -168,7 +168,7 @@ export class ContrastGrid extends LitElement {
       gap: var(--space-md, 1rem);
       margin-top: var(--space-md, 1rem);
       padding: var(--space-md, 1rem);
-      background: var(--color-surface-secondary, #f5f5f5);
+      background: var(--theme-card-bg-color, #f5f5f5);
       border-radius: var(--radius-md, 0.5rem);
 
       @media (max-width: 640px) {
@@ -209,7 +209,7 @@ export class ContrastGrid extends LitElement {
 
     .axis-label {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-muted, #666666);
+      color: var(--theme-text-muted-color);
       text-align: center;
       padding: var(--space-xs, 0.25rem);
 
@@ -234,6 +234,41 @@ export class ContrastGrid extends LitElement {
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling. We only need to:
+       1. Preserve actual colors in color preview dots
+       2. Add visible borders for structure
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .grid-wrapper {
+        border: 2px solid CanvasText;
+      }
+
+      .header-cell {
+        border: 2px solid CanvasText;
+      }
+
+      .color-dot {
+        /* MUST preserve actual color for the preview */
+        forced-color-adjust: none;
+        border: 2px solid CanvasText;
+      }
+
+      .empty-state {
+        border: 2px dashed CanvasText;
+      }
+
+      .legend {
+        border: 2px solid CanvasText;
+      }
+
+      .legend-badge {
+        border: 2px solid CanvasText;
+      }
     }
   `;
 
@@ -396,6 +431,15 @@ export class ContrastGrid extends LitElement {
         ↓ Foreground (text) &nbsp;&nbsp;|&nbsp;&nbsp; Background →
       </div>
 
+      <!--
+        tabindex="0": Required for keyboard accessibility. The grid can overflow with many colors,
+        and scrollable containers are not keyboard-focusable by default. This allows keyboard users
+        to focus the container and scroll with arrow keys (handled by handleGridKeydown).
+        Without this, keyboard users cannot access off-screen content.
+
+        role="region": Landmark role for significant content section. Combined with aria-label,
+        allows screen reader users to navigate directly to the grid.
+      -->
       <div
         class="grid-wrapper"
         tabindex="0"

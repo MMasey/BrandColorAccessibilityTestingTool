@@ -21,8 +21,8 @@ export class ColorSwatch extends LitElement {
       display: flex;
       align-items: stretch;
       gap: 0;
-      background: var(--color-surface-secondary, #f5f5f5);
-      border: 1px solid var(--color-border-default, #d4d4d4);
+      background: var(--theme-card-bg-color, #f5f5f5);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
       border-radius: var(--radius-md, 0.5rem);
       overflow: hidden;
       min-height: var(--touch-target-min, 44px);
@@ -72,14 +72,14 @@ export class ColorSwatch extends LitElement {
       font-family: var(--font-family-mono, monospace);
       font-size: var(--font-size-md, 1rem);
       font-weight: var(--font-weight-medium, 500);
-      color: var(--color-text-primary, #1a1a1a);
+      color: var(--theme-text-color, #1a1a1a);
       line-height: 1.2;
     }
 
     /* Label - secondary, smaller text */
     .label {
       font-size: var(--font-size-xs, 0.75rem);
-      color: var(--color-text-secondary, #555555);
+      color: var(--theme-text-secondary-color, #555555);
       line-height: 1.3;
       display: -webkit-box;
       -webkit-line-clamp: 1;
@@ -104,17 +104,17 @@ export class ColorSwatch extends LitElement {
     }
 
     .label-editable:hover {
-      background: var(--color-surface-tertiary, #e8e8e8);
+      background: var(--theme-card-bg-color-hover);
     }
 
     .label-editable:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
       outline-offset: 1px;
     }
 
     /* Placeholder state for "Add label" - uses darker color for contrast accessibility */
     .label-placeholder {
-      color: var(--color-text-muted, #666666);
+      color: var(--theme-text-muted-color);
       font-style: italic;
     }
 
@@ -125,15 +125,15 @@ export class ColorSwatch extends LitElement {
       margin: -0.125rem -0.25rem;
       font-size: var(--font-size-xs, 0.75rem);
       font-family: inherit;
-      color: var(--color-text-secondary, #555555);
-      background: var(--color-surface-primary, #ffffff);
-      border: 1px solid var(--color-border-focus, #0066cc);
+      color: var(--theme-text-secondary-color);
+      background: var(--theme-page-bg-color);
+      border: 1px solid var(--theme-input-border-color-focus);
       border-radius: var(--radius-sm, 0.25rem);
       outline: none;
     }
 
     .label-input:focus {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
       outline-offset: 1px;
     }
 
@@ -145,21 +145,22 @@ export class ColorSwatch extends LitElement {
       justify-content: center;
       background: transparent;
       border: none;
-      border-left: 1px solid var(--color-border-default, #d4d4d4);
-      color: var(--color-text-muted, #666666);
+      border-left: 1px solid var(--theme-input-border-color);
+      color: var(--theme-text-muted-color);
       cursor: pointer;
       transition: color var(--transition-fast, 150ms ease),
                   background var(--transition-fast, 150ms ease);
     }
 
     .remove-btn:hover {
-      color: var(--color-error, #dc2626);
-      background: var(--color-error-bg, #fee2e2);
+      color: var(--theme-error-text-color);
+      background: var(--theme-error-bg-color);
     }
 
     .remove-btn:focus-visible {
-      outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #0066cc);
-      outline-offset: var(--focus-ring-offset, 2px);
+      /* Use outline with negative offset to draw inside element, avoiding overflow:hidden clipping */
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+      outline-offset: -4px;
     }
 
     .remove-btn svg {
@@ -179,6 +180,38 @@ export class ColorSwatch extends LitElement {
     :host([compact]) .remove-btn {
       width: 2rem;
       min-width: 2rem;
+    }
+
+    /* ========================================================================
+       Windows High Contrast Mode (forced-colors: active)
+
+       Let the browser handle most styling automatically. We only need to:
+       1. Preserve actual colors in the color preview box
+       2. Add visible borders for structure
+       ======================================================================== */
+    @media (forced-colors: active) {
+      .swatch-container {
+        border: 2px solid CanvasText;
+      }
+
+      .color-box {
+        /* MUST preserve actual color for the preview */
+        forced-color-adjust: none;
+        border-right: 2px solid CanvasText;
+      }
+
+      .color-box::before {
+        /* Checkerboard needs visible pattern */
+        background: repeating-conic-gradient(Canvas 0% 25%, CanvasText 0% 50%) 50% / 8px 8px;
+      }
+
+      .label-input {
+        border: 2px solid Highlight;
+      }
+
+      .remove-btn {
+        border-left: 2px solid CanvasText;
+      }
     }
   `;
 
@@ -281,7 +314,7 @@ export class ColorSwatch extends LitElement {
       <div class="swatch-container" style="--swatch-color: ${this.color.hex}">
         <div class="color-box" aria-hidden="true"></div>
 
-        <div class="info" role="group" aria-label="${hasLabel ? `${label}: ${this.color.hex}` : this.color.hex}">
+        <div class="info">
           <!-- Hex value - primary, larger text -->
           <div class="hex">${this.color.hex}</div>
 
