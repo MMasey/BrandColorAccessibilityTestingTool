@@ -1,6 +1,6 @@
 {
   "milestone": "101-color-token-refactoring",
-  "capturedAt": "2026-01-21T05:43:30.304Z",
+  "capturedAt": "2026-01-21T05:54:37.226Z",
   "url": "http://localhost:4173",
   "scores": {
     "performance": 1,
@@ -10,28 +10,28 @@
   },
   "metrics": {
     "firstContentfulPaint": {
-      "value": 1166.1768,
-      "display": "1.2 s"
+      "value": 1127.4614,
+      "display": "1.1 s"
     },
     "largestContentfulPaint": {
-      "value": 1223.6768,
+      "value": 1166.9614,
       "display": "1.2 s"
     },
     "totalBlockingTime": {
-      "value": 65,
-      "display": "70 ms"
+      "value": 29,
+      "display": "30 ms"
     },
     "cumulativeLayoutShift": {
       "value": 0.038882138517618466,
       "display": "0.039"
     },
     "speedIndex": {
-      "value": 1166.1768,
-      "display": "1.2 s"
+      "value": 1127.4614,
+      "display": "1.1 s"
     },
     "timeToInteractive": {
-      "value": 1281.1768,
-      "display": "1.3 s"
+      "value": 1206.4614,
+      "display": "1.2 s"
     }
   }
 }
