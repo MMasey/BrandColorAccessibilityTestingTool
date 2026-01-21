@@ -259,10 +259,6 @@ export class ColorInput extends LitElement {
   @state()
   private parsedColor: Color | null = null;
 
-  /** Whether current color input is valid */
-  @state()
-  private isValid = true;
-
   /** Whether user has typed something (for showing errors) */
   @state()
   private hasInput = false;
@@ -282,7 +278,6 @@ export class ColorInput extends LitElement {
     this.value = '';
     this.label = '';
     this.parsedColor = null;
-    this.isValid = true;
     this.hasInput = false;
   }
 
@@ -309,16 +304,13 @@ export class ColorInput extends LitElement {
 
     if (!colorValue) {
       this.parsedColor = null;
-      this.isValid = true;
       return;
     }
 
     if (isValidColor(colorValue)) {
       this.parsedColor = createColor(colorValue, this.label.trim());
-      this.isValid = true;
     } else {
       this.parsedColor = null;
-      this.isValid = false;
     }
   }
 
