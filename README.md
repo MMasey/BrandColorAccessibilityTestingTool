@@ -2,6 +2,8 @@
 
 A web-based tool for testing and validating brand color palettes against WCAG 2.1 accessibility standards. Helps designers and developers ensure their color combinations meet contrast requirements for text readability.
 
+🚀 **[Try it live](https://mmasey.github.io/BrandColorAccessibilityTestingTool/)**
+
 ## Features
 
 - **Color Input**: Enter colors in hex (#RRGGBB, #RGB), RGB, or HSL formats
