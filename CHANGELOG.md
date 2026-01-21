@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Respects prefers-contrast
 
 ### Performance
-- Achieved Lighthouse Performance score: 100/100
+- Achieved Lighthouse Performance score: 97/100
 - First Contentful Paint: 1.1s
 - Largest Contentful Paint: 1.2s
 - Total Blocking Time: 40ms
