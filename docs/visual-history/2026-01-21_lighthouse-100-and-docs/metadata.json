@@ -1,0 +1,61 @@
+{
+  "milestone": "lighthouse-100-and-docs",
+  "capturedAt": "2026-01-21T13:39:12.219Z",
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 900
+    },
+    "tablet": {
+      "width": 768,
+      "height": 1024
+    },
+    "mobile": {
+      "width": 375,
+      "height": 667
+    }
+  },
+  "themes": [
+    "light",
+    "dark",
+    "high-contrast"
+  ],
+  "sampleColors": [
+    {
+      "hex": "#1a1a1a",
+      "label": "Dark"
+    },
+    {
+      "hex": "#ffffff",
+      "label": "White"
+    },
+    {
+      "hex": "#0066cc",
+      "label": "Blue"
+    },
+    {
+      "hex": "#dc2626",
+      "label": "Red"
+    }
+  ],
+  "screenshots": [
+    "desktop-dark-colors.png",
+    "desktop-dark-empty.png",
+    "desktop-high-contrast-colors.png",
+    "desktop-high-contrast-empty.png",
+    "desktop-light-colors.png",
+    "desktop-light-empty.png",
+    "mobile-dark-colors.png",
+    "mobile-dark-empty.png",
+    "mobile-high-contrast-colors.png",
+    "mobile-high-contrast-empty.png",
+    "mobile-light-colors.png",
+    "mobile-light-empty.png",
+    "tablet-dark-colors.png",
+    "tablet-dark-empty.png",
+    "tablet-high-contrast-colors.png",
+    "tablet-high-contrast-empty.png",
+    "tablet-light-colors.png",
+    "tablet-light-empty.png"
+  ]
+}
