@@ -33,8 +33,9 @@ async function waitForApp(page: Page): Promise<void> {
 }
 
 async function setTheme(page: Page, theme: string): Promise<void> {
-  const themeButton = page.locator(`theme-switcher button[title="${theme === 'high-contrast' ? 'High' : theme.charAt(0).toUpperCase() + theme.slice(1)}"]`);
-  await themeButton.click();
+  const labelText = theme === 'high-contrast' ? 'High' : theme.charAt(0).toUpperCase() + theme.slice(1);
+  const themeLabel = page.locator(`theme-switcher label.theme-option:has(span.label:text("${labelText}"))`);
+  await themeLabel.click();
   await page.waitForTimeout(200);
 }
 
