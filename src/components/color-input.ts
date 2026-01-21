@@ -31,12 +31,6 @@ export class ColorInput extends LitElement {
       transition: border-color var(--transition-fast, 150ms ease);
     }
 
-    /* Only highlight container when inputs are focused, not the button */
-    .swatch-container:has(.hex-input:focus),
-    .swatch-container:has(.label-input:focus) {
-      border-color: var(--theme-input-border-color-focus, #0066cc);
-    }
-
     .swatch-container.invalid {
       border-color: var(--theme-error-text-color, #dc2626);
     }
@@ -105,7 +99,7 @@ export class ColorInput extends LitElement {
       background: rgba(0, 0, 0, 0.02);
     }
 
-    .hex-input:focus {
+    .hex-input:focus-visible {
       outline: none;
       border-bottom-style: solid;
       border-bottom-color: var(--theme-focus-ring-color);
@@ -140,7 +134,7 @@ export class ColorInput extends LitElement {
       background: rgba(0, 0, 0, 0.02);
     }
 
-    .label-input:focus {
+    .label-input:focus-visible {
       outline: none;
       border-bottom-style: solid;
       border-bottom-color: var(--theme-focus-ring-color);
@@ -176,9 +170,9 @@ export class ColorInput extends LitElement {
     }
 
     .add-btn:focus-visible {
-      /* Use inset box-shadow instead of outline to avoid clipping by parent's overflow:hidden */
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--theme-focus-ring-color);
+      /* Use outline with negative offset to draw inside element, avoiding overflow:hidden clipping */
+      outline: var(--focus-ring-width, 2px) solid var(--theme-button-text-color);
+      outline-offset: -4px;
     }
 
     .add-btn:disabled {
