@@ -25,12 +25,12 @@ Enable users to export the contrast grid as visual artifacts for documentation, 
 - Export preview before download
 
 # Dependencies
-- Phase 1 complete
-- Phase 2 optional (APCA values in exports)
+- Phase 1 (core contrast checker)
+- Feature 102 optional (APCA values in exports)
 
 # Out of Scope
-- No AI generation → Phase 4
-- No paid features → Phase 5
+- No AI generation → Feature 104
+- No paid features → Feature 105
 
 # Done
 - User can download contrast grid as PNG or SVG

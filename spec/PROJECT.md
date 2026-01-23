@@ -2,7 +2,7 @@
 
 ## Vision
 
-Provide an accessible, easy-to-use web app for designers and developers to validate brand color palettes against WCAG 2.1 and APCA accessibility standards, with multiple export options for integration into projects.
+Provide an accessible, easy-to-use web app for designers and developers to validate brand color palettes against WCAG 2.2 and APCA accessibility standards, with multiple export options for integration into projects.
 
 ## Quality Bar
 
@@ -14,7 +14,7 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 ## Business Model
 
 - **Free tier**: Core contrast checker with ethical, non-intrusive ads
-- **Paid features**: AI mock-up generation (Phase 5)
+- **Paid features**: AI mock-up generation (Feature 105)
 
 ## Tech Stack
 
@@ -24,25 +24,33 @@ Provide an accessible, easy-to-use web app for designers and developers to valid
 - **Testing**: Vitest + Playwright
 - **Architecture**: Web Components with Shadow DOM
 
-## Phases
+## Development Phases
 
-| Phase | Name | Description |
-|-------|------|-------------|
-| 1 | [Core Contrast Checker](001-core-contrast-checker/spec.md) | Color input, contrast grid, WCAG badges |
-| 2 | [APCA & Exports](002-apca-exports/spec.md) | APCA algorithm, CSS/SCSS export |
-| 3 | [Visual Exports](003-visual-exports/spec.md) | Image, PDF, HTML exports |
-| 4 | [AI Color Generation](004-ai-color-gen/spec.md) | AI-generated accessible palettes |
-| 5 | [AI Mockups](005-ai-mockups/spec.md) | Paid AI mockup generation |
+| Phase | Name | Description | Status |
+|-------|------|-------------|--------|
+| 1 | [Core Contrast Checker](001-core-contrast-checker/spec.md) | Color input, contrast grid, WCAG badges | ✅ Complete |
 
-## Feature Specs
+**Note**: The original "phases" 2-5 have been restructured as **independent features (102-105)** below, as they have no sequential dependencies on each other - all depend only on Phase 1.
 
-Feature specs use 100+ numbering to avoid collision with roadmap phases:
+## Feature Roadmap
 
-| ID | Name | Status |
-|----|------|--------|
-| 100 | [Theme Contrast Testing](100-theme-contrast-testing/spec.md) | Planned |
+All features are independent and can be implemented in any order. They share a common dependency on Phase 1 (Core Contrast Checker) but have no interdependencies.
+
+### Core Features (100s)
+
+| ID | Name | Status | Dependencies |
+|----|------|--------|--------------|
+| 100 | [Theme Contrast Testing](100-theme-contrast-testing/spec.md) | Planned | Phase 1 |
+| 101 | [Color Palette Sorting & Reordering](101-color-sorting/spec.md) | Planned | Phase 1 |
+| 102 | [APCA & Code Exports](102-apca-exports/spec.md) | Planned | Phase 1 |
+| 103 | [Visual Exports](103-visual-exports/spec.md) | Planned | Phase 1, optionally 102 |
+| 104 | [AI Color Generation](104-ai-color-gen/spec.md) | Planned | Phase 1 |
+| 105 | [AI Mockup Generation (Paid)](105-ai-mockups/spec.md) | Planned | Phase 1, optionally 104 |
 
 ## Current Status
 
-**Active Phase**: 1 - Core Contrast Checker
-**See**: [001-core-contrast-checker/spec.md](001-core-contrast-checker/spec.md)
+**Completed**: Phase 1 - Core Contrast Checker ✅ (Lighthouse 100/100)
+**Next**: Any feature from 100-105 can be implemented independently
+**Recommended**: Feature 101 (Color Sorting & Reordering) - adds immediate UX value and establishes WCAG 2.2 drag-drop patterns
+
+**See**: [001-core-contrast-checker/tasks.md](001-core-contrast-checker/tasks.md) for Phase 1 completion details

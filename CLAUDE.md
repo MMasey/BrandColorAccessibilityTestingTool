@@ -31,28 +31,29 @@ src/
 
 See [spec/PROJECT.md](spec/PROJECT.md) for the full roadmap.
 
-### Phases (001-005)
+### Phase 1 (Complete)
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | Core Contrast Checker | In Progress |
-| 2 | APCA & Exports | Planned |
-| 3 | Visual Exports | Planned |
-| 4 | AI Color Generation | Planned |
-| 5 | AI Mockups (Paid) | Planned |
+| 1 | Core Contrast Checker | ✅ Complete (Lighthouse 100/100) |
 
-### Feature Specs (100+)
-Standalone features use 100+ numbering to avoid collision with phases.
+### Feature Roadmap (100+)
+All features are independent and can be implemented in any order. Original "phases" 2-5 have been restructured as features 102-105.
 
 | ID | Name | Status |
 |----|------|--------|
 | 100 | Theme Contrast Testing | Planned |
+| 101 | Color Palette Sorting & Reordering | Planned |
+| 102 | APCA & Code Exports | Planned |
+| 103 | Visual Exports | Planned |
+| 104 | AI Color Generation | Planned |
+| 105 | AI Mockup Generation (Paid) | Planned |
 
 All specs follow the SPECKL format with `README.md` + `spec.md`.
 
 ## Design Values
 
 1. **Accessibility First**: The tool tests accessibility, so it must be fully accessible itself
-2. **WCAG Compliance**: All themes meet WCAG 2.1 AA minimum, high-contrast meets AAA
+2. **WCAG Compliance**: All themes meet WCAG 2.2 AA minimum, high-contrast meets AAA
 3. **Semantic HTML**: Proper landmarks, headings, and ARIA where needed
 4. **Keyboard Navigation**: Full keyboard support for all interactions
 5. **Touch-Friendly**: Minimum 44px touch targets
@@ -73,10 +74,12 @@ All specs follow the SPECKL format with `README.md` + `spec.md`.
 - Responsive at all viewport sizes
 
 ### Accessibility Compliance
-- WCAG 2.1 Level AA for light/dark themes
-- WCAG 2.1 Level AAA for high-contrast theme
+- WCAG 2.2 Level AA for light/dark themes
+- WCAG 2.2 Level AAA for high-contrast theme
 - Supports `prefers-reduced-motion`, `prefers-color-scheme`, `prefers-contrast`
 - Windows High Contrast Mode support (`forced-colors`)
+- Keyboard alternatives for all drag-and-drop operations (2.5.7)
+- 44x44px minimum touch targets (exceeds 2.5.8 requirement)
 
 ### Browser Support
 - Modern browsers (Chrome, Firefox, Safari, Edge)
@@ -91,7 +94,7 @@ Three themes via `data-theme` attribute on `<html>`:
 
 Plus `system` mode that respects OS preferences.
 
-CSS variables defined in `src/styles/global.css`.
+CSS variables defined in `src/styles/themes/*.css` (light, dark, high-contrast).
 
 ## Testing Strategy
 

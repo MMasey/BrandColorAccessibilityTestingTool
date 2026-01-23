@@ -215,6 +215,7 @@ export class ContrastGrid extends LitElement {
 
       @media (max-width: 640px) {
         font-size: var(--font-size-xs, 0.75rem);
+        text-align: left;
       }
     }
 

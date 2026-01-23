@@ -26,11 +26,11 @@ Generate accessible color palettes from natural language descriptions of brand p
 - Color explanation/rationale display
 
 # Dependencies
-- Phase 1 complete (contrast checker to validate)
+- Phase 1 (core contrast checker to validate)
 - AI API integration (Anthropic Claude or OpenAI)
 
 # Out of Scope
-- No mockup generation → Phase 5 (paid)
+- No mockup generation → Feature 105 (paid)
 - No logo generation
 - No brand guidelines document
 

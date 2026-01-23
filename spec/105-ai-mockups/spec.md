@@ -27,8 +27,8 @@ Generate visual mockups showing brand colors in context, helping users visualize
 - Clear pricing display
 
 # Dependencies
-- Phase 1 complete (contrast checker)
-- Phase 4 optional (AI color generation)
+- Phase 1 (core contrast checker)
+- Feature 104 optional (AI color generation)
 - Backend for payment processing
 - AI image generation API
 
