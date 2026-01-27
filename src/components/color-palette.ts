@@ -6,6 +6,7 @@ import type { ColorInput } from './color-input';
 import './color-input';
 import './color-swatch';
 import './brand-guidance';
+import './sort-controls';
 
 /**
  * Color palette component for managing a list of brand colors.
@@ -205,6 +206,11 @@ export class ColorPalette extends LitElement {
 
         ${colors.length >= 7 ? html`
           <brand-guidance .colorCount="${colors.length}"></brand-guidance>
+        ` : null}
+
+        <!-- Sort controls (shown when 2+ colors) -->
+        ${colors.length >= 2 ? html`
+          <sort-controls></sort-controls>
         ` : null}
 
         <div class="add-section">
