@@ -48,11 +48,11 @@ export class ColorSwatch extends LitElement {
       }
     }
 
-    /* Drop target indicator: positioned in the middle of the gap */
+    /* Drop target indicator: positioned above the card in the gap */
     :host([is-drop-target]) .swatch-container::before {
       content: '';
       position: absolute;
-      top: -50%;
+      top: -3px; /* Position in the gap between cards */
       left: 0;
       right: 0;
       height: 4px;
@@ -659,7 +659,15 @@ export class ColorSwatch extends LitElement {
    * Move this swatch up in the list
    */
   private moveUp(): void {
-    if (this.index <= 0) return;
+    if (this.index <= 0) {
+      // Announce boundary to screen readers
+      this.dispatchEvent(new CustomEvent('boundary-reached', {
+        detail: { message: 'Cannot move up - already at beginning of list' },
+        bubbles: true,
+        composed: true,
+      }));
+      return;
+    }
 
     this.dispatchEvent(new CustomEvent('swatch-move', {
       detail: { fromIndex: this.index, toIndex: this.index - 1 },
@@ -673,7 +681,15 @@ export class ColorSwatch extends LitElement {
    * Move this swatch down in the list
    */
   private moveDown(): void {
-    if (this.index >= this.totalColors - 1) return;
+    if (this.index >= this.totalColors - 1) {
+      // Announce boundary to screen readers
+      this.dispatchEvent(new CustomEvent('boundary-reached', {
+        detail: { message: 'Cannot move down - already at end of list' },
+        bubbles: true,
+        composed: true,
+      }));
+      return;
+    }
 
     this.dispatchEvent(new CustomEvent('swatch-move', {
       detail: { fromIndex: this.index, toIndex: this.index + 1 },

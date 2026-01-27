@@ -66,6 +66,7 @@ export class ColorPalette extends LitElement {
     .colors-list > li {
       transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      overflow: visible; /* Allow drop indicator to extend above */
     }
 
     /* Disable transitions for reduced-motion users */
@@ -267,11 +268,23 @@ export class ColorPalette extends LitElement {
   private handleColorMove(e: CustomEvent): void {
     const { fromIndex, toIndex } = e.detail;
 
-    // Clear drag state
-    this.draggedIndex = null;
-    this.dropTargetIndex = null;
+    // Enable keyboard preview mode for arrow button moves
+    this.keyboardPreviewMode = true;
+    this.draggedIndex = fromIndex;
+    this.dropTargetIndex = toIndex;
 
-    if (this.store.moveColor(fromIndex, toIndex)) {
+    // Briefly show the transform preview, then update DOM
+    this.requestUpdate();
+
+    // After transform renders, update the actual order
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        // Clear preview state
+        this.draggedIndex = null;
+        this.dropTargetIndex = null;
+        this.keyboardPreviewMode = false;
+
+        if (this.store.moveColor(fromIndex, toIndex)) {
       // Announce to screen readers
       const color = this.store.colors[toIndex];
       const colorLabel = color?.label || color?.hex;
@@ -308,7 +321,14 @@ export class ColorPalette extends LitElement {
           }
         }
       });
-    }
+        }
+      }, 250); // Match transition duration
+    });
+  }
+
+  private handleBoundaryReached(e: CustomEvent): void {
+    // Announce boundary message to screen readers
+    this.statusMessage = e.detail.message;
   }
 
   render() {
@@ -374,6 +394,7 @@ export class ColorPalette extends LitElement {
                   @swatch-drag-start="${this.handleDragStart}"
                   @swatch-drag-end="${this.handleDragEnd}"
                   @swatch-drag-enter="${this.handleDragEnter}"
+                  @boundary-reached="${this.handleBoundaryReached}"
                 ></color-swatch>
               </li>
             `)}
