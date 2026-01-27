@@ -63,6 +63,17 @@ export class ColorPalette extends LitElement {
       overflow-x: hidden;
     }
 
+    .colors-list > li {
+      transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Disable transitions for reduced-motion users */
+    @media (prefers-reduced-motion: reduce) {
+      .colors-list > li {
+        transition: none;
+      }
+    }
+
     .empty-state {
       padding: var(--space-xl, 2rem);
       text-align: center;
@@ -153,6 +164,11 @@ export class ColorPalette extends LitElement {
   @state()
   private dropTargetIndex: number | null = null;
 
+  @state()
+  private keyboardPreviewMode = false;
+
+  private itemHeights = new Map<number, number>();
+
   private handleAddColor(e: CustomEvent): void {
     const { color } = e.detail;
     if (!color) return;
@@ -201,7 +217,43 @@ export class ColorPalette extends LitElement {
     const { index } = e.detail;
     if (this.draggedIndex !== null && index !== this.draggedIndex) {
       this.dropTargetIndex = index;
+      this.requestUpdate(); // Force re-render to update transforms
     }
+  }
+
+  /**
+   * Calculate visual offset for each item during drag
+   * Items between dragged and drop target shift to make room
+   */
+  private getItemTransform(itemIndex: number): string {
+    if (this.draggedIndex === null || this.dropTargetIndex === null) {
+      return 'translateY(0)';
+    }
+
+    const dragIdx = this.draggedIndex;
+    const dropIdx = this.dropTargetIndex;
+
+    // Item being dragged doesn't transform (handled by is-dragging styles)
+    if (itemIndex === dragIdx) {
+      return 'translateY(0)';
+    }
+
+    // Calculate shift direction and amount
+    // If dragging down (dragIdx < dropIdx): items between shift up
+    // If dragging up (dragIdx > dropIdx): items between shift down
+    if (dragIdx < dropIdx) {
+      // Dragging downward: items between dragIdx and dropIdx shift up
+      if (itemIndex > dragIdx && itemIndex <= dropIdx) {
+        return 'translateY(-100%)'; // Shift up by one item height
+      }
+    } else {
+      // Dragging upward: items between dropIdx and dragIdx shift down
+      if (itemIndex >= dropIdx && itemIndex < dragIdx) {
+        return 'translateY(100%)'; // Shift down by one item height
+      }
+    }
+
+    return 'translateY(0)';
   }
 
   /**
@@ -299,7 +351,7 @@ export class ColorPalette extends LitElement {
           <!-- Using native ul/li instead of ARIA roles for better semantics -->
           <ul class="colors-list">
             ${colors.map((color: Color, index: number) => html`
-              <li>
+              <li style="transform: ${this.getItemTransform(index)};">
                 <color-swatch
                   .color="${color}"
                   .index="${index}"

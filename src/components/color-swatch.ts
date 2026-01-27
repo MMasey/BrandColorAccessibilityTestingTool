@@ -48,14 +48,14 @@ export class ColorSwatch extends LitElement {
       }
     }
 
-    /* Drop target indicator: show where item will be dropped */
+    /* Drop target indicator: positioned in the middle of the gap */
     :host([is-drop-target]) .swatch-container::before {
       content: '';
       position: absolute;
-      top: -4px;
+      top: -50%;
       left: 0;
       right: 0;
-      height: 6px;
+      height: 4px;
       background: var(--theme-focus-ring-color, #0066cc);
       border-radius: var(--radius-sm, 0.25rem);
       z-index: 10;
@@ -77,18 +77,6 @@ export class ColorSwatch extends LitElement {
 
       :host([is-drop-target]) .swatch-container::before {
         animation: pulse 1s ease-in-out infinite;
-      }
-
-      /* Highlight drop target area - create space */
-      :host([is-drop-target]) .swatch-container {
-        transform: translateY(4px);
-      }
-    }
-
-    /* Smooth transitions for all items during drag (respects prefers-reduced-motion) */
-    @media (prefers-reduced-motion: no-preference) {
-      :host {
-        transition: transform 200ms ease-out;
       }
     }
 
