@@ -193,17 +193,23 @@ export class ColorPalette extends LitElement {
       const colorLabel = color?.label || color?.hex;
       this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
 
-      // Focus management: move focus to the moved color
+      // Focus management: keep focus on the same button type (up/down)
       this.updateComplete.then(() => {
         const colorsList = this.shadowRoot?.querySelector('.colors-list');
         if (colorsList) {
           const swatchElements = colorsList.querySelectorAll('color-swatch');
           const targetSwatch = swatchElements[toIndex];
           if (targetSwatch) {
-            // Find the first focusable element within the swatch (the move up button)
-            const moveButton = targetSwatch.shadowRoot?.querySelector<HTMLButtonElement>('.reorder-btn');
-            if (moveButton) {
-              moveButton.focus();
+            // Determine which button was pressed based on direction
+            // If moved down (toIndex > fromIndex), focus the down button (second .reorder-btn)
+            // If moved up (toIndex < fromIndex), focus the up button (first .reorder-btn)
+            const movedDown = toIndex > fromIndex;
+            const buttons = targetSwatch.shadowRoot?.querySelectorAll<HTMLButtonElement>('.reorder-btn');
+            if (buttons && buttons.length === 2) {
+              const targetButton = movedDown ? buttons[1] : buttons[0];
+              if (targetButton) {
+                targetButton.focus();
+              }
             }
           }
         }
@@ -213,6 +219,8 @@ export class ColorPalette extends LitElement {
 
   render() {
     const colors = this.store.colors;
+    const { criteria } = this.store.getSortState();
+    const showReorderControls = criteria === 'manual';
 
     return html`
       <div class="palette">
@@ -259,7 +267,7 @@ export class ColorPalette extends LitElement {
                   .color="${color}"
                   .index="${index}"
                   .totalColors="${colors.length}"
-                  ?manual-reorder-enabled="${this.store.isManualReorderEnabled()}"
+                  ?manual-reorder-enabled="${showReorderControls}"
                   show-remove
                   editable-label
                   draggable-swatch

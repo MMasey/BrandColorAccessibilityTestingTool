@@ -512,9 +512,6 @@ export class ColorSwatch extends LitElement {
       <div
         class="swatch-container ${this.isDragging ? 'dragging' : ''}"
         style="--swatch-color: ${this.color.hex}"
-        draggable="${this.draggableSwatch && this.manualReorderEnabled}"
-        @dragstart="${this.handleDragStart}"
-        @dragend="${this.handleDragEnd}"
         @dragover="${this.handleDragOver}"
         @drop="${this.handleDrop}"
       >
@@ -548,11 +545,14 @@ export class ColorSwatch extends LitElement {
         ${this.draggableSwatch && this.manualReorderEnabled ? html`
           <div
             class="drag-handle"
+            draggable="true"
             role="img"
             aria-label="Drag to reorder ${hasLabel ? label : this.color.hex}"
             title="Drag to reorder"
+            @dragstart="${this.handleDragStart}"
+            @dragend="${this.handleDragEnd}"
           >
-            <svg viewBox="0 0 24 24" fill="currentColor">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="pointer-events: none;">
               <circle cx="9" cy="5" r="1.5"/>
               <circle cx="9" cy="12" r="1.5"/>
               <circle cx="9" cy="19" r="1.5"/>
