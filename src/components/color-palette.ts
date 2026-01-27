@@ -65,6 +65,7 @@ export class ColorPalette extends LitElement {
 
     .colors-list > li {
       transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
     }
 
     /* Disable transitions for reduced-motion users */
@@ -206,11 +207,14 @@ export class ColorPalette extends LitElement {
 
   private handleDragStart(e: CustomEvent): void {
     this.draggedIndex = e.detail.index;
+    // Disable keyboard preview mode during mouse drag (transforms break drop detection)
+    this.keyboardPreviewMode = false;
   }
 
   private handleDragEnd(): void {
     this.draggedIndex = null;
     this.dropTargetIndex = null;
+    this.keyboardPreviewMode = false;
   }
 
   private handleDragEnter(e: CustomEvent): void {
@@ -222,34 +226,35 @@ export class ColorPalette extends LitElement {
   }
 
   /**
-   * Calculate visual offset for each item during drag
+   * Calculate visual offset for each item during keyboard navigation
    * Items between dragged and drop target shift to make room
+   * Only active during keyboard navigation (not mouse drag, which breaks drop detection)
    */
   private getItemTransform(itemIndex: number): string {
-    if (this.draggedIndex === null || this.dropTargetIndex === null) {
+    // Only apply transforms during keyboard preview mode
+    // Mouse drag has transforms disabled because they break drop detection
+    if (!this.keyboardPreviewMode || this.draggedIndex === null || this.dropTargetIndex === null) {
       return 'translateY(0)';
     }
 
     const dragIdx = this.draggedIndex;
     const dropIdx = this.dropTargetIndex;
 
-    // Item being dragged doesn't transform (handled by is-dragging styles)
+    // Don't transform the dragged item itself
     if (itemIndex === dragIdx) {
       return 'translateY(0)';
     }
 
-    // Calculate shift direction and amount
-    // If dragging down (dragIdx < dropIdx): items between shift up
-    // If dragging up (dragIdx > dropIdx): items between shift down
+    // Shift items between drag and drop positions
     if (dragIdx < dropIdx) {
-      // Dragging downward: items between dragIdx and dropIdx shift up
+      // Dragging down: shift items up
       if (itemIndex > dragIdx && itemIndex <= dropIdx) {
-        return 'translateY(-100%)'; // Shift up by one item height
+        return 'translateY(-100%)';
       }
     } else {
-      // Dragging upward: items between dropIdx and dragIdx shift down
+      // Dragging up: shift items down
       if (itemIndex >= dropIdx && itemIndex < dragIdx) {
-        return 'translateY(100%)'; // Shift down by one item height
+        return 'translateY(100%)';
       }
     }
 

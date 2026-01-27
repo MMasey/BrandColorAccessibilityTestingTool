@@ -485,34 +485,123 @@ export class ColorSwatch extends LitElement {
   // ========================================================================
 
   private handleDragStart(e: DragEvent): void {
-    if (!this.draggableSwatch || !this.manualReorderEnabled || !e.dataTransfer) return;
+    if (!this.draggableSwatch || !this.manualReorderEnabled || !e.dataTransfer || !this.color) return;
 
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', String(this.index));
 
-    // Create custom drag image for better visual feedback
+    // Create custom drag image that looks like the actual card
     const container = this.shadowRoot?.querySelector('.swatch-container') as HTMLElement;
     if (container) {
-      // Clone the container for the drag image
-      const dragImage = container.cloneNode(true) as HTMLElement;
+      // Get actual DOM elements to read their computed styles
+      const colorBoxEl = this.shadowRoot?.querySelector('.color-preview') as HTMLElement;
+      const hexEl = this.shadowRoot?.querySelector('.color-hex') as HTMLElement;
+      const labelEl = this.shadowRoot?.querySelector('.color-label') as HTMLElement;
 
-      // Style the drag image to look lifted
+      // Create a visual drag image
+      const dragImage = document.createElement('div');
+
+      // Copy exact computed styles from container
+      const containerStyle = window.getComputedStyle(container);
+      dragImage.style.width = `${container.offsetWidth}px`;
+      dragImage.style.height = `${container.offsetHeight}px`;
+      dragImage.style.minHeight = containerStyle.minHeight;
+      dragImage.style.backgroundColor = containerStyle.backgroundColor;
+      dragImage.style.border = containerStyle.border;
+      dragImage.style.borderRadius = containerStyle.borderRadius;
+      dragImage.style.boxShadow = containerStyle.boxShadow;
+      dragImage.style.display = 'flex';
+      dragImage.style.alignItems = 'stretch';
+      dragImage.style.overflow = 'hidden';
+      dragImage.style.fontFamily = containerStyle.fontFamily;
+
+      // Add dramatic lift effect
+      dragImage.style.transform = 'scale(1.05) rotate(2deg)';
+      dragImage.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.3)';
+      dragImage.style.opacity = '0.98';
+
+      // Create color preview box matching actual element
+      const colorBox = document.createElement('div');
+      if (colorBoxEl) {
+        const colorBoxStyle = window.getComputedStyle(colorBoxEl);
+        colorBox.style.width = colorBoxStyle.width;
+        colorBox.style.minWidth = colorBoxStyle.minWidth;
+        colorBox.style.flexShrink = colorBoxStyle.flexShrink;
+      } else {
+        colorBox.style.width = '3rem';
+        colorBox.style.minWidth = '3rem';
+        colorBox.style.flexShrink = '0';
+      }
+      colorBox.style.background = this.color.hex;
+
+      // Create info section matching actual element structure
+      const info = document.createElement('div');
+      info.style.flex = '1';
+      info.style.display = 'flex';
+      info.style.flexDirection = 'column';
+      info.style.justifyContent = 'center';
+      info.style.gap = '0.125rem';
+      info.style.minWidth = '0';
+      info.style.padding = '0.25rem 0.5rem';
+
+      // Create hex text matching actual element
+      const hex = document.createElement('div');
+      hex.textContent = this.color.hex;
+      if (hexEl) {
+        const hexStyle = window.getComputedStyle(hexEl);
+        hex.style.fontFamily = hexStyle.fontFamily;
+        hex.style.fontSize = hexStyle.fontSize;
+        hex.style.fontWeight = hexStyle.fontWeight;
+        hex.style.color = hexStyle.color;
+        hex.style.lineHeight = hexStyle.lineHeight;
+      } else {
+        hex.style.fontFamily = 'monospace';
+        hex.style.fontSize = '1rem';
+        hex.style.fontWeight = '500';
+        hex.style.color = containerStyle.color;
+      }
+      info.appendChild(hex);
+
+      // Create label text if present, matching actual element
+      if (this.color.label) {
+        const label = document.createElement('div');
+        label.textContent = this.color.label;
+        if (labelEl) {
+          const labelStyle = window.getComputedStyle(labelEl);
+          label.style.fontSize = labelStyle.fontSize;
+          label.style.color = labelStyle.color;
+          label.style.fontWeight = labelStyle.fontWeight;
+          label.style.lineHeight = labelStyle.lineHeight;
+          label.style.overflow = 'hidden';
+          label.style.textOverflow = 'ellipsis';
+          label.style.whiteSpace = 'nowrap';
+        } else {
+          // Fallback styling
+          label.style.fontSize = '0.75rem';
+          label.style.color = '#999';
+          label.style.overflow = 'hidden';
+          label.style.textOverflow = 'ellipsis';
+          label.style.whiteSpace = 'nowrap';
+        }
+        info.appendChild(label);
+      }
+
+      dragImage.appendChild(colorBox);
+      dragImage.appendChild(info);
+
+      // Position offscreen
       dragImage.style.position = 'absolute';
       dragImage.style.top = '-1000px';
       dragImage.style.left = '-1000px';
-      dragImage.style.width = `${container.offsetWidth}px`;
-      dragImage.style.transform = 'scale(1.05) rotate(2deg)';
-      dragImage.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.25)';
-      dragImage.style.opacity = '0.95';
       dragImage.style.pointerEvents = 'none';
 
-      // Temporarily add to document for drag image
+      // Add to document temporarily
       document.body.appendChild(dragImage);
 
-      // Set as drag image (offset to center under cursor)
+      // Set as drag image centered on cursor
       e.dataTransfer.setDragImage(dragImage, container.offsetWidth / 2, container.offsetHeight / 2);
 
-      // Clean up after a short delay
+      // Clean up
       requestAnimationFrame(() => {
         document.body.removeChild(dragImage);
       });
