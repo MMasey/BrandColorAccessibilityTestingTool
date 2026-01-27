@@ -125,6 +125,39 @@ export class SortControls extends LitElement {
       }
     }
 
+    .toggle-reorder-btn {
+      padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+      background: transparent;
+      color: var(--theme-text-secondary-color);
+      border: 1px solid var(--theme-input-border-color, #d4d4d4);
+      border-radius: var(--radius-sm, 0.25rem);
+      font-size: var(--font-size-sm, 0.875rem);
+      cursor: pointer;
+      transition: all var(--transition-fast, 150ms ease);
+      min-width: 44px;
+      min-height: 44px;
+
+      &:hover {
+        background: var(--theme-card-bg-color-hover);
+        border-color: var(--theme-text-secondary-color);
+      }
+
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+        outline-offset: var(--focus-ring-offset, 2px);
+      }
+
+      &.active {
+        background: var(--theme-button-bg-color);
+        border-color: var(--theme-button-border-color);
+        color: var(--theme-button-text-color);
+      }
+
+      @media (max-width: 640px) {
+        font-size: var(--font-size-xs, 0.75rem);
+      }
+    }
+
     .sort-indicator {
       display: inline-flex;
       align-items: center;
@@ -154,7 +187,8 @@ export class SortControls extends LitElement {
     @media (forced-colors: active) {
       .sort-select,
       .direction-btn,
-      .reset-btn {
+      .reset-btn,
+      .toggle-reorder-btn {
         border: 2px solid CanvasText;
       }
 
@@ -197,9 +231,16 @@ export class SortControls extends LitElement {
     this.statusMessage = 'Colors reset to original order';
   }
 
+  private toggleManualReorder(): void {
+    this.store.toggleManualReorder();
+    const enabled = this.store.isManualReorderEnabled();
+    this.statusMessage = `Manual reordering ${enabled ? 'enabled' : 'disabled'}`;
+  }
+
   render() {
     const { criteria, direction, isSorted } = this.store.getSortState();
     const colors = this.store.colors;
+    const manualReorderEnabled = this.store.isManualReorderEnabled();
 
     // Don't show controls if less than 2 colors
     if (colors.length < 2) {
@@ -257,6 +298,17 @@ export class SortControls extends LitElement {
             ↺ Reset
           </button>
         ` : null}
+
+        <button
+          type="button"
+          class="toggle-reorder-btn ${manualReorderEnabled ? 'active' : ''}"
+          @click="${this.toggleManualReorder}"
+          aria-label="${manualReorderEnabled ? 'Disable' : 'Enable'} manual reordering"
+          aria-pressed="${manualReorderEnabled}"
+          title="${manualReorderEnabled ? 'Hide' : 'Show'} drag handles and move buttons"
+        >
+          ${manualReorderEnabled ? '⋮⋮' : '⋮⋮'}
+        </button>
 
         ${isSorted ? html`
           <span class="sort-indicator" aria-label="Currently sorted">

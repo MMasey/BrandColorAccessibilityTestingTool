@@ -330,6 +330,10 @@ export class ColorSwatch extends LitElement {
   @property({ type: Boolean, attribute: 'draggable-swatch' })
   draggableSwatch = false;
 
+  /** Whether manual reorder controls should be visible */
+  @property({ type: Boolean, attribute: 'manual-reorder-enabled' })
+  manualReorderEnabled = false;
+
   /** Index of this swatch in the palette (for reordering) */
   @property({ type: Number })
   index = -1;
@@ -420,7 +424,7 @@ export class ColorSwatch extends LitElement {
   // ========================================================================
 
   private handleDragStart(e: DragEvent): void {
-    if (!this.draggableSwatch || !e.dataTransfer) return;
+    if (!this.draggableSwatch || !this.manualReorderEnabled || !e.dataTransfer) return;
 
     this.isDragging = true;
     e.dataTransfer.effectAllowed = 'move';
@@ -444,7 +448,7 @@ export class ColorSwatch extends LitElement {
   }
 
   private handleDragOver(e: DragEvent): void {
-    if (!this.draggableSwatch) return;
+    if (!this.draggableSwatch || !this.manualReorderEnabled) return;
 
     e.preventDefault(); // Required to allow drop
     if (e.dataTransfer) {
@@ -453,7 +457,7 @@ export class ColorSwatch extends LitElement {
   }
 
   private handleDrop(e: DragEvent): void {
-    if (!this.draggableSwatch || !e.dataTransfer) return;
+    if (!this.draggableSwatch || !this.manualReorderEnabled || !e.dataTransfer) return;
 
     e.preventDefault();
     const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
@@ -508,14 +512,14 @@ export class ColorSwatch extends LitElement {
       <div
         class="swatch-container ${this.isDragging ? 'dragging' : ''}"
         style="--swatch-color: ${this.color.hex}"
-        ?draggable="${this.draggableSwatch}"
+        draggable="${this.draggableSwatch && this.manualReorderEnabled}"
         @dragstart="${this.handleDragStart}"
         @dragend="${this.handleDragEnd}"
         @dragover="${this.handleDragOver}"
         @drop="${this.handleDrop}"
       >
         <!-- WCAG 2.2 2.5.7: Keyboard alternative to dragging -->
-        ${this.draggableSwatch ? html`
+        ${this.draggableSwatch && this.manualReorderEnabled ? html`
           <div class="reorder-buttons">
             <button
               type="button"
@@ -541,7 +545,7 @@ export class ColorSwatch extends LitElement {
         ` : null}
 
         <!-- Drag handle (mouse/touch alternative) -->
-        ${this.draggableSwatch ? html`
+        ${this.draggableSwatch && this.manualReorderEnabled ? html`
           <div
             class="drag-handle"
             role="img"

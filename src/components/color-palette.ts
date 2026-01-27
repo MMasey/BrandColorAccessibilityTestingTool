@@ -192,6 +192,22 @@ export class ColorPalette extends LitElement {
       const color = this.store.colors[toIndex];
       const colorLabel = color?.label || color?.hex;
       this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
+
+      // Focus management: move focus to the moved color
+      this.updateComplete.then(() => {
+        const colorsList = this.shadowRoot?.querySelector('.colors-list');
+        if (colorsList) {
+          const swatchElements = colorsList.querySelectorAll('color-swatch');
+          const targetSwatch = swatchElements[toIndex];
+          if (targetSwatch) {
+            // Find the first focusable element within the swatch (the move up button)
+            const moveButton = targetSwatch.shadowRoot?.querySelector<HTMLButtonElement>('.reorder-btn');
+            if (moveButton) {
+              moveButton.focus();
+            }
+          }
+        }
+      });
     }
   }
 
@@ -243,6 +259,7 @@ export class ColorPalette extends LitElement {
                   .color="${color}"
                   .index="${index}"
                   .totalColors="${colors.length}"
+                  ?manual-reorder-enabled="${this.store.isManualReorderEnabled()}"
                   show-remove
                   editable-label
                   draggable-swatch
