@@ -182,6 +182,19 @@ export class ColorPalette extends LitElement {
     }
   }
 
+  /**
+   * Handle color reordering via drag-and-drop or move buttons
+   */
+  private handleColorMove(e: CustomEvent): void {
+    const { fromIndex, toIndex } = e.detail;
+    if (this.store.moveColor(fromIndex, toIndex)) {
+      // Announce to screen readers
+      const color = this.store.colors[toIndex];
+      const colorLabel = color?.label || color?.hex;
+      this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
+    }
+  }
+
   render() {
     const colors = this.store.colors;
 
@@ -228,10 +241,15 @@ export class ColorPalette extends LitElement {
               <li>
                 <color-swatch
                   .color="${color}"
+                  .index="${index}"
+                  .totalColors="${colors.length}"
                   show-remove
                   editable-label
+                  draggable-swatch
                   @swatch-remove="${() => this.removeColor(index)}"
                   @label-change="${(e: CustomEvent) => this.updateColorLabel(index, e.detail.label)}"
+                  @swatch-move="${this.handleColorMove}"
+                  @swatch-drop="${this.handleColorMove}"
                 ></color-swatch>
               </li>
             `)}

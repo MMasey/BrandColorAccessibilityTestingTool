@@ -26,6 +26,89 @@ export class ColorSwatch extends LitElement {
       border-radius: var(--radius-md, 0.5rem);
       overflow: hidden;
       min-height: var(--touch-target-min, 44px);
+      transition: opacity var(--transition-fast, 150ms ease),
+                  transform var(--transition-fast, 150ms ease);
+    }
+
+    .swatch-container.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .drag-handle {
+      width: var(--touch-target-min, 44px);
+      min-width: var(--touch-target-min, 44px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--theme-input-border-color);
+      color: var(--theme-text-muted-color);
+      cursor: grab;
+      transition: color var(--transition-fast, 150ms ease),
+                  background var(--transition-fast, 150ms ease);
+    }
+
+    .drag-handle:hover {
+      background: var(--theme-card-bg-color-hover);
+      color: var(--theme-text-color);
+    }
+
+    .drag-handle:focus-visible {
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+      outline-offset: -4px;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .drag-handle svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .reorder-buttons {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--theme-input-border-color);
+    }
+
+    .reorder-btn {
+      width: var(--touch-target-min, 44px);
+      min-width: var(--touch-target-min, 44px);
+      height: 22px;
+      min-height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--theme-text-muted-color);
+      cursor: pointer;
+      transition: color var(--transition-fast, 150ms ease),
+                  background var(--transition-fast, 150ms ease);
+      font-size: var(--font-size-xs, 0.75rem);
+    }
+
+    .reorder-btn:hover:not(:disabled) {
+      background: var(--theme-card-bg-color-hover);
+      color: var(--theme-text-color);
+    }
+
+    .reorder-btn:focus-visible {
+      outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
+      outline-offset: -4px;
+    }
+
+    .reorder-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .reorder-btn:not(:last-child) {
+      border-bottom: 1px solid var(--theme-input-border-color);
     }
 
     .color-box {
@@ -212,6 +295,18 @@ export class ColorSwatch extends LitElement {
       .remove-btn {
         border-left: 2px solid CanvasText;
       }
+
+      .drag-handle {
+        border-right: 2px solid CanvasText;
+      }
+
+      .reorder-buttons {
+        border-right: 2px solid CanvasText;
+      }
+
+      .reorder-btn {
+        border: 2px solid CanvasText;
+      }
     }
   `;
 
@@ -231,6 +326,18 @@ export class ColorSwatch extends LitElement {
   @property({ type: Boolean, reflect: true })
   compact = false;
 
+  /** Whether to enable drag-and-drop reordering */
+  @property({ type: Boolean, attribute: 'draggable-swatch' })
+  draggableSwatch = false;
+
+  /** Index of this swatch in the palette (for reordering) */
+  @property({ type: Number })
+  index = -1;
+
+  /** Total number of colors (for reordering) */
+  @property({ type: Number, attribute: 'total-colors' })
+  totalColors = 0;
+
   /** Whether currently editing the label */
   @state()
   private isEditing = false;
@@ -238,6 +345,10 @@ export class ColorSwatch extends LitElement {
   /** Temporary label value while editing */
   @state()
   private editValue = '';
+
+  /** Whether this swatch is being dragged */
+  @state()
+  private isDragging = false;
 
   private handleRemove(e: Event): void {
     e.stopPropagation();
@@ -304,14 +415,150 @@ export class ColorSwatch extends LitElement {
     this.editValue = input.value;
   }
 
+  // ========================================================================
+  // Drag-and-Drop & Reordering (WCAG 2.2 2.5.7 Compliant)
+  // ========================================================================
+
+  private handleDragStart(e: DragEvent): void {
+    if (!this.draggableSwatch || !e.dataTransfer) return;
+
+    this.isDragging = true;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(this.index));
+
+    // Dispatch event so parent can track what's being dragged
+    this.dispatchEvent(new CustomEvent('swatch-drag-start', {
+      detail: { index: this.index },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private handleDragEnd(): void {
+    this.isDragging = false;
+
+    this.dispatchEvent(new CustomEvent('swatch-drag-end', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private handleDragOver(e: DragEvent): void {
+    if (!this.draggableSwatch) return;
+
+    e.preventDefault(); // Required to allow drop
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+  }
+
+  private handleDrop(e: DragEvent): void {
+    if (!this.draggableSwatch || !e.dataTransfer) return;
+
+    e.preventDefault();
+    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    const toIndex = this.index;
+
+    if (fromIndex !== toIndex && !isNaN(fromIndex)) {
+      this.dispatchEvent(new CustomEvent('swatch-drop', {
+        detail: { fromIndex, toIndex },
+        bubbles: true,
+        composed: true,
+      }));
+    }
+  }
+
+  /**
+   * WCAG 2.2 2.5.7 Dragging Movements - Keyboard Alternative
+   * Move this swatch up in the list
+   */
+  private moveUp(): void {
+    if (this.index <= 0) return;
+
+    this.dispatchEvent(new CustomEvent('swatch-move', {
+      detail: { fromIndex: this.index, toIndex: this.index - 1 },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  /**
+   * WCAG 2.2 2.5.7 Dragging Movements - Keyboard Alternative
+   * Move this swatch down in the list
+   */
+  private moveDown(): void {
+    if (this.index >= this.totalColors - 1) return;
+
+    this.dispatchEvent(new CustomEvent('swatch-move', {
+      detail: { fromIndex: this.index, toIndex: this.index + 1 },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   render() {
     if (!this.color) return null;
 
     const label = this.color.label || '';
     const hasLabel = label.length > 0;
+    const canMoveUp = this.index > 0;
+    const canMoveDown = this.index < this.totalColors - 1;
 
     return html`
-      <div class="swatch-container" style="--swatch-color: ${this.color.hex}">
+      <div
+        class="swatch-container ${this.isDragging ? 'dragging' : ''}"
+        style="--swatch-color: ${this.color.hex}"
+        ?draggable="${this.draggableSwatch}"
+        @dragstart="${this.handleDragStart}"
+        @dragend="${this.handleDragEnd}"
+        @dragover="${this.handleDragOver}"
+        @drop="${this.handleDrop}"
+      >
+        <!-- WCAG 2.2 2.5.7: Keyboard alternative to dragging -->
+        ${this.draggableSwatch ? html`
+          <div class="reorder-buttons">
+            <button
+              type="button"
+              class="reorder-btn"
+              aria-label="Move ${hasLabel ? label : this.color.hex} up"
+              title="Move up"
+              ?disabled="${!canMoveUp}"
+              @click="${this.moveUp}"
+            >
+              ▲
+            </button>
+            <button
+              type="button"
+              class="reorder-btn"
+              aria-label="Move ${hasLabel ? label : this.color.hex} down"
+              title="Move down"
+              ?disabled="${!canMoveDown}"
+              @click="${this.moveDown}"
+            >
+              ▼
+            </button>
+          </div>
+        ` : null}
+
+        <!-- Drag handle (mouse/touch alternative) -->
+        ${this.draggableSwatch ? html`
+          <div
+            class="drag-handle"
+            role="img"
+            aria-label="Drag to reorder ${hasLabel ? label : this.color.hex}"
+            title="Drag to reorder"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="9" cy="5" r="1.5"/>
+              <circle cx="9" cy="12" r="1.5"/>
+              <circle cx="9" cy="19" r="1.5"/>
+              <circle cx="15" cy="5" r="1.5"/>
+              <circle cx="15" cy="12" r="1.5"/>
+              <circle cx="15" cy="19" r="1.5"/>
+            </svg>
+          </div>
+        ` : null}
+
         <div class="color-box" aria-hidden="true"></div>
 
         <div class="info">
