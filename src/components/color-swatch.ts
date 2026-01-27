@@ -29,20 +29,22 @@ export class ColorSwatch extends LitElement {
       position: relative;
       transition: opacity var(--transition-fast, 150ms ease),
                   transform var(--transition-fast, 150ms ease),
-                  box-shadow var(--transition-fast, 150ms ease);
+                  box-shadow var(--transition-fast, 150ms ease),
+                  border-style var(--transition-fast, 150ms ease);
     }
 
     /* Dragging state: lift and fade */
     :host([is-dragging]) .swatch-container {
-      opacity: 0.4;
+      opacity: 0.3;
       cursor: grabbing;
+      border-style: dashed;
     }
 
     /* Lift effect when starting drag (respects prefers-reduced-motion) */
     @media (prefers-reduced-motion: no-preference) {
       :host([is-dragging]) .swatch-container {
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: scale(0.95) rotate(-1deg);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
     }
 
@@ -50,13 +52,37 @@ export class ColorSwatch extends LitElement {
     :host([is-drop-target]) .swatch-container::before {
       content: '';
       position: absolute;
-      top: -2px;
+      top: -4px;
       left: 0;
       right: 0;
-      height: 4px;
+      height: 6px;
       background: var(--theme-focus-ring-color, #0066cc);
       border-radius: var(--radius-sm, 0.25rem);
       z-index: 10;
+      box-shadow: 0 0 12px var(--theme-focus-ring-color, #0066cc);
+    }
+
+    /* Pulse animation for drop indicator (respects prefers-reduced-motion) */
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+          box-shadow: 0 0 12px var(--theme-focus-ring-color, #0066cc);
+        }
+        50% {
+          opacity: 0.7;
+          box-shadow: 0 0 20px var(--theme-focus-ring-color, #0066cc);
+        }
+      }
+
+      :host([is-drop-target]) .swatch-container::before {
+        animation: pulse 1s ease-in-out infinite;
+      }
+
+      /* Highlight drop target area - create space */
+      :host([is-drop-target]) .swatch-container {
+        transform: translateY(4px);
+      }
     }
 
     /* Smooth transitions for all items during drag (respects prefers-reduced-motion) */
@@ -475,6 +501,34 @@ export class ColorSwatch extends LitElement {
 
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', String(this.index));
+
+    // Create custom drag image for better visual feedback
+    const container = this.shadowRoot?.querySelector('.swatch-container') as HTMLElement;
+    if (container) {
+      // Clone the container for the drag image
+      const dragImage = container.cloneNode(true) as HTMLElement;
+
+      // Style the drag image to look lifted
+      dragImage.style.position = 'absolute';
+      dragImage.style.top = '-1000px';
+      dragImage.style.left = '-1000px';
+      dragImage.style.width = `${container.offsetWidth}px`;
+      dragImage.style.transform = 'scale(1.05) rotate(2deg)';
+      dragImage.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.25)';
+      dragImage.style.opacity = '0.95';
+      dragImage.style.pointerEvents = 'none';
+
+      // Temporarily add to document for drag image
+      document.body.appendChild(dragImage);
+
+      // Set as drag image (offset to center under cursor)
+      e.dataTransfer.setDragImage(dragImage, container.offsetWidth / 2, container.offsetHeight / 2);
+
+      // Clean up after a short delay
+      requestAnimationFrame(() => {
+        document.body.removeChild(dragImage);
+      });
+    }
 
     // Dispatch event so parent can track what's being dragged
     this.dispatchEvent(new CustomEvent('swatch-drag-start', {

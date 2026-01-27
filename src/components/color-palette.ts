@@ -220,21 +220,31 @@ export class ColorPalette extends LitElement {
       const colorLabel = color?.label || color?.hex;
       this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
 
-      // Focus management: keep focus on the same button type (up/down)
+      // Focus management: keep focus on an ENABLED button
       this.updateComplete.then(() => {
         const colorsList = this.shadowRoot?.querySelector('.colors-list');
         if (colorsList) {
           const swatchElements = colorsList.querySelectorAll('color-swatch');
           const targetSwatch = swatchElements[toIndex];
           if (targetSwatch) {
-            // Determine which button was pressed based on direction
-            // If moved down (toIndex > fromIndex), focus the down button (second .reorder-btn)
-            // If moved up (toIndex < fromIndex), focus the up button (first .reorder-btn)
-            const movedDown = toIndex > fromIndex;
             const buttons = targetSwatch.shadowRoot?.querySelectorAll<HTMLButtonElement>('.reorder-btn');
             if (buttons && buttons.length === 2) {
-              const targetButton = movedDown ? buttons[1] : buttons[0];
-              if (targetButton) {
+              let targetButton: HTMLButtonElement | null = null;
+
+              // Smart focus: always focus an enabled button
+              if (toIndex === 0) {
+                // At first position: up button disabled, focus down button
+                targetButton = buttons[1];
+              } else if (toIndex === colors.length - 1) {
+                // At last position: down button disabled, focus up button
+                targetButton = buttons[0];
+              } else {
+                // Middle positions: focus the button that matches direction of movement
+                const movedDown = toIndex > fromIndex;
+                targetButton = movedDown ? buttons[1] : buttons[0];
+              }
+
+              if (targetButton && !targetButton.disabled) {
                 targetButton.focus();
               }
             }
