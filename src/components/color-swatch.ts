@@ -26,13 +26,44 @@ export class ColorSwatch extends LitElement {
       border-radius: var(--radius-md, 0.5rem);
       overflow: hidden;
       min-height: var(--touch-target-min, 44px);
+      position: relative;
       transition: opacity var(--transition-fast, 150ms ease),
-                  transform var(--transition-fast, 150ms ease);
+                  transform var(--transition-fast, 150ms ease),
+                  box-shadow var(--transition-fast, 150ms ease);
     }
 
-    .swatch-container.dragging {
-      opacity: 0.5;
+    /* Dragging state: lift and fade */
+    :host([is-dragging]) .swatch-container {
+      opacity: 0.4;
       cursor: grabbing;
+    }
+
+    /* Lift effect when starting drag (respects prefers-reduced-motion) */
+    @media (prefers-reduced-motion: no-preference) {
+      :host([is-dragging]) .swatch-container {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    /* Drop target indicator: show where item will be dropped */
+    :host([is-drop-target]) .swatch-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--theme-focus-ring-color, #0066cc);
+      border-radius: var(--radius-sm, 0.25rem);
+      z-index: 10;
+    }
+
+    /* Smooth transitions for all items during drag (respects prefers-reduced-motion) */
+    @media (prefers-reduced-motion: no-preference) {
+      :host {
+        transition: transform 200ms ease-out;
+      }
     }
 
     .drag-handle {
@@ -47,12 +78,20 @@ export class ColorSwatch extends LitElement {
       color: var(--theme-text-muted-color);
       cursor: grab;
       transition: color var(--transition-fast, 150ms ease),
-                  background var(--transition-fast, 150ms ease);
+                  background var(--transition-fast, 150ms ease),
+                  transform var(--transition-fast, 150ms ease);
+      user-select: none;
     }
 
     .drag-handle:hover {
       background: var(--theme-card-bg-color-hover);
       color: var(--theme-text-color);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .drag-handle:hover {
+        transform: scale(1.05);
+      }
     }
 
     .drag-handle:focus-visible {
@@ -61,6 +100,10 @@ export class ColorSwatch extends LitElement {
     }
 
     .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    :host([is-dragging]) .drag-handle {
       cursor: grabbing;
     }
 
@@ -334,6 +377,14 @@ export class ColorSwatch extends LitElement {
   @property({ type: Boolean, attribute: 'manual-reorder-enabled' })
   manualReorderEnabled = false;
 
+  /** Whether this swatch is currently being dragged */
+  @property({ type: Boolean, attribute: 'is-dragging' })
+  isDraggingExternal = false;
+
+  /** Whether this swatch is a drop target */
+  @property({ type: Boolean, attribute: 'is-drop-target' })
+  isDropTarget = false;
+
   /** Index of this swatch in the palette (for reordering) */
   @property({ type: Number })
   index = -1;
@@ -349,10 +400,6 @@ export class ColorSwatch extends LitElement {
   /** Temporary label value while editing */
   @state()
   private editValue = '';
-
-  /** Whether this swatch is being dragged */
-  @state()
-  private isDragging = false;
 
   private handleRemove(e: Event): void {
     e.stopPropagation();
@@ -426,7 +473,6 @@ export class ColorSwatch extends LitElement {
   private handleDragStart(e: DragEvent): void {
     if (!this.draggableSwatch || !this.manualReorderEnabled || !e.dataTransfer) return;
 
-    this.isDragging = true;
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', String(this.index));
 
@@ -439,8 +485,6 @@ export class ColorSwatch extends LitElement {
   }
 
   private handleDragEnd(): void {
-    this.isDragging = false;
-
     this.dispatchEvent(new CustomEvent('swatch-drag-end', {
       bubbles: true,
       composed: true,
@@ -454,6 +498,13 @@ export class ColorSwatch extends LitElement {
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = 'move';
     }
+
+    // Dispatch drag-enter event for drop indicator
+    this.dispatchEvent(new CustomEvent('swatch-drag-enter', {
+      detail: { index: this.index },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private handleDrop(e: DragEvent): void {
@@ -510,7 +561,7 @@ export class ColorSwatch extends LitElement {
 
     return html`
       <div
-        class="swatch-container ${this.isDragging ? 'dragging' : ''}"
+        class="swatch-container"
         style="--swatch-color: ${this.color.hex}"
         @dragover="${this.handleDragOver}"
         @drop="${this.handleDrop}"

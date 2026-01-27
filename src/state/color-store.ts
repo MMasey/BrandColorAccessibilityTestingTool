@@ -97,10 +97,22 @@ function createColorStore() {
 
       if (!color) return null;
 
-      state = {
-        ...state,
-        colors: [...state.colors, color],
-      };
+      // Add to array
+      const newColors = [...state.colors, color];
+
+      // If currently sorted (not manual mode), re-apply sort
+      if (state.sortCriteria !== 'manual') {
+        const sortedColors = applySorting(newColors, state.sortCriteria, state.sortDirection);
+        state = {
+          ...state,
+          colors: sortedColors,
+        };
+      } else {
+        state = {
+          ...state,
+          colors: newColors,
+        };
+      }
 
       emit({ type: 'colors-changed', colors: state.colors });
       return color;
@@ -112,10 +124,21 @@ function createColorStore() {
      * @returns The added color
      */
     addColorObject(color: Color): Color {
-      state = {
-        ...state,
-        colors: [...state.colors, { ...color }],
-      };
+      const newColors = [...state.colors, { ...color }];
+
+      // If currently sorted (not manual mode), re-apply sort
+      if (state.sortCriteria !== 'manual') {
+        const sortedColors = applySorting(newColors, state.sortCriteria, state.sortDirection);
+        state = {
+          ...state,
+          colors: sortedColors,
+        };
+      } else {
+        state = {
+          ...state,
+          colors: newColors,
+        };
+      }
 
       emit({ type: 'colors-changed', colors: state.colors });
       return color;
@@ -142,10 +165,22 @@ function createColorStore() {
       }
 
       if (newColors.length > 0) {
-        state = {
-          ...state,
-          colors: [...state.colors, ...newColors],
-        };
+        const allColors = [...state.colors, ...newColors];
+
+        // If currently sorted (not manual mode), re-apply sort
+        if (state.sortCriteria !== 'manual') {
+          const sortedColors = applySorting(allColors, state.sortCriteria, state.sortDirection);
+          state = {
+            ...state,
+            colors: sortedColors,
+          };
+        } else {
+          state = {
+            ...state,
+            colors: allColors,
+          };
+        }
+
         emit({ type: 'colors-changed', colors: state.colors });
       }
 

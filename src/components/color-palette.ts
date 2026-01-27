@@ -147,6 +147,12 @@ export class ColorPalette extends LitElement {
   @state()
   private statusMessage = '';
 
+  @state()
+  private draggedIndex: number | null = null;
+
+  @state()
+  private dropTargetIndex: number | null = null;
+
   private handleAddColor(e: CustomEvent): void {
     const { color } = e.detail;
     if (!color) return;
@@ -182,11 +188,32 @@ export class ColorPalette extends LitElement {
     }
   }
 
+  private handleDragStart(e: CustomEvent): void {
+    this.draggedIndex = e.detail.index;
+  }
+
+  private handleDragEnd(): void {
+    this.draggedIndex = null;
+    this.dropTargetIndex = null;
+  }
+
+  private handleDragEnter(e: CustomEvent): void {
+    const { index } = e.detail;
+    if (this.draggedIndex !== null && index !== this.draggedIndex) {
+      this.dropTargetIndex = index;
+    }
+  }
+
   /**
    * Handle color reordering via drag-and-drop or move buttons
    */
   private handleColorMove(e: CustomEvent): void {
     const { fromIndex, toIndex } = e.detail;
+
+    // Clear drag state
+    this.draggedIndex = null;
+    this.dropTargetIndex = null;
+
     if (this.store.moveColor(fromIndex, toIndex)) {
       // Announce to screen readers
       const color = this.store.colors[toIndex];
@@ -268,6 +295,8 @@ export class ColorPalette extends LitElement {
                   .index="${index}"
                   .totalColors="${colors.length}"
                   ?manual-reorder-enabled="${showReorderControls}"
+                  ?is-dragging="${this.draggedIndex === index}"
+                  ?is-drop-target="${this.dropTargetIndex === index}"
                   show-remove
                   editable-label
                   draggable-swatch
@@ -275,6 +304,9 @@ export class ColorPalette extends LitElement {
                   @label-change="${(e: CustomEvent) => this.updateColorLabel(index, e.detail.label)}"
                   @swatch-move="${this.handleColorMove}"
                   @swatch-drop="${this.handleColorMove}"
+                  @swatch-drag-start="${this.handleDragStart}"
+                  @swatch-drag-end="${this.handleDragEnd}"
+                  @swatch-drag-enter="${this.handleDragEnter}"
                 ></color-swatch>
               </li>
             `)}
