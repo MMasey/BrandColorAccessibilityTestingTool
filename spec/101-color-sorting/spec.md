@@ -1,53 +1,114 @@
 # Color Palette Sorting & Reordering
 
 # Goal
-Enable users to sort and manually reorder their color palette to organize colors logically, identify most/least accessible combinations, and prepare palettes for presentations or exports.
+Enable users to sort their color palette by luminance and manually reorder colors to organize their palette logically and identify most/least accessible combinations.
 
 # Inputs
 - Existing color palette from color store
-- Sort criteria selection (luminance, contrast, WCAG pass rate, hue, alphabetical)
-- User interaction (drag-and-drop, keyboard, buttons)
+- Sort criteria selection (luminance or manual order)
+- Sort direction (ascending/descending)
+- User interaction (drag-and-drop, keyboard move buttons)
 
 # Outputs
 - Reordered color palette in desired sequence
-- Visual feedback during sorting/reordering
+- Real-time visual feedback during sorting/reordering operations
 - Screen reader announcements for accessibility
-- Persisted order in URL state
+- Auto-sorted new colors when in sorted mode
 
 # Constraints
 - WCAG 2.2 Level AA compliance for all interactions
-- 2.5.7 Dragging Movements: Must provide single-pointer alternative to drag-and-drop
-- 2.5.8 Target Size: Minimum 24x24px touch targets (already meet 44x44px)
+- 2.5.7 Dragging Movements (AA): Must provide single-pointer alternative to drag-and-drop
+- 2.5.8 Target Size (AA): Minimum 24x24px touch targets (implementation uses 44x44px)
+- 2.4.3 Focus Order (A): Logical focus order during reordering, never focus disabled buttons
+- 4.1.3 Status Messages (AA): Screen reader announcements for sort/reorder actions
 - Reordering must update contrast grid immediately
-- Sort order must be reversible (ascending/descending)
+- Sort order must be reversible (ascending/descending) for luminance
+- Must respect `prefers-reduced-motion` for all animations
 
 # Requirements
-- Implement sorting algorithms for each criteria
-- Add sort dropdown UI to color palette header
-- Implement drag-and-drop with visual feedback
-- Provide keyboard-only reordering (arrow keys, move up/down buttons)
-- Add screen reader live region announcements
-- Show visual indicator when palette is sorted vs manual order
-- Persist sort order in URL state
-- Add "Reset to original order" option
+
+## Core Sorting
+- Implement luminance sorting algorithm (lightest to darkest)
+- Add sort controls UI (dropdown + direction toggle)
+- Show "Manual Order" as default (insertion order)
+- When sorted, show "Sorted" indicator and "Reset" button
+- Disable direction toggle when in manual mode
+- Auto-sort newly added colors when in sorted mode
+
+## Manual Reordering
+- Auto-show reorder controls (drag handles + move buttons) when Manual Order selected
+- Auto-hide reorder controls when sorted mode selected
+- Provide three reordering methods:
+  1. **Drag-and-drop**: Drag handle with mouse/touch
+  2. **Keyboard buttons**: Move up/down arrow buttons (44x44px minimum)
+  3. **Keyboard drag**: Drag handle focusable and draggable via keyboard
+
+## Drag-and-Drop Interaction
+- Custom drag ghost that matches actual card appearance
+- Visual feedback during drag:
+  - Dragged card: 30% opacity, dashed border, scale down, rotate
+  - Drop target: Blue indicator line with pulse animation
+  - All animations disabled if `prefers-reduced-motion: reduce`
+- Drag ghost construction:
+  - Reads computed styles from actual DOM elements
+  - Matches card layout (color preview + hex + label)
+  - Applies lift effect (scale 1.05, rotate 2deg, enhanced shadow)
+- Drop detection:
+  - Mouse drag uses native HTML5 drag-and-drop events
+  - Transform-based preview disabled during mouse drag (breaks hitbox detection)
+  - Transform-based preview reserved for future keyboard drag mode
+
+## Accessibility
+- Smart focus management:
+  - After move, always focus an enabled button
+  - At first position: focus down button (up is disabled)
+  - At last position: focus up button (down is disabled)
+  - Middle positions: focus button matching movement direction
+- Screen reader announcements:
+  - "Color [label/hex] added to palette"
+  - "Colors sorted: [criteria]"
+  - "Sort direction changed: [direction]"
+  - "[label/hex] moved to position [n]"
+  - "Colors reset to original order"
+- ARIA live regions (polite, atomic)
+- All buttons have aria-label and title attributes
+- Drag handle has role="img" and descriptive aria-label
+
+## State Management
+- Store original color order on first sort/reorder
+- Reset button restores original insertion order
+- Clear original order after reset
+- Track sort criteria and direction in state
+- Re-apply sort when adding colors in sorted mode
 
 # Dependencies
 - Phase 1 complete (color palette component exists)
-- `src/state/color-store.ts` - Extend with sort/reorder methods
-- `src/state/url-state.ts` - Add color order to URL parameters
-- `src/utils/contrast.ts` - Calculate pass rates for sorting
+- `src/state/color-store.ts` - Extended with sort/reorder methods
+- `src/utils/color-sorting.ts` - Luminance sorting algorithm
+- `src/components/color-swatch.ts` - Drag-and-drop handlers
+- `src/components/sort-controls.ts` - Sort UI component
 
 # Out of Scope
+- Additional sort criteria (contrast score, WCAG pass rate, hue, alphabetical)
+- URL persistence of sort order
 - Saving custom sort preferences (no user accounts)
 - Sorting by color name/brand (no semantic color data)
 - Multi-select for batch reordering
 - Undo/redo history (single reset is sufficient)
+- Transform-based preview during mouse drag (breaks drop detection)
 
 # Done
-- User can sort palette by 5+ criteria (luminance, contrast, pass rate, hue, alphabetical)
-- User can manually reorder via drag-and-drop OR keyboard
-- Drag-and-drop has accessible alternative per WCAG 2.2 2.5.7
-- Screen reader announces sort/reorder actions
-- Sort order persists in URL for shareability
-- Reset button restores original order
-- All interactive elements meet 44x44px touch target minimum
+- ✅ User can sort palette by luminance (lightest ↔ darkest)
+- ✅ User can toggle between ascending/descending direction
+- ✅ User can manually reorder via drag-and-drop with mouse/touch
+- ✅ User can manually reorder via keyboard (44x44px move up/down buttons)
+- ✅ Drag-and-drop has accessible alternatives per WCAG 2.2 2.5.7
+- ✅ Custom drag ghost matches actual card appearance
+- ✅ Rich visual feedback (opacity, scale, rotation, drop indicators)
+- ✅ Smart focus management (never focuses disabled buttons)
+- ✅ Screen reader announces all sort/reorder actions per WCAG 2.2 4.1.3
+- ✅ Reorder controls auto-show when Manual Order selected
+- ✅ New colors auto-sorted when in sorted mode
+- ✅ Reset button restores original insertion order
+- ✅ All animations respect `prefers-reduced-motion`
+- ✅ All interactive elements meet 44x44px touch target minimum per WCAG 2.2 2.5.8
