@@ -44,19 +44,20 @@ Enable users to sort their color palette by luminance and manually reorder color
   3. **Keyboard drag**: Drag handle focusable and draggable via keyboard
 
 ## Drag-and-Drop Interaction
-- Custom drag ghost that matches actual card appearance
-- Visual feedback during drag:
-  - Dragged card: 30% opacity, dashed border, scale down, rotate
-  - Drop target: Blue indicator line with pulse animation
-  - All animations disabled if `prefers-reduced-motion: reduce`
-- Drag ghost construction:
+- Uses HTML5 drag-and-drop API for best cross-platform support
+- Custom drag ghost that matches actual card appearance:
   - Reads computed styles from actual DOM elements
   - Matches card layout (color preview + hex + label)
   - Applies lift effect (scale 1.05, rotate 2deg, enhanced shadow)
-- Drop detection:
-  - Mouse drag uses native HTML5 drag-and-drop events
-  - Transform-based preview disabled during mouse drag (breaks hitbox detection)
-  - Transform-based preview reserved for future keyboard drag mode
+- Visual feedback during drag:
+  - Dragged card: 30% opacity, dashed border, scale down, rotate
+  - Drop target: Blue indicator line (positioned at -3px above card) with pulse animation
+  - All animations disabled if `prefers-reduced-motion: reduce`
+- Smooth animations for keyboard arrow moves:
+  - 250ms transform-based preview before DOM update
+  - Cards visually swap positions using translateY transforms
+  - Provides feedback matching drag-and-drop behavior
+  - Respects prefers-reduced-motion
 
 ## Accessibility
 - Smart focus management:
@@ -70,9 +71,12 @@ Enable users to sort their color palette by luminance and manually reorder color
   - "Sort direction changed: [direction]"
   - "[label/hex] moved to position [n]"
   - "Colors reset to original order"
+  - "Cannot move up - already at beginning of list" (boundary reached)
+  - "Cannot move down - already at end of list" (boundary reached)
 - ARIA live regions (polite, atomic)
 - All buttons have aria-label and title attributes
 - Drag handle has role="img" and descriptive aria-label
+- Boundary announcements when disabled buttons are clicked (WCAG 4.1.3)
 
 ## State Management
 - Store original color order on first sort/reorder
@@ -95,7 +99,7 @@ Enable users to sort their color palette by luminance and manually reorder color
 - Sorting by color name/brand (no semantic color data)
 - Multi-select for batch reordering
 - Undo/redo history (single reset is sufficient)
-- Transform-based preview during mouse drag (breaks drop detection)
+- Custom drag implementation (HTML5 drag-and-drop provides better native support)
 
 # Done
 - ✅ User can sort palette by luminance (lightest ↔ darkest)
@@ -103,10 +107,13 @@ Enable users to sort their color palette by luminance and manually reorder color
 - ✅ User can manually reorder via drag-and-drop with mouse/touch
 - ✅ User can manually reorder via keyboard (44x44px move up/down buttons)
 - ✅ Drag-and-drop has accessible alternatives per WCAG 2.2 2.5.7
-- ✅ Custom drag ghost matches actual card appearance
+- ✅ Custom drag ghost matches actual card appearance (reads computed styles)
+- ✅ Blue drop indicator line shows insertion point with pulse animation
+- ✅ Smooth animation for keyboard arrow moves (250ms transform preview)
 - ✅ Rich visual feedback (opacity, scale, rotation, drop indicators)
 - ✅ Smart focus management (never focuses disabled buttons)
 - ✅ Screen reader announces all sort/reorder actions per WCAG 2.2 4.1.3
+- ✅ Screen reader announces boundary when trying to move beyond list
 - ✅ Reorder controls auto-show when Manual Order selected
 - ✅ New colors auto-sorted when in sorted mode
 - ✅ Reset button restores original insertion order

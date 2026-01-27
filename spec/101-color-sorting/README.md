@@ -29,10 +29,16 @@ Users can reorder colors using any of these methods:
 
 ### Visual Feedback
 
-**During Drag:**
+**During Mouse/Touch Drag:**
 - Dragged card: 30% opacity, dashed border, subtle scale/rotate
-- Drop target: Blue indicator line with pulse animation
+- Drop target: Blue indicator line (positioned in gap) with pulse animation
 - Custom drag ghost that matches actual card appearance
+- All animations respect `prefers-reduced-motion`
+
+**During Keyboard Arrow Moves:**
+- 250ms transform-based animation preview
+- Cards visually swap positions before DOM update
+- Provides smooth feedback matching drag-and-drop
 - All animations respect `prefers-reduced-motion`
 
 **Drag Ghost Details:**
@@ -46,7 +52,7 @@ Users can reorder colors using any of these methods:
 - **2.5.7 Dragging Movements (AA)**: Three alternatives to drag-and-drop (move up/down buttons + keyboard drag)
 - **2.5.8 Target Size (Minimum) (AA)**: All interactive elements are 44x44px (exceeds 24x24px requirement)
 - **2.4.3 Focus Order (A)**: Smart focus management - always focuses enabled buttons after move
-- **4.1.3 Status Messages (AA)**: Screen reader announcements for all sort/reorder actions
+- **4.1.3 Status Messages (AA)**: Screen reader announcements for all sort/reorder actions + boundary announcements
 
 ### Implementation
 
@@ -68,5 +74,6 @@ Users currently have no way to reorder colors after adding them, making it diffi
 
 ### Known Limitations
 
-- **Transform-based preview disabled during mouse drag**: CSS transforms move elements visually but their hit zones stay in original DOM position, breaking drop detection. Currently disabled for mouse drag; reserved for future keyboard drag mode.
+- **HTML5 drag-and-drop used instead of custom implementation**: Provides better native support for touch, screen readers, and cross-browser compatibility. Custom drag ghost compensates for browser default appearance.
+- **Transform-based preview only for keyboard moves**: Mouse drag uses native HTML5 events. Transform preview (250ms) only shown for keyboard arrow button moves to avoid hitbox issues.
 - **No URL persistence**: Sort order doesn't sync to URL parameters (future enhancement).
