@@ -30,53 +30,73 @@ export class ColorSwatch extends LitElement {
       transition: opacity var(--transition-fast, 150ms ease),
                   transform var(--transition-fast, 150ms ease),
                   box-shadow var(--transition-fast, 150ms ease),
-                  border-style var(--transition-fast, 150ms ease);
+                  border-style var(--transition-fast, 150ms ease),
+                  border-color var(--transition-fast, 150ms ease),
+                  border-width var(--transition-fast, 150ms ease);
+      cursor: grab;
     }
 
-    /* Dragging state: lift and fade */
-    :host([is-dragging]) .swatch-container {
-      opacity: 0.3;
+    .swatch-container[draggable="true"]:active {
       cursor: grabbing;
-      border-style: dashed;
     }
 
-    /* Lift effect when starting drag (respects prefers-reduced-motion) */
-    @media (prefers-reduced-motion: no-preference) {
-      :host([is-dragging]) .swatch-container {
-        transform: scale(0.95) rotate(-1deg);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
+    :host([dragging]) .swatch-container {
+      opacity: 0.8;
+      cursor: grabbing;
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      z-index: 100;
     }
 
-    /* Drop target indicator: positioned above the card in the gap */
-    :host([is-drop-target]) .swatch-container::before {
+    /* Drop indicator - show a line BEFORE the card */
+    /* Don't move the card - just show a thick line to indicate drop zone */
+    :host([drag-position="before"]:not([dragging]))::before {
       content: '';
       position: absolute;
-      top: -3px; /* Position in the gap between cards */
+      top: -0.5rem;
       left: 0;
       right: 0;
-      height: 4px;
-      background: var(--theme-focus-ring-color, #0066cc);
-      border-radius: var(--radius-sm, 0.25rem);
-      z-index: 10;
-      box-shadow: 0 0 12px var(--theme-focus-ring-color, #0066cc);
+      height: 6px;
+      background: var(--theme-primary-color, #0066cc);
+      border-radius: 3px;
+      box-shadow: 0 0 16px rgba(0, 102, 204, 0.6),
+                  0 0 0 8px rgba(0, 102, 204, 0.1);
+      z-index: 1000;
+      pointer-events: none; /* Prevent interfering with drag events */
     }
 
-    /* Pulse animation for drop indicator (respects prefers-reduced-motion) */
+    /* Drop indicator - show a line AFTER the card */
+    :host([drag-position="after"]:not([dragging]))::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: var(--theme-primary-color, #0066cc);
+      border-radius: 3px;
+      box-shadow: 0 0 16px rgba(0, 102, 204, 0.6),
+                  0 0 0 8px rgba(0, 102, 204, 0.1);
+      z-index: 1000;
+      pointer-events: none; /* Prevent interfering with drag events */
+    }
+
+    /* Shake animation for boundary collision (respects prefers-reduced-motion) */
     @media (prefers-reduced-motion: no-preference) {
-      @keyframes pulse {
+      @keyframes shake {
         0%, 100% {
-          opacity: 1;
-          box-shadow: 0 0 12px var(--theme-focus-ring-color, #0066cc);
+          transform: translateX(0);
         }
-        50% {
-          opacity: 0.7;
-          box-shadow: 0 0 20px var(--theme-focus-ring-color, #0066cc);
+        25% {
+          transform: translateX(-4px);
+        }
+        75% {
+          transform: translateX(4px);
         }
       }
 
-      :host([is-drop-target]) .swatch-container::before {
-        animation: pulse 1s ease-in-out infinite;
+      :host([shake]) .swatch-container {
+        animation: shake 200ms ease-in-out;
       }
     }
 
@@ -117,10 +137,6 @@ export class ColorSwatch extends LitElement {
       cursor: grabbing;
     }
 
-    :host([is-dragging]) .drag-handle {
-      cursor: grabbing;
-    }
-
     .drag-handle svg {
       width: 1.25rem;
       height: 1.25rem;
@@ -129,6 +145,7 @@ export class ColorSwatch extends LitElement {
     .reorder-buttons {
       display: flex;
       flex-direction: column;
+      justify-content: center;
       border-right: 1px solid var(--theme-input-border-color);
     }
 
@@ -391,14 +408,6 @@ export class ColorSwatch extends LitElement {
   @property({ type: Boolean, attribute: 'manual-reorder-enabled' })
   manualReorderEnabled = false;
 
-  /** Whether this swatch is currently being dragged */
-  @property({ type: Boolean, attribute: 'is-dragging' })
-  isDraggingExternal = false;
-
-  /** Whether this swatch is a drop target */
-  @property({ type: Boolean, attribute: 'is-drop-target' })
-  isDropTarget = false;
-
   /** Index of this swatch in the palette (for reordering) */
   @property({ type: Number })
   index = -1;
@@ -414,6 +423,30 @@ export class ColorSwatch extends LitElement {
   /** Temporary label value while editing */
   @state()
   private editValue = '';
+
+  /** Whether to show shake animation for boundary collision */
+  @property({ type: Boolean, reflect: true })
+  shake = false;
+
+  /** Track drag state - reflected to host for styling */
+  @property({ type: Boolean, reflect: true, attribute: 'dragging' })
+  isDragging = false;
+
+  @property({ type: Boolean, reflect: true, attribute: 'drag-over' })
+  isDragOver = false;
+
+  /** Track where to show drop indicator: 'before' or 'after' */
+  @property({ type: String, reflect: true, attribute: 'drag-position' })
+  dragPosition: 'before' | 'after' | 'none' = 'none';
+
+  /** Store the index being dragged (accessible during dragover) */
+  private static draggedIndex: number = -1;
+
+  /** Timeout for clearing stuck drag states */
+  private dragCleanupTimeout?: number;
+
+  /** Timeout for debouncing drag leave */
+  private dragLeaveTimeout?: number;
 
   private handleRemove(e: Event): void {
     e.stopPropagation();
@@ -481,186 +514,161 @@ export class ColorSwatch extends LitElement {
   }
 
   // ========================================================================
-  // Drag-and-Drop & Reordering (WCAG 2.2 2.5.7 Compliant)
+  // HTML5 Drag-and-Drop
   // ========================================================================
 
   private handleDragStart(e: DragEvent): void {
-    if (!this.draggableSwatch || !this.manualReorderEnabled || !e.dataTransfer || !this.color) return;
+    if (!this.draggableSwatch || !this.manualReorderEnabled) return;
 
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', String(this.index));
-
-    // Create custom drag image that looks like the actual card
-    const container = this.shadowRoot?.querySelector('.swatch-container') as HTMLElement;
-    if (container) {
-      // Get actual DOM elements to read their computed styles
-      const colorBoxEl = this.shadowRoot?.querySelector('.color-preview') as HTMLElement;
-      const hexEl = this.shadowRoot?.querySelector('.color-hex') as HTMLElement;
-      const labelEl = this.shadowRoot?.querySelector('.color-label') as HTMLElement;
-
-      // Create a visual drag image
-      const dragImage = document.createElement('div');
-
-      // Copy exact computed styles from container
-      const containerStyle = window.getComputedStyle(container);
-      dragImage.style.width = `${container.offsetWidth}px`;
-      dragImage.style.height = `${container.offsetHeight}px`;
-      dragImage.style.minHeight = containerStyle.minHeight;
-      dragImage.style.backgroundColor = containerStyle.backgroundColor;
-      dragImage.style.border = containerStyle.border;
-      dragImage.style.borderRadius = containerStyle.borderRadius;
-      dragImage.style.boxShadow = containerStyle.boxShadow;
-      dragImage.style.display = 'flex';
-      dragImage.style.alignItems = 'stretch';
-      dragImage.style.overflow = 'hidden';
-      dragImage.style.fontFamily = containerStyle.fontFamily;
-
-      // Add dramatic lift effect
-      dragImage.style.transform = 'scale(1.05) rotate(2deg)';
-      dragImage.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.3)';
-      dragImage.style.opacity = '0.98';
-
-      // Create color preview box matching actual element
-      const colorBox = document.createElement('div');
-      if (colorBoxEl) {
-        const colorBoxStyle = window.getComputedStyle(colorBoxEl);
-        colorBox.style.width = colorBoxStyle.width;
-        colorBox.style.minWidth = colorBoxStyle.minWidth;
-        colorBox.style.flexShrink = colorBoxStyle.flexShrink;
-      } else {
-        colorBox.style.width = '3rem';
-        colorBox.style.minWidth = '3rem';
-        colorBox.style.flexShrink = '0';
-      }
-      colorBox.style.background = this.color.hex;
-
-      // Create info section matching actual element structure
-      const info = document.createElement('div');
-      info.style.flex = '1';
-      info.style.display = 'flex';
-      info.style.flexDirection = 'column';
-      info.style.justifyContent = 'center';
-      info.style.gap = '0.125rem';
-      info.style.minWidth = '0';
-      info.style.padding = '0.25rem 0.5rem';
-
-      // Create hex text matching actual element
-      const hex = document.createElement('div');
-      hex.textContent = this.color.hex;
-      if (hexEl) {
-        const hexStyle = window.getComputedStyle(hexEl);
-        hex.style.fontFamily = hexStyle.fontFamily;
-        hex.style.fontSize = hexStyle.fontSize;
-        hex.style.fontWeight = hexStyle.fontWeight;
-        hex.style.color = hexStyle.color;
-        hex.style.lineHeight = hexStyle.lineHeight;
-      } else {
-        hex.style.fontFamily = 'monospace';
-        hex.style.fontSize = '1rem';
-        hex.style.fontWeight = '500';
-        hex.style.color = containerStyle.color;
-      }
-      info.appendChild(hex);
-
-      // Create label text if present, matching actual element
-      if (this.color.label) {
-        const label = document.createElement('div');
-        label.textContent = this.color.label;
-        if (labelEl) {
-          const labelStyle = window.getComputedStyle(labelEl);
-          label.style.fontSize = labelStyle.fontSize;
-          label.style.color = labelStyle.color;
-          label.style.fontWeight = labelStyle.fontWeight;
-          label.style.lineHeight = labelStyle.lineHeight;
-          label.style.overflow = 'hidden';
-          label.style.textOverflow = 'ellipsis';
-          label.style.whiteSpace = 'nowrap';
-        } else {
-          // Fallback styling
-          label.style.fontSize = '0.75rem';
-          label.style.color = '#999';
-          label.style.overflow = 'hidden';
-          label.style.textOverflow = 'ellipsis';
-          label.style.whiteSpace = 'nowrap';
-        }
-        info.appendChild(label);
-      }
-
-      dragImage.appendChild(colorBox);
-      dragImage.appendChild(info);
-
-      // Position offscreen
-      dragImage.style.position = 'absolute';
-      dragImage.style.top = '-1000px';
-      dragImage.style.left = '-1000px';
-      dragImage.style.pointerEvents = 'none';
-
-      // Add to document temporarily
-      document.body.appendChild(dragImage);
-
-      // Set as drag image centered on cursor
-      e.dataTransfer.setDragImage(dragImage, container.offsetWidth / 2, container.offsetHeight / 2);
-
-      // Clean up
-      requestAnimationFrame(() => {
-        document.body.removeChild(dragImage);
-      });
+    // Clear any previous cleanup timeout
+    if (this.dragCleanupTimeout) {
+      window.clearTimeout(this.dragCleanupTimeout);
     }
 
-    // Dispatch event so parent can track what's being dragged
-    this.dispatchEvent(new CustomEvent('swatch-drag-start', {
-      detail: { index: this.index },
-      bubbles: true,
-      composed: true,
-    }));
+    this.isDragging = true;
+    ColorSwatch.draggedIndex = this.index; // Store for use in dragover
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.index.toString());
+    }
+
+    // Safety: clear drag state after 2 seconds if dragend doesn't fire
+    this.dragCleanupTimeout = window.setTimeout(() => {
+      this.clearDragState();
+      // Also clear all other swatches in case they're stuck
+      this.dispatchEvent(new CustomEvent('clear-all-drag-states', {
+        bubbles: true,
+        composed: true,
+      }));
+    }, 2000);
   }
 
   private handleDragEnd(): void {
-    this.dispatchEvent(new CustomEvent('swatch-drag-end', {
-      bubbles: true,
-      composed: true,
-    }));
+    if (this.dragCleanupTimeout) {
+      window.clearTimeout(this.dragCleanupTimeout);
+    }
+    this.clearDragState();
+  }
+
+  private clearDragState(): void {
+    // Clear any pending timeouts
+    if (this.dragLeaveTimeout) {
+      window.clearTimeout(this.dragLeaveTimeout);
+      this.dragLeaveTimeout = undefined;
+    }
+
+    this.isDragging = false;
+    this.isDragOver = false;
+    this.dragPosition = 'none';
+    ColorSwatch.draggedIndex = -1;
   }
 
   private handleDragOver(e: DragEvent): void {
     if (!this.draggableSwatch || !this.manualReorderEnabled) return;
+    e.preventDefault();
+    e.stopPropagation(); // Prevent bubbling to parent elements
 
-    e.preventDefault(); // Required to allow drop
+    // Clear any pending drag leave timeout since we're still over the element
+    if (this.dragLeaveTimeout) {
+      window.clearTimeout(this.dragLeaveTimeout);
+      this.dragLeaveTimeout = undefined;
+    }
+
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = 'move';
     }
 
-    // Dispatch drag-enter event for drop indicator
-    this.dispatchEvent(new CustomEvent('swatch-drag-enter', {
-      detail: { index: this.index },
-      bubbles: true,
-      composed: true,
-    }));
+    // Don't show indicator on the element being dragged
+    if (ColorSwatch.draggedIndex === this.index) {
+      this.isDragOver = false;
+      this.dragPosition = 'none';
+      return;
+    }
+
+    this.isDragOver = true;
+
+    // Calculate if mouse is in top or bottom half of the card
+    const rect = this.getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+    const isTopHalf = e.clientY < midpoint;
+    const newPosition = isTopHalf ? 'before' : 'after';
+
+    // Only update if position actually changed to reduce visual jumps
+    if (this.dragPosition !== newPosition) {
+      this.dragPosition = newPosition;
+    }
+  }
+
+  private handleDragLeave(): void {
+    // Debounce drag leave to prevent flickering when moving over child elements
+    // or when the indicator itself causes slight layout changes
+    if (this.dragLeaveTimeout) {
+      window.clearTimeout(this.dragLeaveTimeout);
+    }
+
+    this.dragLeaveTimeout = window.setTimeout(() => {
+      this.isDragOver = false;
+      this.dragPosition = 'none';
+      this.dragLeaveTimeout = undefined;
+    }, 100);
   }
 
   private handleDrop(e: DragEvent): void {
-    if (!this.draggableSwatch || !this.manualReorderEnabled || !e.dataTransfer) return;
-
     e.preventDefault();
+    e.stopPropagation();
+
+    if (!this.draggableSwatch || !this.manualReorderEnabled) return;
+    if (!e.dataTransfer) return;
+
     const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-    const toIndex = this.index;
+    let toIndex = this.index;
+
+    // If dropping "after", adjust the target index
+    if (this.dragPosition === 'after') {
+      toIndex = this.index + 1;
+    }
+
+    // When moving forward (fromIndex < toIndex), after removal the indices shift
+    // so we need to adjust toIndex down by 1
+    if (fromIndex < toIndex) {
+      toIndex = toIndex - 1;
+    }
+
+    // Clear all drag states immediately
+    this.clearDragState();
 
     if (fromIndex !== toIndex && !isNaN(fromIndex)) {
-      this.dispatchEvent(new CustomEvent('swatch-drop', {
+      this.dispatchEvent(new CustomEvent('swatch-move', {
         detail: { fromIndex, toIndex },
         bubbles: true,
         composed: true,
       }));
     }
+
+    // Broadcast to clear all other swatches too
+    this.dispatchEvent(new CustomEvent('clear-all-drag-states', {
+      bubbles: true,
+      composed: true,
+    }));
   }
+
+  // ========================================================================
+  // Keyboard Reordering (WCAG 2.2 2.5.7 Compliant)
+  // ========================================================================
 
   /**
    * WCAG 2.2 2.5.7 Dragging Movements - Keyboard Alternative
    * Move this swatch up in the list
    */
   private moveUp(): void {
+    // Use the index property set by Lit (reliable after updateComplete)
     if (this.index <= 0) {
-      // Announce boundary to screen readers
+      // Show shake animation and announce boundary to screen readers
+      this.shake = true;
+      setTimeout(() => {
+        this.shake = false;
+      }, 200);
+
       this.dispatchEvent(new CustomEvent('boundary-reached', {
         detail: { message: 'Cannot move up - already at beginning of list' },
         bubbles: true,
@@ -681,8 +689,14 @@ export class ColorSwatch extends LitElement {
    * Move this swatch down in the list
    */
   private moveDown(): void {
+    // Use the index property set by Lit (reliable after updateComplete)
     if (this.index >= this.totalColors - 1) {
-      // Announce boundary to screen readers
+      // Show shake animation and announce boundary to screen readers
+      this.shake = true;
+      setTimeout(() => {
+        this.shake = false;
+      }, 200);
+
       this.dispatchEvent(new CustomEvent('boundary-reached', {
         detail: { message: 'Cannot move down - already at end of list' },
         bubbles: true,
@@ -703,14 +717,16 @@ export class ColorSwatch extends LitElement {
 
     const label = this.color.label || '';
     const hasLabel = label.length > 0;
-    const canMoveUp = this.index > 0;
-    const canMoveDown = this.index < this.totalColors - 1;
 
     return html`
       <div
         class="swatch-container"
         style="--swatch-color: ${this.color.hex}"
+        draggable="${this.draggableSwatch && this.manualReorderEnabled ? 'true' : 'false'}"
+        @dragstart="${this.handleDragStart}"
+        @dragend="${this.handleDragEnd}"
         @dragover="${this.handleDragOver}"
+        @dragleave="${this.handleDragLeave}"
         @drop="${this.handleDrop}"
       >
         <!-- WCAG 2.2 2.5.7: Keyboard alternative to dragging -->
@@ -721,7 +737,6 @@ export class ColorSwatch extends LitElement {
               class="reorder-btn"
               aria-label="Move ${hasLabel ? label : this.color.hex} up"
               title="Move up"
-              ?disabled="${!canMoveUp}"
               @click="${this.moveUp}"
             >
               ▲
@@ -731,7 +746,6 @@ export class ColorSwatch extends LitElement {
               class="reorder-btn"
               aria-label="Move ${hasLabel ? label : this.color.hex} down"
               title="Move down"
-              ?disabled="${!canMoveDown}"
               @click="${this.moveDown}"
             >
               ▼
@@ -739,16 +753,13 @@ export class ColorSwatch extends LitElement {
           </div>
         ` : null}
 
-        <!-- Drag handle (mouse/touch alternative) -->
+        <!-- Drag handle (visual indicator for drag-and-drop) -->
         ${this.draggableSwatch && this.manualReorderEnabled ? html`
           <div
             class="drag-handle"
-            draggable="true"
             role="img"
             aria-label="Drag to reorder ${hasLabel ? label : this.color.hex}"
             title="Drag to reorder"
-            @dragstart="${this.handleDragStart}"
-            @dragend="${this.handleDragEnd}"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" style="pointer-events: none;">
               <circle cx="9" cy="5" r="1.5"/>

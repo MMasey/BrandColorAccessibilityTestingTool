@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 import { ColorStoreController } from '../state';
 import type { Color } from '../utils';
 import type { ColorInput } from './color-input';
@@ -7,6 +8,26 @@ import './color-input';
 import './color-swatch';
 import './brand-guidance';
 import './sort-controls';
+
+/**
+ * CustomEvent detail interfaces for type safety
+ */
+interface AddColorEventDetail {
+  color: Color;
+}
+
+interface SwatchMoveEventDetail {
+  fromIndex: number;
+  toIndex: number;
+}
+
+interface BoundaryReachedEventDetail {
+  message: string;
+}
+
+interface LabelChangeEventDetail {
+  label: string;
+}
 
 /**
  * Color palette component for managing a list of brand colors.
@@ -64,16 +85,20 @@ export class ColorPalette extends LitElement {
     }
 
     .colors-list > li {
-      transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
-      overflow: visible; /* Allow drop indicator to extend above */
     }
 
-    /* Disable transitions for reduced-motion users */
-    @media (prefers-reduced-motion: reduce) {
-      .colors-list > li {
-        transition: none;
-      }
+    /* SortableJS drag states */
+    .colors-list .sortable-ghost {
+      opacity: 0.4;
+    }
+
+    .colors-list .sortable-chosen {
+      cursor: grabbing;
+    }
+
+    .colors-list .sortable-drag {
+      opacity: 0.9;
     }
 
     .empty-state {
@@ -156,22 +181,13 @@ export class ColorPalette extends LitElement {
   `;
 
   private store = new ColorStoreController(this);
+  private isReordering = false; // Prevent concurrent moves
+  private activeAnimations: Animation[] = []; // Track ongoing animations
 
   @state()
   private statusMessage = '';
 
-  @state()
-  private draggedIndex: number | null = null;
-
-  @state()
-  private dropTargetIndex: number | null = null;
-
-  @state()
-  private keyboardPreviewMode = false;
-
-  private itemHeights = new Map<number, number>();
-
-  private handleAddColor(e: CustomEvent): void {
+  private handleAddColor(e: CustomEvent<AddColorEventDetail>): void {
     const { color } = e.detail;
     if (!color) return;
 
@@ -206,130 +222,211 @@ export class ColorPalette extends LitElement {
     }
   }
 
-  private handleDragStart(e: CustomEvent): void {
-    this.draggedIndex = e.detail.index;
-    // Disable keyboard preview mode during mouse drag (transforms break drop detection)
-    this.keyboardPreviewMode = false;
-  }
-
-  private handleDragEnd(): void {
-    this.draggedIndex = null;
-    this.dropTargetIndex = null;
-    this.keyboardPreviewMode = false;
-  }
-
-  private handleDragEnter(e: CustomEvent): void {
-    const { index } = e.detail;
-    if (this.draggedIndex !== null && index !== this.draggedIndex) {
-      this.dropTargetIndex = index;
-      this.requestUpdate(); // Force re-render to update transforms
-    }
-  }
-
   /**
-   * Calculate visual offset for each item during keyboard navigation
-   * Items between dragged and drop target shift to make room
-   * Only active during keyboard navigation (not mouse drag, which breaks drop detection)
+   * Clear all drag states from all color swatches
    */
-  private getItemTransform(itemIndex: number): string {
-    // Only apply transforms during keyboard preview mode
-    // Mouse drag has transforms disabled because they break drop detection
-    if (!this.keyboardPreviewMode || this.draggedIndex === null || this.dropTargetIndex === null) {
-      return 'translateY(0)';
-    }
+  private clearAllDragStates(): void {
+    const colorsList = this.shadowRoot?.querySelector('.colors-list');
+    if (!colorsList) return;
 
-    const dragIdx = this.draggedIndex;
-    const dropIdx = this.dropTargetIndex;
-
-    // Don't transform the dragged item itself
-    if (itemIndex === dragIdx) {
-      return 'translateY(0)';
-    }
-
-    // Shift items between drag and drop positions
-    if (dragIdx < dropIdx) {
-      // Dragging down: shift items up
-      if (itemIndex > dragIdx && itemIndex <= dropIdx) {
-        return 'translateY(-100%)';
-      }
-    } else {
-      // Dragging up: shift items down
-      if (itemIndex >= dropIdx && itemIndex < dragIdx) {
-        return 'translateY(100%)';
-      }
-    }
-
-    return 'translateY(0)';
-  }
-
-  /**
-   * Handle color reordering via drag-and-drop or move buttons
-   */
-  private handleColorMove(e: CustomEvent): void {
-    const { fromIndex, toIndex } = e.detail;
-
-    // Enable keyboard preview mode for arrow button moves
-    this.keyboardPreviewMode = true;
-    this.draggedIndex = fromIndex;
-    this.dropTargetIndex = toIndex;
-
-    // Briefly show the transform preview, then update DOM
-    this.requestUpdate();
-
-    // After transform renders, update the actual order
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        // Clear preview state
-        this.draggedIndex = null;
-        this.dropTargetIndex = null;
-        this.keyboardPreviewMode = false;
-
-        if (this.store.moveColor(fromIndex, toIndex)) {
-      // Announce to screen readers
-      const color = this.store.colors[toIndex];
-      const colorLabel = color?.label || color?.hex;
-      this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
-
-      // Focus management: keep focus on an ENABLED button
-      this.updateComplete.then(() => {
-        const colorsList = this.shadowRoot?.querySelector('.colors-list');
-        if (colorsList) {
-          const swatchElements = colorsList.querySelectorAll('color-swatch');
-          const targetSwatch = swatchElements[toIndex];
-          if (targetSwatch) {
-            const buttons = targetSwatch.shadowRoot?.querySelectorAll<HTMLButtonElement>('.reorder-btn');
-            if (buttons && buttons.length === 2) {
-              let targetButton: HTMLButtonElement | null = null;
-
-              // Smart focus: always focus an enabled button
-              if (toIndex === 0) {
-                // At first position: up button disabled, focus down button
-                targetButton = buttons[1];
-              } else if (toIndex === colors.length - 1) {
-                // At last position: down button disabled, focus up button
-                targetButton = buttons[0];
-              } else {
-                // Middle positions: focus the button that matches direction of movement
-                const movedDown = toIndex > fromIndex;
-                targetButton = movedDown ? buttons[1] : buttons[0];
-              }
-
-              if (targetButton && !targetButton.disabled) {
-                targetButton.focus();
-              }
-            }
-          }
-        }
-      });
-        }
-      }, 250); // Match transition duration
+    const swatches = colorsList.querySelectorAll('color-swatch');
+    swatches.forEach((swatch) => {
+      swatch.removeAttribute('drag-position');
+      swatch.removeAttribute('dragging');
+      swatch.removeAttribute('drag-over');
     });
   }
 
-  private handleBoundaryReached(e: CustomEvent): void {
+  /**
+   * Handle color reordering via keyboard arrow buttons (WCAG 2.2 2.5.7)
+   * Uses Web Animations API for smooth, reliable animations
+   */
+  private handleColorMove(e: CustomEvent<SwatchMoveEventDetail>): void {
+    // Clear any stuck drag states first
+    this.clearAllDragStates();
+
+    // Prevent concurrent moves (indices may be stale during re-render)
+    if (this.isReordering) {
+      console.warn('Move blocked - reorder in progress');
+      return;
+    }
+
+    const { fromIndex, toIndex } = e.detail;
+
+    // Validate indices before proceeding
+    const colorCount = this.store.colors.length;
+    // toIndex can be up to colorCount (meaning append to end)
+    if (fromIndex < 0 || fromIndex >= colorCount || toIndex < 0 || toIndex > colorCount) {
+      console.warn('Invalid move indices:', { fromIndex, toIndex, colorCount });
+      return;
+    }
+
+    // Mark reorder in progress
+    this.isReordering = true;
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      // No animation - just update immediately
+      if (this.store.moveColor(fromIndex, toIndex)) {
+        const color = this.store.colors[toIndex];
+        const colorLabel = color?.label || color?.hex;
+        this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
+        this.manageFocusAfterMove(toIndex, fromIndex);
+
+        // Clear flag after update completes
+        this.updateComplete.then(() => {
+          this.isReordering = false;
+        });
+      } else {
+        this.isReordering = false;
+      }
+      return;
+    }
+
+    // Immediately update store and move focus BEFORE animation
+    // This prevents rapid key presses from moving the same color multiple times
+    if (!this.store.moveColor(fromIndex, toIndex)) {
+      this.isReordering = false;
+      return;
+    }
+
+    const color = this.store.colors[toIndex];
+    const colorLabel = color?.label || color?.hex;
+    this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
+
+    // Move focus immediately to new position
+    this.manageFocusAfterMove(toIndex, fromIndex);
+
+    // Now animate the visual transition
+    // Wait for DOM to render with new order first
+    this.updateComplete.then(() => {
+      const colorsList = this.shadowRoot?.querySelector('.colors-list');
+      if (!colorsList) return;
+
+      const listItems = Array.from(colorsList.querySelectorAll('li'));
+
+      // Cancel any ongoing animations first
+      this.activeAnimations.forEach(anim => anim.cancel());
+      this.activeAnimations = [];
+
+      // Clear all drag states again to prevent visual conflicts during animation
+      this.clearAllDragStates();
+
+      // Clear all transforms and z-indices from previous animations/drags
+      listItems.forEach((li) => {
+        const htmlLi = li as HTMLElement;
+        htmlLi.style.transform = '';
+        htmlLi.style.zIndex = '';
+      });
+
+      // After reordering, the elements are at new positions in DOM
+      // We need to animate ALL affected cards to show the movement clearly
+      const movedElement = listItems[toIndex];
+      if (!movedElement) return;
+
+      // Calculate card height and gap for animations
+      const computedStyle = window.getComputedStyle(colorsList);
+      const gap = parseFloat(computedStyle.gap) || 0;
+      const cardHeight = movedElement.offsetHeight + gap;
+
+      const timing = {
+        duration: 200,
+        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+      };
+
+      // Determine the range of affected indices
+      const minIndex = Math.min(fromIndex, toIndex);
+      const maxIndex = Math.max(fromIndex, toIndex);
+      const movingDown = toIndex > fromIndex;
+
+      // Set z-index for moved element so it appears on top
+      (movedElement as HTMLElement).style.zIndex = '10';
+
+      // Animate all affected cards
+      for (let i = minIndex; i <= maxIndex; i++) {
+        const element = listItems[i];
+        if (!element) continue;
+
+        let animation;
+
+        if (i === toIndex) {
+          // This is the moved card - animate it from its old position
+          const distance = Math.abs(toIndex - fromIndex) * cardHeight;
+          const direction = movingDown ? -1 : 1;
+          animation = element.animate(
+            [
+              { transform: `translateY(${direction * distance}px)` },
+              { transform: 'translateY(0)' }
+            ],
+            timing
+          );
+        } else {
+          // This is a card that got shifted - animate it shifting back
+          const direction = movingDown ? 1 : -1;
+          animation = element.animate(
+            [
+              { transform: `translateY(${direction * cardHeight}px)` },
+              { transform: 'translateY(0)' }
+            ],
+            timing
+          );
+        }
+
+        this.activeAnimations.push(animation);
+      }
+
+      // Wait for all animations to complete
+      if (this.activeAnimations.length > 0) {
+        Promise.all(this.activeAnimations.map(anim => anim.finished))
+          .then(() => {
+            (movedElement as HTMLElement).style.zIndex = '';
+            this.activeAnimations = [];
+            this.isReordering = false;
+          })
+          .catch(() => {
+            // Animations were cancelled - still need to clean up
+            this.activeAnimations = [];
+            this.isReordering = false;
+          });
+      } else {
+        this.isReordering = false;
+      }
+    });
+  }
+
+  /**
+   * Manage focus after a color move
+   */
+  private manageFocusAfterMove(toIndex: number, fromIndex: number): void {
+    this.updateComplete.then(() => {
+      const colorsList = this.shadowRoot?.querySelector('.colors-list');
+      if (colorsList) {
+        const swatchElements = colorsList.querySelectorAll('color-swatch');
+        const targetSwatch = swatchElements[toIndex];
+        if (targetSwatch) {
+          const buttons = targetSwatch.shadowRoot?.querySelectorAll<HTMLButtonElement>('.reorder-btn');
+          if (buttons && buttons.length === 2) {
+            // Always focus the button matching the direction that was pressed
+            // buttons[0] = up, buttons[1] = down
+            const movedDown = toIndex > fromIndex;
+            const targetButton = movedDown ? buttons[1] : buttons[0];
+
+            if (targetButton) {
+              targetButton.focus();
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private handleBoundaryReached(e: CustomEvent<BoundaryReachedEventDetail>): void {
     // Announce boundary message to screen readers
     this.statusMessage = e.detail.message;
   }
+
 
   render() {
     const colors = this.store.colors;
@@ -375,29 +472,28 @@ export class ColorPalette extends LitElement {
         ${colors.length > 0 ? html`
           <!-- Using native ul/li instead of ARIA roles for better semantics -->
           <ul class="colors-list">
-            ${colors.map((color: Color, index: number) => html`
-              <li style="transform: ${this.getItemTransform(index)};">
-                <color-swatch
-                  .color="${color}"
-                  .index="${index}"
-                  .totalColors="${colors.length}"
-                  ?manual-reorder-enabled="${showReorderControls}"
-                  ?is-dragging="${this.draggedIndex === index}"
-                  ?is-drop-target="${this.dropTargetIndex === index}"
-                  show-remove
-                  editable-label
-                  draggable-swatch
-                  @swatch-remove="${() => this.removeColor(index)}"
-                  @label-change="${(e: CustomEvent) => this.updateColorLabel(index, e.detail.label)}"
-                  @swatch-move="${this.handleColorMove}"
-                  @swatch-drop="${this.handleColorMove}"
-                  @swatch-drag-start="${this.handleDragStart}"
-                  @swatch-drag-end="${this.handleDragEnd}"
-                  @swatch-drag-enter="${this.handleDragEnter}"
-                  @boundary-reached="${this.handleBoundaryReached}"
-                ></color-swatch>
-              </li>
-            `)}
+            ${repeat(
+              colors,
+              (color) => color.hex,
+              (color, index) => html`
+                <li data-color-id="${color.hex}">
+                  <color-swatch
+                    .color="${color}"
+                    .index="${index}"
+                    .totalColors="${colors.length}"
+                    ?manual-reorder-enabled="${showReorderControls}"
+                    show-remove
+                    editable-label
+                    draggable-swatch
+                    @swatch-remove="${() => this.removeColor(index)}"
+                    @label-change="${(e: CustomEvent<LabelChangeEventDetail>) => this.updateColorLabel(index, e.detail.label)}"
+                    @swatch-move="${this.handleColorMove}"
+                    @boundary-reached="${this.handleBoundaryReached}"
+                    @clear-all-drag-states="${this.clearAllDragStates}"
+                  ></color-swatch>
+                </li>
+              `
+            )}
           </ul>
 
           <div class="actions">
