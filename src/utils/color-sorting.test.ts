@@ -54,16 +54,16 @@ describe('color-sorting', () => {
       const sorted = sortByLuminance(testColors, 'ascending');
 
       // White should be first (lightest), Black should be last (darkest)
-      expect(sorted[0].hex).toBe('#FFFFFF');
-      expect(sorted[sorted.length - 1].hex).toBe('#000000');
+      expect(sorted[0]!.hex).toBe('#FFFFFF');
+      expect(sorted[sorted.length - 1]!.hex).toBe('#000000');
     });
 
     it('sorts colors from darkest to lightest (descending)', () => {
       const sorted = sortByLuminance(testColors, 'descending');
 
       // Black should be first (darkest), White should be last (lightest)
-      expect(sorted[0].hex).toBe('#000000');
-      expect(sorted[sorted.length - 1].hex).toBe('#FFFFFF');
+      expect(sorted[0]!.hex).toBe('#000000');
+      expect(sorted[sorted.length - 1]!.hex).toBe('#FFFFFF');
     });
 
     it('handles empty array', () => {
@@ -72,8 +72,8 @@ describe('color-sorting', () => {
     });
 
     it('handles single color', () => {
-      const sorted = sortByLuminance([testColors[0]], 'ascending');
-      expect(sorted).toEqual([testColors[0]]);
+      const sorted = sortByLuminance([testColors[0]!], 'ascending');
+      expect(sorted).toEqual([testColors[0]!]);
     });
   });
 
@@ -141,8 +141,8 @@ describe('color-sorting', () => {
       const sorted = sortAlphabetically(colorsWithoutLabels, 'ascending');
 
       // #AAAAAA should come before #CCCCCC
-      expect(sorted[0].hex).toBe('#AAAAAA');
-      expect(sorted[1].hex).toBe('#CCCCCC');
+      expect(sorted[0]!.hex).toBe('#AAAAAA');
+      expect(sorted[1]!.hex).toBe('#CCCCCC');
     });
   });
 
@@ -153,13 +153,13 @@ describe('color-sorting', () => {
       const sorted = sortByContrastScore(testColors, 'descending');
 
       // White or Black should be first (highest average contrast)
-      const firstColor = sorted[0].hex;
+      const firstColor = sorted[0]!.hex;
       expect(firstColor === '#FFFFFF' || firstColor === '#000000').toBe(true);
     });
 
     it('handles palette with single color', () => {
-      const sorted = sortByContrastScore([testColors[0]], 'ascending');
-      expect(sorted).toEqual([testColors[0]]);
+      const sorted = sortByContrastScore([testColors[0]!], 'ascending');
+      expect(sorted).toEqual([testColors[0]!]);
     });
   });
 
@@ -169,13 +169,13 @@ describe('color-sorting', () => {
       const sorted = sortByPassRate(testColors, 'descending');
 
       // White or Black should be first (highest pass rate)
-      const firstColor = sorted[0].hex;
+      const firstColor = sorted[0]!.hex;
       expect(firstColor === '#FFFFFF' || firstColor === '#000000').toBe(true);
     });
 
     it('returns 0% pass rate for single color', () => {
-      const sorted = sortByPassRate([testColors[0]], 'ascending');
-      expect(sorted).toEqual([testColors[0]]);
+      const sorted = sortByPassRate([testColors[0]!], 'ascending');
+      expect(sorted).toEqual([testColors[0]!]);
     });
   });
 
@@ -186,8 +186,8 @@ describe('color-sorting', () => {
       const byAlpha = sortColors(testColors, 'alphabetical', 'ascending');
 
       // Results should differ based on criteria
-      expect(byLuminance[0].hex).not.toBe(byHue[0].hex);
-      expect(byAlpha[0].hex).not.toBe(byLuminance[0].hex);
+      expect(byLuminance[0]!.hex).not.toBe(byHue[0]!.hex);
+      expect(byAlpha[0]!.hex).not.toBe(byLuminance[0]!.hex);
     });
 
     it('returns original order for manual criteria', () => {

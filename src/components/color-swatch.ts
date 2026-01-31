@@ -48,38 +48,6 @@ export class ColorSwatch extends LitElement {
       z-index: 100;
     }
 
-    /* Drop indicator - show a line BEFORE the card */
-    /* Don't move the card - just show a thick line to indicate drop zone */
-    :host([drag-position="before"]:not([dragging]))::before {
-      content: '';
-      position: absolute;
-      top: -0.5rem;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: var(--theme-primary-color, #0066cc);
-      border-radius: 3px;
-      box-shadow: 0 0 16px rgba(0, 102, 204, 0.6),
-                  0 0 0 8px rgba(0, 102, 204, 0.1);
-      z-index: 1000;
-      pointer-events: none; /* Prevent interfering with drag events */
-    }
-
-    /* Drop indicator - show a line AFTER the card */
-    :host([drag-position="after"]:not([dragging]))::after {
-      content: '';
-      position: absolute;
-      bottom: -0.5rem;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: var(--theme-primary-color, #0066cc);
-      border-radius: 3px;
-      box-shadow: 0 0 16px rgba(0, 102, 204, 0.6),
-                  0 0 0 8px rgba(0, 102, 204, 0.1);
-      z-index: 1000;
-      pointer-events: none; /* Prevent interfering with drag events */
-    }
 
     /* Shake animation for boundary collision (respects prefers-reduced-motion) */
     @media (prefers-reduced-motion: no-preference) {
@@ -146,14 +114,16 @@ export class ColorSwatch extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: center;
+      gap: 4px;
+      padding: 4px 0;
       border-right: 1px solid var(--theme-input-border-color);
     }
 
     .reorder-btn {
       width: var(--touch-target-min, 44px);
       min-width: var(--touch-target-min, 44px);
-      height: 22px;
-      min-height: 22px;
+      height: var(--touch-target-min, 44px);
+      min-height: var(--touch-target-min, 44px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -532,6 +502,13 @@ export class ColorSwatch extends LitElement {
       e.dataTransfer.setData('text/plain', this.index.toString());
     }
 
+    // Notify parent that dragging has started, including which index is being dragged
+    this.dispatchEvent(new CustomEvent('drag-state-change', {
+      detail: { dragging: true, draggedIndex: this.index },
+      bubbles: true,
+      composed: true,
+    }));
+
     // Safety: clear drag state after 2 seconds if dragend doesn't fire
     this.dragCleanupTimeout = window.setTimeout(() => {
       this.clearDragState();
@@ -548,6 +525,13 @@ export class ColorSwatch extends LitElement {
       window.clearTimeout(this.dragCleanupTimeout);
     }
     this.clearDragState();
+
+    // Notify parent that dragging has ended
+    this.dispatchEvent(new CustomEvent('drag-state-change', {
+      detail: { dragging: false },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private clearDragState(): void {
@@ -587,16 +571,38 @@ export class ColorSwatch extends LitElement {
 
     this.isDragOver = true;
 
-    // Calculate if mouse is in top or bottom half of the card
+    // Calculate drop position with hysteresis to reduce rapid switching
     const rect = this.getBoundingClientRect();
-    const midpoint = rect.top + rect.height / 2;
-    const isTopHalf = e.clientY < midpoint;
-    const newPosition = isTopHalf ? 'before' : 'after';
+    const relativeY = e.clientY - rect.top;
+    const heightThird = rect.height / 3;
+
+    // Use thirds instead of halves to create a more stable middle zone
+    let newPosition: 'before' | 'after';
+    if (relativeY < heightThird) {
+      // Clearly in top third - before
+      newPosition = 'before';
+    } else if (relativeY > rect.height - heightThird) {
+      // Clearly in bottom third - after
+      newPosition = 'after';
+    } else {
+      // In middle third - stick to current position if any, default to before
+      newPosition = this.dragPosition !== 'none' ? this.dragPosition : 'before';
+    }
 
     // Only update if position actually changed to reduce visual jumps
     if (this.dragPosition !== newPosition) {
       this.dragPosition = newPosition;
     }
+
+    // Notify parent about drop position for visual indicator
+    this.dispatchEvent(new CustomEvent('drop-position-change', {
+      detail: {
+        targetIndex: this.index,
+        position: this.dragPosition,
+      },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private handleDragLeave(): void {
@@ -610,6 +616,16 @@ export class ColorSwatch extends LitElement {
       this.isDragOver = false;
       this.dragPosition = 'none';
       this.dragLeaveTimeout = undefined;
+
+      // Notify parent to hide drop indicator
+      this.dispatchEvent(new CustomEvent('drop-position-change', {
+        detail: {
+          targetIndex: -1,
+          position: 'none',
+        },
+        bubbles: true,
+        composed: true,
+      }));
     }, 100);
   }
 

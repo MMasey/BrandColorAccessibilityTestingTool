@@ -82,6 +82,64 @@ export class ColorPalette extends LitElement {
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      transition: gap 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Expand gaps when dragging for better drop targeting */
+    .colors-list.dragging-active {
+      gap: 2.75rem; /* 44px */
+    }
+
+    /* Apply transforms to cards during drag to create spreading effect */
+    .colors-list > li {
+      transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .colors-list > li {
+        transition: none;
+      }
+    }
+
+    /* Drop indicator - JavaScript-managed element */
+    .drop-indicator {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 102, 204, 0.05),
+        rgba(0, 102, 204, 0.15) 50%,
+        rgba(0, 102, 204, 0.05)
+      );
+      border: 2px dashed var(--theme-primary-color, #0066cc);
+      border-radius: var(--radius-md, 0.5rem);
+      z-index: 1000;
+      pointer-events: none;
+      transition: opacity 150ms ease, top 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drop-indicator::before {
+      content: 'Drop here';
+      font-size: var(--font-size-xs, 0.75rem);
+      color: var(--theme-primary-color, #0066cc);
+      font-weight: var(--font-weight-semibold, 600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .drop-indicator.hidden {
+      opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .colors-list {
+        transition: none;
+      }
     }
 
     .colors-list > li {
@@ -186,6 +244,15 @@ export class ColorPalette extends LitElement {
 
   @state()
   private statusMessage = '';
+
+  @state()
+  private isDraggingCard = false; // Track if any card is being dragged
+
+  @state()
+  private dropIndicatorIndex = -1; // Which gap to show drop indicator in
+
+  @state()
+  private dropIndicatorPosition: 'before' | 'after' | 'none' = 'none'; // Where in the gap
 
   private handleAddColor(e: CustomEvent<AddColorEventDetail>): void {
     const { color } = e.detail;
@@ -427,6 +494,93 @@ export class ColorPalette extends LitElement {
     this.statusMessage = e.detail.message;
   }
 
+  private handleDragStateChange(e: CustomEvent<{dragging: boolean, draggedIndex?: number}>): void {
+    this.isDraggingCard = e.detail.dragging;
+
+    // Clear drop indicator when drag ends
+    if (!e.detail.dragging) {
+      this.dropIndicatorIndex = -1;
+      this.dropIndicatorPosition = 'none';
+    }
+  }
+
+  private handleDropPositionChange(e: CustomEvent<{targetIndex: number, position: 'before' | 'after' | 'none'}>): void {
+    this.dropIndicatorIndex = e.detail.targetIndex;
+    this.dropIndicatorPosition = e.detail.position;
+
+    // Update indicator position when drop position changes
+    this.updateDropIndicatorPosition();
+  }
+
+  /**
+   * Calculate transform offset for a card based on its position relative to the dragged card
+   * This creates a visual "spreading" effect that originates from the grabbed card
+   */
+  private getCardTransform(_cardIndex: number): string {
+    // Temporarily disabled - gap expansion alone is sufficient
+    // Adding transforms creates double spacing
+    return '';
+  }
+
+  /**
+   * Get the inline style for the drop indicator based on current drop position
+   */
+  private getDropIndicatorStyle(): string {
+    if (this.dropIndicatorIndex === -1 || this.dropIndicatorPosition === 'none') {
+      return 'display: none;';
+    }
+
+    // We need to calculate position based on the li elements
+    // This will be updated after render when we can measure actual positions
+    return 'display: block; opacity: 0;'; // Hidden by default, will be positioned via updateComplete
+  }
+
+  /**
+   * Update drop indicator position after render (when we can measure actual DOM positions)
+   */
+  private updateDropIndicatorPosition(): void {
+    if (this.dropIndicatorIndex === -1 || this.dropIndicatorPosition === 'none') {
+      return;
+    }
+
+    this.updateComplete.then(() => {
+      const colorsList = this.shadowRoot?.querySelector('.colors-list');
+      const dropIndicator = this.shadowRoot?.querySelector('.drop-indicator') as HTMLElement;
+
+      if (!colorsList || !dropIndicator) return;
+
+      const listItems = Array.from(colorsList.querySelectorAll('li'));
+      const targetLi = listItems[this.dropIndicatorIndex];
+
+      if (!targetLi) {
+        dropIndicator.style.opacity = '0';
+        return;
+      }
+
+      const targetRect = targetLi.getBoundingClientRect();
+      const listRect = colorsList.getBoundingClientRect();
+
+      // Calculate position relative to the list, accounting for scroll
+      const relativeTop = targetRect.top - listRect.top + (colorsList as HTMLElement).scrollTop;
+
+      let indicatorTop: number;
+      // When dragging, gap is 44px (2.75rem)
+      const gapSize = 44;
+      const indicatorHeight = 32;
+
+      if (this.dropIndicatorPosition === 'before') {
+        // Position in the gap above the card
+        indicatorTop = relativeTop - gapSize + (gapSize - indicatorHeight) / 2;
+      } else {
+        // Position in the gap below the card
+        indicatorTop = relativeTop + targetRect.height + (gapSize - indicatorHeight) / 2;
+      }
+
+      dropIndicator.style.top = `${indicatorTop}px`;
+      dropIndicator.style.opacity = '1';
+    });
+  }
+
 
   render() {
     const colors = this.store.colors;
@@ -471,12 +625,15 @@ export class ColorPalette extends LitElement {
 
         ${colors.length > 0 ? html`
           <!-- Using native ul/li instead of ARIA roles for better semantics -->
-          <ul class="colors-list">
+          <ul class="colors-list ${this.isDraggingCard ? 'dragging-active' : ''}" style="position: relative">
             ${repeat(
               colors,
               (color) => color.hex,
               (color, index) => html`
-                <li data-color-id="${color.hex}">
+                <li
+                  data-color-id="${color.hex}"
+                  style="transform: ${this.getCardTransform(index)}"
+                >
                   <color-swatch
                     .color="${color}"
                     .index="${index}"
@@ -490,10 +647,19 @@ export class ColorPalette extends LitElement {
                     @swatch-move="${this.handleColorMove}"
                     @boundary-reached="${this.handleBoundaryReached}"
                     @clear-all-drag-states="${this.clearAllDragStates}"
+                    @drag-state-change="${this.handleDragStateChange}"
+                    @drop-position-change="${this.handleDropPositionChange}"
                   ></color-swatch>
                 </li>
               `
             )}
+
+            <!-- Drop indicator - positioned by JavaScript -->
+            <div
+              class="drop-indicator"
+              style="${this.getDropIndicatorStyle()}"
+              aria-hidden="true"
+            ></div>
           </ul>
 
           <div class="actions">

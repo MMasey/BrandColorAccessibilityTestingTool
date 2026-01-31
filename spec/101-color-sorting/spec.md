@@ -44,27 +44,46 @@ Enable users to sort their color palette by luminance and manually reorder color
   3. **Keyboard drag**: Drag handle focusable and draggable via keyboard
 
 ## Drag-and-Drop Interaction
-- Uses HTML5 drag-and-drop API for best cross-platform support
+
+### Technology Choice: HTML5 Drag-and-Drop
+- **Rejected `@atlaskit/pragmatic-drag-and-drop`**:
+  - Evaluated for superior UX and accessibility features (4.7kb)
+  - Fatal flaw: Incompatible with Web Components Shadow DOM
+  - Library listens at document level, Shadow DOM event retargeting blocks it
+- **Chose HTML5 native drag-and-drop**:
+  - Works with Shadow DOM out of the box
+  - Zero dependencies
+  - Requires careful event handling (preventDefault on both dragenter and dragover)
+
+### Implementation Details
 - Custom drag ghost that matches actual card appearance:
-  - Reads computed styles from actual DOM elements
-  - Matches card layout (color preview + hex + label)
-  - Applies lift effect (scale 1.05, rotate 2deg, enhanced shadow)
-- Visual feedback during drag:
-  - Dragged card: 30% opacity, dashed border, scale down, rotate
-  - Drop target: Blue indicator line (positioned at -3px above card) with pulse animation
+  - Clones `.swatch-container` with full styling
+  - Positions at actual grab point for natural feel
+  - 90% opacity for visual feedback
+- Live reordering during drag:
+  - Other cards smoothly shift (translateY transforms) as you drag
+  - Dragged card stays faded in place (30% opacity, dashed border)
+  - No delay - order commits immediately on drop
+- Visual feedback:
+  - Drop target: Blue indicator line centered in gap with pulse animation
   - All animations disabled if `prefers-reduced-motion: reduce`
-- Smooth animations for keyboard arrow moves:
+- Keyboard arrow moves:
   - 250ms transform-based preview before DOM update
-  - Cards visually swap positions using translateY transforms
-  - Provides feedback matching drag-and-drop behavior
-  - Respects prefers-reduced-motion
+  - Dragged card animates over others (elevated z-index)
+  - Cards shift to make room
+  - Shake animation at boundaries (can't move further)
+  - Focus stays on same direction button
 
 ## Accessibility
 - Smart focus management:
-  - After move, always focus an enabled button
-  - At first position: focus down button (up is disabled)
-  - At last position: focus up button (down is disabled)
-  - Middle positions: focus button matching movement direction
+  - After move, focus stays on the same direction button (up stays on up, down stays on down)
+  - Focus never moves to a different button
+  - Provides predictable, consistent behavior
+- Boundary feedback (buttons stay enabled):
+  - Pressing move button at boundary shows shake animation
+  - Screen reader announcement confirms boundary ("Cannot move up/down...")
+  - No disabled buttons - consistent interaction model
+  - Shake animation respects `prefers-reduced-motion`
 - Screen reader announcements:
   - "Color [label/hex] added to palette"
   - "Colors sorted: [criteria]"
@@ -76,7 +95,6 @@ Enable users to sort their color palette by luminance and manually reorder color
 - ARIA live regions (polite, atomic)
 - All buttons have aria-label and title attributes
 - Drag handle has role="img" and descriptive aria-label
-- Boundary announcements when disabled buttons are clicked (WCAG 4.1.3)
 
 ## State Management
 - Store original color order on first sort/reorder
