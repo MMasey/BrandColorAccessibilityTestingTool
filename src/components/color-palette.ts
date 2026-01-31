@@ -85,18 +85,26 @@ export class ColorPalette extends LitElement {
     }
 
     /* Expand gaps when dragging for better drop targeting */
-    .colors-list.dragging-active {
-      gap: 2.75rem; /* 44px */
+    /* When dragging, shrink all cards to create visual gaps */
+    .colors-list.dragging-active > li {
+      transform: scaleY(0.92);
+      opacity: 0.85;
     }
 
-    /* Apply transforms to cards during drag to create spreading effect */
+    /* Smooth transition for card shrinking */
     .colors-list > li {
-      transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     @media (prefers-reduced-motion: reduce) {
       .colors-list > li {
         transition: none;
+      }
+
+      .colors-list.dragging-active > li {
+        transform: none;
+        opacity: 0.85;
       }
     }
 
@@ -250,9 +258,6 @@ export class ColorPalette extends LitElement {
 
   @state()
   private isDraggingCard = false; // Track if any card is being dragged
-
-  @state()
-  private grabbedCardIndex = -1; // Track which card is being grabbed (for spreading effect)
 
   @state()
   private dropIndicatorIndex = -1; // Which gap to show drop indicator in
@@ -502,13 +507,11 @@ export class ColorPalette extends LitElement {
 
   private handleDragStateChange(e: CustomEvent<{dragging: boolean, draggedIndex?: number}>): void {
     this.isDraggingCard = e.detail.dragging;
-    this.grabbedCardIndex = e.detail.draggedIndex ?? -1;
 
-    // Clear drop indicator and grabbed index when drag ends
+    // Clear drop indicator when drag ends
     if (!e.detail.dragging) {
       this.dropIndicatorIndex = -1;
       this.dropIndicatorPosition = 'none';
-      this.grabbedCardIndex = -1;
     }
   }
 
@@ -522,27 +525,11 @@ export class ColorPalette extends LitElement {
 
   /**
    * Calculate transform offset for a card based on its position relative to the dragged card
-   * This creates a visual "spreading" effect that originates from the grabbed card
+   * Note: Card shrinking is now handled by CSS (.dragging-active class)
    */
-  private getCardTransform(cardIndex: number): string {
-    // Only apply spreading effect when a card is being grabbed
-    if (this.grabbedCardIndex === -1 || !this.isDraggingCard) {
-      return 'translateY(0)';
-    }
-
-    // Don't transform the grabbed card itself
-    if (cardIndex === this.grabbedCardIndex) {
-      return 'translateY(0)';
-    }
-
-    // Calculate distance from grabbed card
-    const distance = cardIndex - this.grabbedCardIndex;
-
-    // Spread cards outward: 16px per card distance (more visible)
-    const spreadAmount = 16;
-    const offset = distance * spreadAmount;
-
-    return `translateY(${offset}px)`;
+  private getCardTransform(_cardIndex: number): string {
+    // No per-card transforms needed - CSS handles shrinking all cards
+    return '';
   }
 
   /**
