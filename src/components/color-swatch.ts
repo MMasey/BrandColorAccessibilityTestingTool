@@ -571,23 +571,13 @@ export class ColorSwatch extends LitElement {
 
     this.isDragOver = true;
 
-    // Calculate drop position with hysteresis to reduce rapid switching
+    // Calculate drop position using middle as boundary for larger drop zones
     const rect = this.getBoundingClientRect();
     const relativeY = e.clientY - rect.top;
-    const heightThird = rect.height / 3;
+    const middle = rect.height / 2;
 
-    // Use thirds instead of halves to create a more stable middle zone
-    let newPosition: 'before' | 'after';
-    if (relativeY < heightThird) {
-      // Clearly in top third - before
-      newPosition = 'before';
-    } else if (relativeY > rect.height - heightThird) {
-      // Clearly in bottom third - after
-      newPosition = 'after';
-    } else {
-      // In middle third - stick to current position if any, default to before
-      newPosition = this.dragPosition !== 'none' ? this.dragPosition : 'before';
-    }
+    // Simple half-split: top half = before, bottom half = after
+    const newPosition: 'before' | 'after' = relativeY < middle ? 'before' : 'after';
 
     // Only update if position actually changed to reduce visual jumps
     if (this.dragPosition !== newPosition) {
