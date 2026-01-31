@@ -574,16 +574,15 @@ export class ColorPalette extends LitElement {
       const relativeTop = targetRect.top - listRect.top + (colorsList as HTMLElement).scrollTop;
 
       let indicatorTop: number;
-      // When dragging, gap is 44px (2.75rem)
-      const gapSize = 44;
-      const indicatorHeight = 32;
+      const indicatorHeight = 4; // Thin line indicator
 
+      // With card shrinking, we position at the exact edge of the card
       if (this.dropIndicatorPosition === 'before') {
-        // Position in the gap above the card
-        indicatorTop = relativeTop - gapSize + (gapSize - indicatorHeight) / 2;
+        // Position at top edge of card
+        indicatorTop = relativeTop - (indicatorHeight / 2);
       } else {
-        // Position in the gap below the card
-        indicatorTop = relativeTop + targetRect.height + (gapSize - indicatorHeight) / 2;
+        // Position at bottom edge of card
+        indicatorTop = relativeTop + targetRect.height - (indicatorHeight / 2);
       }
 
       dropIndicator.style.top = `${indicatorTop}px`;
