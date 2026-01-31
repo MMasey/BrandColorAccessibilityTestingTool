@@ -114,16 +114,15 @@ export class ColorSwatch extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 4px;
-      padding: 4px 0;
+      gap: 2px;
       border-right: 1px solid var(--theme-input-border-color);
     }
 
     .reorder-btn {
       width: var(--touch-target-min, 44px);
       min-width: var(--touch-target-min, 44px);
-      height: var(--touch-target-min, 44px);
-      min-height: var(--touch-target-min, 44px);
+      height: 24px;
+      min-height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -133,7 +132,8 @@ export class ColorSwatch extends LitElement {
       cursor: pointer;
       transition: color var(--transition-fast, 150ms ease),
                   background var(--transition-fast, 150ms ease);
-      font-size: var(--font-size-xs, 0.75rem);
+      font-size: var(--font-size-sm, 0.875rem);
+      font-weight: var(--font-weight-semibold, 600);
     }
 
     .reorder-btn:hover:not(:disabled) {

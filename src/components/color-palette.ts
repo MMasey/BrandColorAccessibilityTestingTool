@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
 import { ColorStoreController } from '../state';
 import type { Color } from '../utils';
 import type { ColorInput } from './color-input';
@@ -106,30 +105,34 @@ export class ColorPalette extends LitElement {
       position: absolute;
       left: 0;
       right: 0;
-      height: 32px;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 102, 204, 0.05),
-        rgba(0, 102, 204, 0.15) 50%,
-        rgba(0, 102, 204, 0.05)
-      );
-      border: 2px dashed var(--theme-primary-color, #0066cc);
-      border-radius: var(--radius-md, 0.5rem);
+      height: 4px;
+      background: var(--theme-primary-color, #0066cc);
       z-index: 1000;
       pointer-events: none;
       transition: opacity 150ms ease, top 150ms ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: 2px;
+      box-shadow: 0 0 12px rgba(0, 102, 204, 0.6);
+    }
+
+    .drop-indicator::before,
+    .drop-indicator::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--theme-primary-color, #0066cc);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      box-shadow: 0 0 8px rgba(0, 102, 204, 0.8);
     }
 
     .drop-indicator::before {
-      content: 'Drop here';
-      font-size: var(--font-size-xs, 0.75rem);
-      color: var(--theme-primary-color, #0066cc);
-      font-weight: var(--font-weight-semibold, 600);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      left: -5px;
+    }
+
+    .drop-indicator::after {
+      right: -5px;
     }
 
     .drop-indicator.hidden {
@@ -247,6 +250,9 @@ export class ColorPalette extends LitElement {
 
   @state()
   private isDraggingCard = false; // Track if any card is being dragged
+
+  @state()
+  private grabbedCardIndex = -1; // Track which card is being grabbed (for spreading effect)
 
   @state()
   private dropIndicatorIndex = -1; // Which gap to show drop indicator in
@@ -496,11 +502,13 @@ export class ColorPalette extends LitElement {
 
   private handleDragStateChange(e: CustomEvent<{dragging: boolean, draggedIndex?: number}>): void {
     this.isDraggingCard = e.detail.dragging;
+    this.grabbedCardIndex = e.detail.draggedIndex ?? -1;
 
-    // Clear drop indicator when drag ends
+    // Clear drop indicator and grabbed index when drag ends
     if (!e.detail.dragging) {
       this.dropIndicatorIndex = -1;
       this.dropIndicatorPosition = 'none';
+      this.grabbedCardIndex = -1;
     }
   }
 
@@ -516,10 +524,25 @@ export class ColorPalette extends LitElement {
    * Calculate transform offset for a card based on its position relative to the dragged card
    * This creates a visual "spreading" effect that originates from the grabbed card
    */
-  private getCardTransform(_cardIndex: number): string {
-    // Temporarily disabled - gap expansion alone is sufficient
-    // Adding transforms creates double spacing
-    return '';
+  private getCardTransform(cardIndex: number): string {
+    // Only apply spreading effect when a card is being grabbed
+    if (this.grabbedCardIndex === -1 || !this.isDraggingCard) {
+      return 'translateY(0)';
+    }
+
+    // Don't transform the grabbed card itself
+    if (cardIndex === this.grabbedCardIndex) {
+      return 'translateY(0)';
+    }
+
+    // Calculate distance from grabbed card
+    const distance = cardIndex - this.grabbedCardIndex;
+
+    // Spread cards outward: 16px per card distance (more visible)
+    const spreadAmount = 16;
+    const offset = distance * spreadAmount;
+
+    return `translateY(${offset}px)`;
   }
 
   /**
@@ -626,10 +649,7 @@ export class ColorPalette extends LitElement {
         ${colors.length > 0 ? html`
           <!-- Using native ul/li instead of ARIA roles for better semantics -->
           <ul class="colors-list ${this.isDraggingCard ? 'dragging-active' : ''}" style="position: relative">
-            ${repeat(
-              colors,
-              (color) => color.hex,
-              (color, index) => html`
+            ${colors.map((color, index) => html`
                 <li
                   data-color-id="${color.hex}"
                   style="transform: ${this.getCardTransform(index)}"
