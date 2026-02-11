@@ -61,7 +61,10 @@ test.describe('Color Palette Sorting & Reordering', () => {
   });
 
   test.describe('Sort Controls UI', () => {
-    test('should show sort dropdown with manual order by default', async ({ page }) => {
+    test('should show sort dropdown with manual order by default when colors added', async ({ page }) => {
+      // Need to add colors first - sort-controls doesn't render with < 2 colors
+      await addColors(page, ['#FF0000', '#00FF00']);
+      
       const sortControls = page.locator('sort-controls');
       const sortDropdown = sortControls.locator('select');
 
@@ -69,34 +72,28 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await expect(sortDropdown).toHaveValue('manual');
     });
 
-    test('should show direction toggle button', async ({ page }) => {
-      const sortControls = page.locator('sort-controls');
-      const directionButton = sortControls.locator('button[aria-label*="direction"]');
-
-      await expect(directionButton).toBeVisible();
-    });
-
-    test('should disable direction toggle in manual mode', async ({ page }) => {
+    test('should hide direction toggle button in manual mode', async ({ page }) => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
       const sortControls = page.locator('sort-controls');
-      const directionButton = sortControls.locator('button[aria-label*="direction"]');
+      const directionButton = sortControls.locator('.direction-btn');
 
-      await expect(directionButton).toBeDisabled();
+      // Direction button should be hidden in manual mode
+      await expect(directionButton).not.toBeVisible();
     });
 
-    test('should enable direction toggle when sorted by luminance', async ({ page }) => {
+    test('should show direction toggle when sorted by luminance', async ({ page }) => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
       const sortControls = page.locator('sort-controls');
       const sortDropdown = sortControls.locator('select');
-      const directionButton = sortControls.locator('button[aria-label*="direction"]');
+      const directionButton = sortControls.locator('.direction-btn');
 
       // Switch to luminance sorting
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
 
-      await expect(directionButton).toBeEnabled();
+      await expect(directionButton).toBeVisible();
     });
   });
 
@@ -469,7 +466,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
 
       const sortControls = page.locator('sort-controls');
       const sortDropdown = sortControls.locator('select');
-      const directionButton = sortControls.locator('button[aria-label*="direction"]');
+      const directionButton = sortControls.locator('.direction-btn');
 
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -662,6 +659,106 @@ test.describe('Color Palette Sorting & Reordering', () => {
 
       const order = await getColorOrder(page);
       expect(order).toEqual(['#00FF00', '#FF0000', '#0000FF']);
+    });
+  });
+
+  test.describe('URL State Persistence', () => {
+    test('should persist sort criteria in URL query string', async ({ page }) => {
+      await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
+
+      // Sort by luminance
+      const sortControls = page.locator('sort-controls');
+      const sortDropdown = sortControls.locator('select');
+      await sortDropdown.selectOption('luminance');
+      await page.waitForTimeout(200);
+
+      // Check URL contains sortBy parameter
+      const url = new URL(page.url());
+      expect(url.searchParams.get('sortBy')).toBe('luminance');
+    });
+
+    test('should persist sort direction in URL query string', async ({ page }) => {
+      await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
+
+      // Sort by luminance
+      const sortControls = page.locator('sort-controls');
+      const sortDropdown = sortControls.locator('select');
+      await sortDropdown.selectOption('luminance');
+      await page.waitForTimeout(200);
+
+      // Toggle direction
+      const directionButton = sortControls.locator('.direction-btn');
+      await directionButton.click();
+      await page.waitForTimeout(200);
+
+      // Check URL contains sortDir parameter
+      const url = new URL(page.url());
+      expect(url.searchParams.get('sortBy')).toBe('luminance');
+      expect(url.searchParams.get('sortDir')).toBe('descending');
+    });
+
+    test('should restore sort state from URL on page load', async ({ page }) => {
+      // Navigate to URL with sort parameters
+      await page.goto('/?colors=FF0000,00FF00,0000FF&sortBy=luminance&sortDir=ascending');
+      await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+      await page.waitForTimeout(300);
+
+      // Verify sort was applied
+      const order = await getColorOrder(page);
+      expect(order[0]).toBe('#00FF00'); // Green is lightest
+
+      // Verify dropdown shows correct value
+      const sortControls = page.locator('sort-controls');
+      const sortDropdown = sortControls.locator('select');
+      await expect(sortDropdown).toHaveValue('luminance');
+    });
+
+    test('should restore sort state from URL on reload', async ({ page }) => {
+      // Add colors and sort
+      await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
+
+      // Sort by luminance
+      const sortControls = page.locator('sort-controls');
+      const sortDropdown = sortControls.locator('select');
+      await sortDropdown.selectOption('luminance');
+      await page.waitForTimeout(200);
+
+      // Get the current URL with sort params
+      const urlWithSort = page.url();
+      expect(urlWithSort).toContain('sortBy=luminance');
+
+      // Reload the page with the same URL
+      await page.goto(urlWithSort);
+      await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+      await page.waitForTimeout(300);
+
+      // Should restore sorted state
+      await expect(sortDropdown).toHaveValue('luminance');
+      const order = await getColorOrder(page);
+      expect(order[0]).toBe('#00FF00'); // Green is lightest
+    });
+
+    test('should clear sort parameters from URL when switched to manual', async ({ page }) => {
+      await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
+
+      // Sort by luminance
+      const sortControls = page.locator('sort-controls');
+      const sortDropdown = sortControls.locator('select');
+      await sortDropdown.selectOption('luminance');
+      await page.waitForTimeout(200);
+
+      // Verify sortBy is in URL
+      let url = new URL(page.url());
+      expect(url.searchParams.get('sortBy')).toBe('luminance');
+
+      // Switch back to manual
+      await sortDropdown.selectOption('manual');
+      await page.waitForTimeout(200);
+
+      // sortBy should be removed or set to manual
+      url = new URL(page.url());
+      const sortBy = url.searchParams.get('sortBy');
+      expect(sortBy === null || sortBy === 'manual').toBe(true);
     });
   });
 });
