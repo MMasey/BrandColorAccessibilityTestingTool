@@ -8,7 +8,7 @@
  */
 
 import type { Theme } from './theme-store';
-import type { GridFilterLevel, GridCellSize } from './color-store';
+import type { GridFilterLevel, GridCellSize, SortCriteria, SortDirection } from './color-store';
 
 /** URL parameter names */
 const PARAM_COLORS = 'colors';
@@ -16,12 +16,20 @@ const PARAM_LABELS = 'labels';
 const PARAM_THEME = 'theme';
 const PARAM_SHOW = 'show';
 const PARAM_SIZE = 'size';
+const PARAM_SORT_BY = 'sortBy';
+const PARAM_SORT_DIR = 'sortDir';
 
 /** Valid filter levels for URL params */
 const VALID_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large', 'failed'];
 
 /** Valid cell sizes for URL params */
 const VALID_CELL_SIZES: GridCellSize[] = ['small', 'medium', 'large'];
+
+/** Valid sort criteria for URL params */
+const VALID_SORT_CRITERIA: SortCriteria[] = ['manual', 'luminance', 'contrast', 'pass-rate', 'hue', 'alphabetical'];
+
+/** Valid sort directions for URL params */
+const VALID_SORT_DIRECTIONS: SortDirection[] = ['ascending', 'descending'];
 
 /** Default active filters (show passing, hide failed) */
 const DEFAULT_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large'];
@@ -33,6 +41,8 @@ export interface URLState {
   theme: Theme;
   filters: GridFilterLevel[];  // Active grid filters
   cellSize: GridCellSize;      // Grid cell size
+  sortCriteria: SortCriteria;  // Sort criteria
+  sortDirection: SortDirection; // Sort direction
 }
 
 /** Default state when no URL params present */
@@ -42,6 +52,8 @@ const DEFAULT_STATE: URLState = {
   theme: 'system',
   filters: DEFAULT_FILTERS,
   cellSize: 'medium',
+  sortCriteria: 'manual',
+  sortDirection: 'ascending',
 };
 
 /**
@@ -90,6 +102,18 @@ export function parseURLState(search: string = window.location.search): Partial<
     state.cellSize = sizeParam as GridCellSize;
   }
 
+  // Parse sort criteria
+  const sortByParam = params.get(PARAM_SORT_BY);
+  if (sortByParam && VALID_SORT_CRITERIA.includes(sortByParam as SortCriteria)) {
+    state.sortCriteria = sortByParam as SortCriteria;
+  }
+
+  // Parse sort direction
+  const sortDirParam = params.get(PARAM_SORT_DIR);
+  if (sortDirParam && VALID_SORT_DIRECTIONS.includes(sortDirParam as SortDirection)) {
+    state.sortDirection = sortDirParam as SortDirection;
+  }
+
   return state;
 }
 
@@ -131,6 +155,16 @@ export function serializeURLState(state: Partial<URLState>): string {
     params.set(PARAM_SIZE, state.cellSize);
   }
 
+  // Serialize sort criteria (only if not manual default)
+  if (state.sortCriteria && state.sortCriteria !== 'manual') {
+    params.set(PARAM_SORT_BY, state.sortCriteria);
+  }
+
+  // Serialize sort direction (only if not ascending default, and only if sorting)
+  if (state.sortDirection && state.sortDirection !== 'ascending' && state.sortCriteria && state.sortCriteria !== 'manual') {
+    params.set(PARAM_SORT_DIR, state.sortDirection);
+  }
+
   const search = params.toString();
   return search ? `?${search}` : '';
 }
@@ -166,7 +200,7 @@ export function getFullURLState(search?: string): URLState {
  */
 export function hasURLState(search: string = window.location.search): boolean {
   const params = new URLSearchParams(search);
-  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_SHOW) || params.has(PARAM_SIZE);
+  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_SHOW) || params.has(PARAM_SIZE) || params.has(PARAM_SORT_BY) || params.has(PARAM_SORT_DIR);
 }
 
 /**

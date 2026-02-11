@@ -7,6 +7,7 @@
 
 import type { Color } from '../utils/color-types';
 import { createColor } from '../utils/color-converter';
+import { sortColors as applySorting, type SortCriteria, type SortDirection } from '../utils/color-sorting';
 
 /** Grid filter levels for WCAG compliance */
 export type GridFilterLevel = 'aaa' | 'aa' | 'aa-large' | 'failed';
@@ -20,6 +21,9 @@ export interface ColorStoreState {
   selectedAlgorithm: 'wcag' | 'apca' | 'both';
   gridFilters: Set<GridFilterLevel>;
   gridCellSize: GridCellSize;
+  sortCriteria: SortCriteria;
+  sortDirection: SortDirection;
+  originalColorOrder: Color[];
 }
 
 /** Event types emitted by the store */
@@ -28,6 +32,8 @@ export type ColorStoreEvent =
   | { type: 'algorithm-changed'; algorithm: 'wcag' | 'apca' | 'both' }
   | { type: 'grid-filters-changed'; filters: Set<GridFilterLevel> }
   | { type: 'grid-cell-size-changed'; size: GridCellSize }
+  | { type: 'sort-changed'; criteria: SortCriteria; direction: SortDirection }
+  | { type: 'order-reset' }
   | { type: 'state-reset' };
 
 type Listener = (event: ColorStoreEvent) => void;
@@ -42,6 +48,9 @@ function createColorStore() {
     selectedAlgorithm: 'wcag',
     gridFilters: new Set(['aaa', 'aa', 'aa-large']),
     gridCellSize: 'medium',
+    sortCriteria: 'manual',
+    sortDirection: 'ascending',
+    originalColorOrder: [],
   };
 
   // Subscribers
@@ -85,10 +94,29 @@ function createColorStore() {
 
       if (!color) return null;
 
-      state = {
-        ...state,
-        colors: [...state.colors, color],
-      };
+      // Add to array
+      const newColors = [...state.colors, color];
+
+      // If we're tracking original order, append the new color to it
+      const newOriginalOrder = state.originalColorOrder.length > 0
+        ? [...state.originalColorOrder, color]
+        : [];
+
+      // If currently sorted (not manual mode), re-apply sort
+      if (state.sortCriteria !== 'manual') {
+        const sortedColors = applySorting(newColors, state.sortCriteria, state.sortDirection);
+        state = {
+          ...state,
+          colors: sortedColors,
+          originalColorOrder: newOriginalOrder,
+        };
+      } else {
+        state = {
+          ...state,
+          colors: newColors,
+          originalColorOrder: newOriginalOrder,
+        };
+      }
 
       emit({ type: 'colors-changed', colors: state.colors });
       return color;
@@ -100,10 +128,28 @@ function createColorStore() {
      * @returns The added color
      */
     addColorObject(color: Color): Color {
-      state = {
-        ...state,
-        colors: [...state.colors, { ...color }],
-      };
+      const newColors = [...state.colors, { ...color }];
+
+      // If we're tracking original order, append the new color to it
+      const newOriginalOrder = state.originalColorOrder.length > 0
+        ? [...state.originalColorOrder, { ...color }]
+        : [];
+
+      // If currently sorted (not manual mode), re-apply sort
+      if (state.sortCriteria !== 'manual') {
+        const sortedColors = applySorting(newColors, state.sortCriteria, state.sortDirection);
+        state = {
+          ...state,
+          colors: sortedColors,
+          originalColorOrder: newOriginalOrder,
+        };
+      } else {
+        state = {
+          ...state,
+          colors: newColors,
+          originalColorOrder: newOriginalOrder,
+        };
+      }
 
       emit({ type: 'colors-changed', colors: state.colors });
       return color;
@@ -130,10 +176,29 @@ function createColorStore() {
       }
 
       if (newColors.length > 0) {
-        state = {
-          ...state,
-          colors: [...state.colors, ...newColors],
-        };
+        const allColors = [...state.colors, ...newColors];
+
+        // If we're tracking original order, append the new colors to it
+        const newOriginalOrder = state.originalColorOrder.length > 0
+          ? [...state.originalColorOrder, ...newColors]
+          : [];
+
+        // If currently sorted (not manual mode), re-apply sort
+        if (state.sortCriteria !== 'manual') {
+          const sortedColors = applySorting(allColors, state.sortCriteria, state.sortDirection);
+          state = {
+            ...state,
+            colors: sortedColors,
+            originalColorOrder: newOriginalOrder,
+          };
+        } else {
+          state = {
+            ...state,
+            colors: allColors,
+            originalColorOrder: newOriginalOrder,
+          };
+        }
+
         emit({ type: 'colors-changed', colors: state.colors });
       }
 
@@ -146,9 +211,18 @@ function createColorStore() {
     removeColor(index: number): boolean {
       if (index < 0 || index >= state.colors.length) return false;
 
+      const removedColor = state.colors[index];
+      const newColors = state.colors.filter((_, i) => i !== index);
+
+      // If we're tracking original order, remove the color from it too
+      const newOriginalOrder = state.originalColorOrder.length > 0
+        ? state.originalColorOrder.filter(c => c !== removedColor)
+        : [];
+
       state = {
         ...state,
-        colors: state.colors.filter((_, i) => i !== index),
+        colors: newColors,
+        originalColorOrder: newOriginalOrder,
       };
 
       emit({ type: 'colors-changed', colors: state.colors });
@@ -216,6 +290,11 @@ function createColorStore() {
         toIndex >= state.colors.length
       ) {
         return false;
+      }
+
+      // Store original order on first manual move (if not already stored)
+      if (state.sortCriteria === 'manual' && state.originalColorOrder.length === 0) {
+        state.originalColorOrder = [...state.colors];
       }
 
       const newColors = [...state.colors];
@@ -294,6 +373,92 @@ function createColorStore() {
     },
 
     /**
+     * Sort colors by the specified criteria
+     * Stores original order for later reset
+     */
+    sortColorsPalette(criteria: SortCriteria, direction: SortDirection = 'ascending'): void {
+      // Don't sort if already sorted with same criteria and direction
+      if (state.sortCriteria === criteria && state.sortDirection === direction && criteria !== 'manual') {
+        return;
+      }
+
+      // Store original order on first sort (if not already stored)
+      if (state.sortCriteria === 'manual' && state.originalColorOrder.length === 0) {
+        state.originalColorOrder = [...state.colors];
+      }
+
+      // Apply sorting
+      const sortedColors = applySorting(state.colors, criteria, direction);
+
+      state = {
+        ...state,
+        colors: sortedColors,
+        sortCriteria: criteria,
+        sortDirection: direction,
+      };
+
+      emit({ type: 'sort-changed', criteria, direction });
+      emit({ type: 'colors-changed', colors: state.colors });
+    },
+
+    /**
+     * Manually reorder colors (for drag-and-drop or move up/down buttons)
+     * @param newOrder - Array of colors in the desired order
+     */
+    reorderColors(newOrder: Color[]): void {
+      // Validate that newOrder contains all and only the current colors
+      if (newOrder.length !== state.colors.length) {
+        console.warn('reorderColors: newOrder length mismatch');
+        return;
+      }
+
+      // Store original order on first manual reorder (if not already stored)
+      if (state.sortCriteria === 'manual' && state.originalColorOrder.length === 0) {
+        state.originalColorOrder = [...state.colors];
+      }
+
+      state = {
+        ...state,
+        colors: [...newOrder],
+        sortCriteria: 'manual',
+      };
+
+      emit({ type: 'sort-changed', criteria: 'manual', direction: state.sortDirection });
+      emit({ type: 'colors-changed', colors: state.colors });
+    },
+
+    /**
+     * Reset to original color order (insertion order)
+     */
+    resetToOriginalOrder(): void {
+      if (state.originalColorOrder.length === 0) {
+        // Nothing to reset to
+        return;
+      }
+
+      state = {
+        ...state,
+        colors: [...state.originalColorOrder],
+        sortCriteria: 'manual',
+        originalColorOrder: [], // Clear original order after reset
+      };
+
+      emit({ type: 'order-reset' });
+      emit({ type: 'colors-changed', colors: state.colors });
+    },
+
+    /**
+     * Get current sort state
+     */
+    getSortState(): { criteria: SortCriteria; direction: SortDirection; isSorted: boolean } {
+      return {
+        criteria: state.sortCriteria,
+        direction: state.sortDirection,
+        isSorted: state.sortCriteria !== 'manual' || state.originalColorOrder.length > 0,
+      };
+    },
+
+    /**
      * Reset store to initial state
      */
     reset(): void {
@@ -302,6 +467,9 @@ function createColorStore() {
         selectedAlgorithm: 'wcag',
         gridFilters: new Set(['aaa', 'aa', 'aa-large']),
         gridCellSize: 'medium',
+        sortCriteria: 'manual',
+        sortDirection: 'ascending',
+        originalColorOrder: [],
       };
       emit({ type: 'state-reset' });
     },
@@ -329,3 +497,6 @@ export const colorStore = createColorStore();
 
 /** Type for the store */
 export type ColorStore = typeof colorStore;
+
+/** Re-export sorting types for convenience */
+export type { SortCriteria, SortDirection } from '../utils/color-sorting';

@@ -237,8 +237,8 @@ export class AppShell extends LitElement {
       <header>
         <div class="header-content">
           <div class="header-main">
-            <h1>Brand Color Accessibility Tool</h1>
-            <p class="tagline">Validate your color palette against WCAG 2.1 contrast requirements</p>
+            <h1>Brand Colour Accessibility Tool</h1>
+            <p class="tagline">Validate your colour palette against WCAG 2.2 contrast requirements</p>
           </div>
           <div class="header-controls">
             <theme-switcher></theme-switcher>
@@ -248,7 +248,7 @@ export class AppShell extends LitElement {
 
       <main>
         <div class="layout">
-          <aside class="sidebar" aria-label="Color palette controls">
+          <aside class="sidebar" aria-label="Colour palette controls">
             <color-palette></color-palette>
 
             <div class="controls-section">
@@ -269,8 +269,8 @@ export class AppShell extends LitElement {
         <div class="footer-content">
           <p>
             Built for accessibility. Evaluates contrast against
-            <a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html" target="_blank" rel="noopener">
-              WCAG 2.1 Success Criterion 1.4.3
+            <a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html" target="_blank" rel="noopener">
+              WCAG 2.2 Success Criterion 1.4.3
             </a>
           </p>
         </div>

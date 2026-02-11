@@ -6,7 +6,7 @@
  */
 
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize } from './color-store';
+import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize, type SortCriteria, type SortDirection } from './color-store';
 import type { Color } from '../utils/color-types';
 
 /**
@@ -142,4 +142,25 @@ export class ColorStoreController implements ReactiveController {
   reset(): void {
     colorStore.reset();
   }
+
+  /** Sort colors by criteria and direction */
+  sortColorsPalette(criteria: SortCriteria, direction: SortDirection = 'ascending'): void {
+    colorStore.sortColorsPalette(criteria, direction);
+  }
+
+  /** Manually reorder colors */
+  reorderColors(newOrder: Color[]): void {
+    colorStore.reorderColors(newOrder);
+  }
+
+  /** Reset to original color order */
+  resetToOriginalOrder(): void {
+    colorStore.resetToOriginalOrder();
+  }
+
+  /** Get current sort state */
+  getSortState(): { criteria: SortCriteria; direction: SortDirection; isSorted: boolean } {
+    return colorStore.getSortState();
+  }
+
 }

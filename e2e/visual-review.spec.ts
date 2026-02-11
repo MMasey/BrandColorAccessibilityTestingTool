@@ -12,11 +12,11 @@ import { test } from '@playwright/test';
  * - Mobile: 375x667 (iPhone SE), 390x844 (iPhone 12), 414x896 (iPhone 11)
  *
  * Color States:
- * - Empty (no colors)
- * - Minimal (2 colors)
- * - Small (3 colors)
- * - Ideal (4 colors)
- * - Stress (10+ colors with long labels)
+ * - Empty (no colours)
+ * - Minimal (2 colours)
+ * - Small (3 colours)
+ * - Ideal (4 colours)
+ * - Stress (10+ colours with long labels)
  *
  * Input format: "#hex, Label" or just "#hex" (comma-separated)
  */
@@ -59,14 +59,14 @@ test.describe('Visual Review - Desktop (1440x900)', () => {
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
   });
 
-  test('Empty state - no colors', async ({ page }) => {
+  test('Empty state - no colours', async ({ page }) => {
     await page.screenshot({
       path: 'e2e/visual-review/desktop-1440-empty.png',
       fullPage: true,
     });
   });
 
-  test('Minimal state - 2 colors', async ({ page }) => {
+  test('Minimal state - 2 colours', async ({ page }) => {
     await addColors(page, ['#1a1a1a, Dark', '#ffffff, Light']);
     await page.screenshot({
       path: 'e2e/visual-review/desktop-1440-2colors.png',
@@ -74,7 +74,7 @@ test.describe('Visual Review - Desktop (1440x900)', () => {
     });
   });
 
-  test('Small palette - 3 colors', async ({ page }) => {
+  test('Small palette - 3 colours', async ({ page }) => {
     await addColors(page, ['#1a1a1a, Dark Grey', '#ffffff, White', '#0066cc, Primary Blue']);
     await page.screenshot({
       path: 'e2e/visual-review/desktop-1440-3colors.png',
@@ -82,7 +82,7 @@ test.describe('Visual Review - Desktop (1440x900)', () => {
     });
   });
 
-  test('Ideal state - 4 colors', async ({ page }) => {
+  test('Ideal state - 4 colours', async ({ page }) => {
     await addColors(page, [
       '#1a1a1a, Dark Grey',
       '#ffffff, White',
@@ -95,7 +95,7 @@ test.describe('Visual Review - Desktop (1440x900)', () => {
     });
   });
 
-  test('Stress test - 12 colors with long labels', async ({ page }) => {
+  test('Stress test - 12 colours with long labels', async ({ page }) => {
     await addColors(page, [
       '#000000, Extra Dark Charcoal Black',
       '#1a1a1a, Very Dark Grey Background',
@@ -124,7 +124,7 @@ test.describe('Visual Review - Desktop Large (1920x1080)', () => {
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
   });
 
-  test('Ideal state - 4 colors', async ({ page }) => {
+  test('Ideal state - 4 colours', async ({ page }) => {
     await addColors(page, [
       '#1a1a1a, Dark Grey',
       '#ffffff, White',
@@ -137,7 +137,7 @@ test.describe('Visual Review - Desktop Large (1920x1080)', () => {
     });
   });
 
-  test('Stress test - 12 colors', async ({ page }) => {
+  test('Stress test - 12 colours', async ({ page }) => {
     await addColors(page, [
       '#000000, Extra Dark Charcoal Black',
       '#1a1a1a, Very Dark Grey Background',
@@ -173,7 +173,7 @@ test.describe('Visual Review - Tablet Portrait (768x1024)', () => {
     });
   });
 
-  test('Minimal state - 2 colors', async ({ page }) => {
+  test('Minimal state - 2 colours', async ({ page }) => {
     await addColors(page, ['#1a1a1a, Dark', '#ffffff, Light']);
     await page.screenshot({
       path: 'e2e/visual-review/tablet-768-2colors.png',
@@ -181,7 +181,7 @@ test.describe('Visual Review - Tablet Portrait (768x1024)', () => {
     });
   });
 
-  test('Ideal state - 4 colors', async ({ page }) => {
+  test('Ideal state - 4 colours', async ({ page }) => {
     await addColors(page, [
       '#1a1a1a, Dark Grey',
       '#ffffff, White',
@@ -194,7 +194,7 @@ test.describe('Visual Review - Tablet Portrait (768x1024)', () => {
     });
   });
 
-  test('Stress test - 10 colors', async ({ page }) => {
+  test('Stress test - 10 colours', async ({ page }) => {
     await addColors(page, [
       '#000000, Extra Dark Charcoal Black',
       '#1a1a1a, Very Dark Grey Background',
@@ -221,7 +221,7 @@ test.describe('Visual Review - Tablet Landscape (1024x768)', () => {
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
   });
 
-  test('Ideal state - 4 colors', async ({ page }) => {
+  test('Ideal state - 4 colours', async ({ page }) => {
     await addColors(page, [
       '#1a1a1a, Dark Grey',
       '#ffffff, White',
@@ -234,7 +234,7 @@ test.describe('Visual Review - Tablet Landscape (1024x768)', () => {
     });
   });
 
-  test('Stress test - 10 colors', async ({ page }) => {
+  test('Stress test - 10 colours', async ({ page }) => {
     await addColors(page, [
       '#000000, Extra Dark Charcoal Black',
       '#1a1a1a, Very Dark Grey Background',
@@ -268,7 +268,7 @@ test.describe('Visual Review - Mobile iPhone SE (375x667)', () => {
     });
   });
 
-  test('Ideal state - 4 colors', async ({ page }) => {
+  test('Ideal state - 4 colours', async ({ page }) => {
     // Mobile: shorter labels work better
     await addColors(page, ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626']);
     await page.screenshot({
@@ -277,7 +277,7 @@ test.describe('Visual Review - Mobile iPhone SE (375x667)', () => {
     });
   });
 
-  test('Stress test - 8 colors', async ({ page }) => {
+  test('Stress test - 8 colours', async ({ page }) => {
     await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#666666',
       '#999999', '#cccccc', '#ffffff', '#0066cc',
@@ -303,7 +303,7 @@ test.describe('Visual Review - Mobile iPhone 12 (390x844)', () => {
     });
   });
 
-  test('Ideal state - 4 colors', async ({ page }) => {
+  test('Ideal state - 4 colours', async ({ page }) => {
     await addColors(page, ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626']);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-390-ideal.png',
@@ -311,7 +311,7 @@ test.describe('Visual Review - Mobile iPhone 12 (390x844)', () => {
     });
   });
 
-  test('Stress test - 8 colors', async ({ page }) => {
+  test('Stress test - 8 colours', async ({ page }) => {
     await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#666666',
       '#999999', '#cccccc', '#ffffff', '#0066cc',
@@ -330,7 +330,7 @@ test.describe('Visual Review - Mobile iPhone 11 Pro Max (414x896)', () => {
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
   });
 
-  test('Ideal state - 4 colors', async ({ page }) => {
+  test('Ideal state - 4 colours', async ({ page }) => {
     await addColors(page, ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626']);
     await page.screenshot({
       path: 'e2e/visual-review/mobile-414-ideal.png',
@@ -338,7 +338,7 @@ test.describe('Visual Review - Mobile iPhone 11 Pro Max (414x896)', () => {
     });
   });
 
-  test('Stress test - 8 colors', async ({ page }) => {
+  test('Stress test - 8 colours', async ({ page }) => {
     await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#666666',
       '#999999', '#cccccc', '#ffffff', '#0066cc',
@@ -351,7 +351,7 @@ test.describe('Visual Review - Mobile iPhone 11 Pro Max (414x896)', () => {
 });
 
 test.describe('Visual Review - Grid Overflow & Scrolling', () => {
-  test('Desktop - horizontal grid scroll with 15 colors', async ({ page }) => {
+  test('Desktop - horizontal grid scroll with 15 colours', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
@@ -367,7 +367,7 @@ test.describe('Visual Review - Grid Overflow & Scrolling', () => {
     });
   });
 
-  test('Mobile - horizontal grid scroll with 8 colors', async ({ page }) => {
+  test('Mobile - horizontal grid scroll with 8 colours', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);

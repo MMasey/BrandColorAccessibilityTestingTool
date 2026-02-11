@@ -247,7 +247,7 @@ export class ContrastCell extends LitElement {
         <div
           class="cell same-color"
           style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
-          aria-label="Same color"
+          aria-label="Same colour"
         >
           <span class="ratio">—</span>
         </div>
