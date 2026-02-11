@@ -48,8 +48,8 @@ describe('getRelativeLuminance', () => {
     expect(getRelativeLuminance({ r: 0, g: 0, b: 255 })).toBeCloseTo(0.0722, 4);
   });
 
-  it('calculates luminance for grays correctly', () => {
-    // Mid-gray (128, 128, 128) should be around 0.2159
+  it('calculates luminance for greys correctly', () => {
+    // Mid-grey (128, 128, 128) should be around 0.2159
     const midGray = getRelativeLuminance({ r: 128, g: 128, b: 128 });
     expect(midGray).toBeGreaterThan(0.2);
     expect(midGray).toBeLessThan(0.22);
@@ -79,8 +79,8 @@ describe('getContrastRatio', () => {
   });
 
   it('calculates expected ratios for common color pairs', () => {
-    // #767676 (mid-gray) should have similar contrast against black and white
-    // This is the "minimum gray" that passes AA against both
+    // #767676 (mid-grey) should have similar contrast against black and white
+    // This is the "minimum grey" that passes AA against both
     const grayVsBlack = getContrastRatio(hexToRgb('#767676'), hexToRgb('#000000'));
     const grayVsWhite = getContrastRatio(hexToRgb('#767676'), hexToRgb('#FFFFFF'));
 

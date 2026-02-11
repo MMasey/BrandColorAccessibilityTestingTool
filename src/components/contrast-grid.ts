@@ -452,7 +452,7 @@ export class ContrastGrid extends LitElement {
           <div
             class="grid"
             role="table"
-            aria-label="Contrast ratios between foreground and background colors"
+            aria-label="Contrast ratios between foreground and background colours"
             style="
               --cell-size: ${this.getCellSize()};
               --row-header-width: ${this.getRowHeaderWidth()};

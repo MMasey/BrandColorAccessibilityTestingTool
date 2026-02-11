@@ -33,6 +33,9 @@ export class ColorSwatch extends LitElement {
                   border-style var(--transition-fast, 150ms ease),
                   border-color var(--transition-fast, 150ms ease),
                   border-width var(--transition-fast, 150ms ease);
+    }
+
+    .swatch-container[draggable="true"] {
       cursor: grab;
     }
 

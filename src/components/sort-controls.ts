@@ -68,6 +68,7 @@ export class SortControls extends LitElement {
       transition: all var(--transition-fast, 150ms ease);
       min-width: 44px;
       min-height: 44px;
+      white-space: nowrap;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -80,11 +81,6 @@ export class SortControls extends LitElement {
       &:focus-visible {
         outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring-color);
         outline-offset: var(--focus-ring-offset, 2px);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
       }
 
       @media (max-width: 640px) {
@@ -125,18 +121,6 @@ export class SortControls extends LitElement {
       }
     }
 
-    .sort-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-xs, 0.25rem);
-      font-size: var(--font-size-xs, 0.75rem);
-      color: var(--theme-text-muted-color);
-      padding: 0.125rem var(--space-xs, 0.25rem);
-      background: var(--theme-button-bg-color);
-      color: var(--theme-button-text-color);
-      border-radius: var(--radius-sm, 0.25rem);
-    }
-
     /* Screen reader only */
     .sr-only {
       position: absolute;
@@ -157,10 +141,6 @@ export class SortControls extends LitElement {
       .reset-btn {
         border: 2px solid CanvasText;
       }
-
-      .sort-indicator {
-        border: 2px solid CanvasText;
-      }
     }
   `;
 
@@ -178,7 +158,7 @@ export class SortControls extends LitElement {
 
     // Announce to screen readers
     const label = getSortCriteriaLabel(criteria, direction);
-    this.statusMessage = `Colors sorted: ${label}`;
+    this.statusMessage = `Colours sorted: ${label}`;
   }
 
   private toggleDirection(): void {
@@ -194,7 +174,29 @@ export class SortControls extends LitElement {
 
   private resetOrder(): void {
     this.store.resetToOriginalOrder();
-    this.statusMessage = 'Colors reset to original order';
+    this.statusMessage = 'Colours reset to original order';
+  }
+
+  private getDirectionLabel(criteria: SortCriteria, direction: SortDirection): string {
+    switch (criteria) {
+      case 'luminance':
+        return direction === 'ascending' ? 'Light → Dark' : 'Dark → Light';
+      case 'contrast':
+      case 'pass-rate':
+        return direction === 'ascending' ? 'Low → High' : 'High → Low';
+      case 'hue':
+        return direction === 'ascending' ? 'Red → Violet' : 'Violet → Red';
+      case 'alphabetical':
+        return direction === 'ascending' ? 'A → Z' : 'Z → A';
+      default:
+        return direction === 'ascending' ? '↑' : '↓';
+    }
+  }
+
+  private getDirectionAriaLabel(criteria: SortCriteria, direction: SortDirection): string {
+    const current = this.getDirectionLabel(criteria, direction);
+    const opposite = this.getDirectionLabel(criteria, direction === 'ascending' ? 'descending' : 'ascending');
+    return `Currently sorting ${current.replace('→', 'to')}. Click to switch to ${opposite.replace('→', 'to')}`;
   }
 
   render() {
@@ -225,22 +227,23 @@ export class SortControls extends LitElement {
           class="sort-select"
           @change="${this.handleSortChange}"
           .value="${criteria}"
-          aria-label="Sort colors by"
+          aria-label="Sort colours by"
         >
           <option value="manual">Manual Order</option>
           <option value="luminance">Luminance (Lightest ↔ Darkest)</option>
         </select>
 
-        <button
-          type="button"
-          class="direction-btn"
-          @click="${this.toggleDirection}"
-          ?disabled="${criteria === 'manual'}"
-          aria-label="Toggle sort direction"
-          title="${direction === 'ascending' ? 'Switch to descending' : 'Switch to ascending'}"
-        >
-          ${direction === 'ascending' ? '↑' : '↓'}
-        </button>
+        ${criteria !== 'manual' ? html`
+          <button
+            type="button"
+            class="direction-btn"
+            @click="${this.toggleDirection}"
+            aria-label="${this.getDirectionAriaLabel(criteria, direction)}"
+            title="${direction === 'ascending' ? 'Switch to descending' : 'Switch to ascending'}"
+          >
+            ${this.getDirectionLabel(criteria, direction)}
+          </button>
+        ` : null}
 
         ${isSorted ? html`
           <button
@@ -252,9 +255,6 @@ export class SortControls extends LitElement {
           >
             ↺ Reset
           </button>
-          <span class="sort-indicator" aria-label="Currently sorted">
-            Sorted
-          </span>
         ` : null}
       </div>
     `;

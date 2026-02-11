@@ -273,7 +273,7 @@ export class ColorPalette extends LitElement {
     if (added) {
       // Announce to screen readers
       const colorLabel = added.label || added.hex;
-      this.statusMessage = `Color ${colorLabel} added to palette`;
+      this.statusMessage = `Colour ${colorLabel} added to palette`;
 
       // Clear input and focus for next entry
       const colorInput = this.shadowRoot?.querySelector('color-input') as ColorInput | null;
@@ -609,9 +609,9 @@ export class ColorPalette extends LitElement {
         </div>
 
         <div class="header">
-          <h2>Brand Colors</h2>
+          <h2>Brand Colours</h2>
           ${colors.length > 0 ? html`
-            <span class="color-count">${colors.length} color${colors.length !== 1 ? 's' : ''}</span>
+            <span class="color-count">${colors.length} colour${colors.length !== 1 ? 's' : ''}</span>
           ` : null}
         </div>
 
@@ -679,7 +679,7 @@ export class ColorPalette extends LitElement {
           </div>
         ` : html`
           <div class="empty-state">
-            <p>No colors added yet.</p>
+            <p>No colours added yet.</p>
             <p>Enter a color using <code>#hex</code>, <code>rgb()</code>, or <code>hsl()</code> format.</p>
           </div>
         `}

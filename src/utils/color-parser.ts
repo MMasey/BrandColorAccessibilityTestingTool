@@ -137,7 +137,7 @@ export function hslToRgb(hsl: HSL): RGB {
   const l = hsl.l / 100;
 
   if (s === 0) {
-    // Achromatic (gray)
+    // Achromatic (grey)
     const val = Math.round(l * 255);
     return { r: val, g: val, b: val };
   }
