@@ -163,13 +163,4 @@ export class ColorStoreController implements ReactiveController {
     return colorStore.getSortState();
   }
 
-  /** Toggle manual reorder controls */
-  toggleManualReorder(): void {
-    colorStore.toggleManualReorder();
-  }
-
-  /** Get manual reorder enabled state */
-  isManualReorderEnabled(): boolean {
-    return colorStore.isManualReorderEnabled();
-  }
 }

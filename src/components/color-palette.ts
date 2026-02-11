@@ -161,20 +161,6 @@ export class ColorPalette extends LitElement {
       position: relative;
     }
 
-   
-    /* SortableJS drag states */
-    .colors-list .sortable-ghost {
-      opacity: 0.4;
-    }
-
-    .colors-list .sortable-chosen {
-      cursor: grabbing;
-    }
-
-    .colors-list .sortable-drag {
-      opacity: 0.9;
-    }
-
     .empty-state {
       padding: var(--space-xl, 2rem);
       text-align: center;
@@ -548,15 +534,6 @@ export class ColorPalette extends LitElement {
   }
 
   /**
-   * Calculate transform offset for a card based on its position relative to the dragged card
-   * Note: Card shrinking is now handled by CSS (.dragging-active class)
-   */
-  private getCardTransform(_cardIndex: number): string {
-    // No per-card transforms needed - CSS handles shrinking all cards
-    return '';
-  }
-
-  /**
    * Get the inline style for the drop indicator based on current drop position
    */
   private getDropIndicatorStyle(): string {
@@ -666,7 +643,6 @@ export class ColorPalette extends LitElement {
               ${colors.map((color, index) => html`
                   <li
                     data-color-id="${color.hex}"
-                    style="transform: ${this.getCardTransform(index)}"
                   >
                     <color-swatch
                       .color="${color}"

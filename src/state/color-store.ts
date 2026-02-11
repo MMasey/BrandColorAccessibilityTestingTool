@@ -24,7 +24,6 @@ export interface ColorStoreState {
   sortCriteria: SortCriteria;
   sortDirection: SortDirection;
   originalColorOrder: Color[];
-  manualReorderEnabled: boolean;
 }
 
 /** Event types emitted by the store */
@@ -35,7 +34,6 @@ export type ColorStoreEvent =
   | { type: 'grid-cell-size-changed'; size: GridCellSize }
   | { type: 'sort-changed'; criteria: SortCriteria; direction: SortDirection }
   | { type: 'order-reset' }
-  | { type: 'manual-reorder-toggled'; enabled: boolean }
   | { type: 'state-reset' };
 
 type Listener = (event: ColorStoreEvent) => void;
@@ -53,7 +51,6 @@ function createColorStore() {
     sortCriteria: 'manual',
     sortDirection: 'ascending',
     originalColorOrder: [],
-    manualReorderEnabled: false,
   };
 
   // Subscribers
@@ -457,21 +454,6 @@ function createColorStore() {
     },
 
     /**
-     * Toggle manual reordering controls (drag handles, move buttons)
-     */
-    toggleManualReorder(): void {
-      state = { ...state, manualReorderEnabled: !state.manualReorderEnabled };
-      emit({ type: 'manual-reorder-toggled', enabled: state.manualReorderEnabled });
-    },
-
-    /**
-     * Get manual reorder enabled state
-     */
-    isManualReorderEnabled(): boolean {
-      return state.manualReorderEnabled;
-    },
-
-    /**
      * Reset store to initial state
      */
     reset(): void {
@@ -483,7 +465,6 @@ function createColorStore() {
         sortCriteria: 'manual',
         sortDirection: 'ascending',
         originalColorOrder: [],
-        manualReorderEnabled: false,
       };
       emit({ type: 'state-reset' });
     },

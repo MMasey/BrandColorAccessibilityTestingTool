@@ -247,6 +247,18 @@ describe('colorStore', () => {
       expect(colorStore.moveColor(-1, 1)).toBe(false);
       expect(colorStore.moveColor(0, 10)).toBe(false);
     });
+
+    it('emits colors-changed event', () => {
+      const listener = vi.fn();
+      colorStore.subscribe(listener);
+
+      colorStore.moveColor(0, 1);
+
+      expect(listener).toHaveBeenCalledWith({
+        type: 'colors-changed',
+        colors: expect.any(Array),
+      });
+    });
   });
 
   describe('clearColors', () => {
@@ -621,35 +633,4 @@ describe('colorStore', () => {
     });
   });
 
-  describe('moveColor', () => {
-    it('moves color from one index to another', () => {
-      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
-
-      colorStore.moveColor(0, 2); // Move first to last
-
-      const colors = colorStore.getColors();
-      expect(colors[2]?.hex).toBe('#FF0000');
-    });
-
-    it('returns false for invalid indices', () => {
-      colorStore.addColors(['#FF0000', '#00FF00']);
-
-      const result = colorStore.moveColor(0, 5); // Out of bounds
-
-      expect(result).toBe(false);
-    });
-
-    it('emits colors-changed event', () => {
-      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
-      const listener = vi.fn();
-      colorStore.subscribe(listener);
-
-      colorStore.moveColor(0, 1);
-
-      expect(listener).toHaveBeenCalledWith({
-        type: 'colors-changed',
-        colors: expect.any(Array),
-      });
-    });
-  });
 });
