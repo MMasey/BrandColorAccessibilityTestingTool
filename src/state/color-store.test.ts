@@ -608,7 +608,6 @@ describe('colorStore', () => {
     it('auto-sorts newly added colors when in sorted mode', () => {
       colorStore.addColors(['#FF0000', '#0000FF']);
       colorStore.sortColorsPalette('luminance', 'ascending');
-      const sortedBefore = colorStore.getColors().map(c => c.hex);
 
       colorStore.addColor('#00FF00'); // Green - high luminance
 
