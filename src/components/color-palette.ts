@@ -70,6 +70,10 @@ export class ColorPalette extends LitElement {
       gap: var(--space-sm, 0.5rem);
     }
 
+    .colors-list-wrapper {
+      position: relative;
+    }
+
     .colors-list {
       display: flex;
       flex-direction: column;
@@ -157,6 +161,7 @@ export class ColorPalette extends LitElement {
       position: relative;
     }
 
+   
     /* SortableJS drag states */
     .colors-list .sortable-ghost {
       opacity: 0.4;
@@ -574,9 +579,10 @@ export class ColorPalette extends LitElement {
 
     this.updateComplete.then(() => {
       const colorsList = this.shadowRoot?.querySelector('.colors-list');
+      const wrapper = this.shadowRoot?.querySelector('.colors-list-wrapper') as HTMLElement | null;
       const dropIndicator = this.shadowRoot?.querySelector('.drop-indicator') as HTMLElement;
 
-      if (!colorsList || !dropIndicator) return;
+      if (!colorsList || !wrapper || !dropIndicator) return;
 
       const listItems = Array.from(colorsList.querySelectorAll('li'));
       const targetLi = listItems[this.dropIndicatorIndex];
@@ -587,10 +593,11 @@ export class ColorPalette extends LitElement {
       }
 
       const targetRect = targetLi.getBoundingClientRect();
-      const listRect = colorsList.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
 
-      // Calculate position relative to the list, accounting for scroll
-      const relativeTop = targetRect.top - listRect.top + (colorsList as HTMLElement).scrollTop;
+      // Position relative to wrapper using viewport coordinates (no scrollTop needed —
+      // the indicator lives outside the scrollable list so its containing block doesn't scroll)
+      const relativeTop = targetRect.top - wrapperRect.top;
 
       let indicatorTop: number;
       const indicatorHeight = 4; // Thin line indicator
@@ -652,41 +659,43 @@ export class ColorPalette extends LitElement {
         </div>
 
         ${colors.length > 0 ? html`
-          <!-- Using native ul/li instead of ARIA roles for better semantics -->
-          <ul class="colors-list ${this.isDraggingCard ? 'dragging-active' : ''}" style="position: relative">
-            ${colors.map((color, index) => html`
-                <li
-                  data-color-id="${color.hex}"
-                  style="transform: ${this.getCardTransform(index)}"
-                >
-                  <color-swatch
-                    .color="${color}"
-                    .index="${index}"
-                    .totalColors="${colors.length}"
-                    ?manual-reorder-enabled="${showReorderControls}"
-                    show-remove
-                    editable-label
-                    draggable-swatch
-                    @swatch-remove="${() => this.removeColor(index)}"
-                    @label-change="${(e: CustomEvent<LabelChangeEventDetail>) => this.updateColorLabel(index, e.detail.label)}"
-                    @swatch-move="${this.handleColorMove}"
-                    @boundary-reached="${this.handleBoundaryReached}"
-                    @clear-all-drag-states="${this.clearAllDragStates}"
-                    @drag-state-change="${this.handleDragStateChange}"
-                    @drop-position-change="${this.handleDropPositionChange}"
-                  ></color-swatch>
-                </li>
-              `
-            )}
+          <!-- Wrapper provides the positioning context for the drop indicator -->
+          <div class="colors-list-wrapper">
+            <!-- Using native ul/li instead of ARIA roles for better semantics -->
+            <ul class="colors-list ${this.isDraggingCard ? 'dragging-active' : ''}">
+              ${colors.map((color, index) => html`
+                  <li
+                    data-color-id="${color.hex}"
+                    style="transform: ${this.getCardTransform(index)}"
+                  >
+                    <color-swatch
+                      .color="${color}"
+                      .index="${index}"
+                      .totalColors="${colors.length}"
+                      ?manual-reorder-enabled="${showReorderControls}"
+                      show-remove
+                      editable-label
+                      draggable-swatch
+                      @swatch-remove="${() => this.removeColor(index)}"
+                      @label-change="${(e: CustomEvent<LabelChangeEventDetail>) => this.updateColorLabel(index, e.detail.label)}"
+                      @swatch-move="${this.handleColorMove}"
+                      @boundary-reached="${this.handleBoundaryReached}"
+                      @clear-all-drag-states="${this.clearAllDragStates}"
+                      @drag-state-change="${this.handleDragStateChange}"
+                      @drop-position-change="${this.handleDropPositionChange}"
+                    ></color-swatch>
+                  </li>
+                `
+              )}
+            </ul>
 
-            <!-- Drop indicator - positioned by JavaScript -->
-            <li
+            <!-- Drop indicator - absolutely positioned sibling to the list, managed by JS -->
+            <div
               class="drop-indicator"
               style="${this.getDropIndicatorStyle()}"
               aria-hidden="true"
-              role="presentation"
-            ></li>
-          </ul>
+            ></div>
+          </div>
 
           <div class="actions">
             <button
