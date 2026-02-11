@@ -124,8 +124,8 @@ export class ColorSwatch extends LitElement {
     .reorder-btn {
       width: var(--touch-target-min, 44px);
       min-width: var(--touch-target-min, 44px);
-      flex: 1;
-      min-height: 22px;
+      height: var(--touch-target-min, 44px);
+      min-height: var(--touch-target-min, 44px);
       display: flex;
       align-items: center;
       justify-content: center;
