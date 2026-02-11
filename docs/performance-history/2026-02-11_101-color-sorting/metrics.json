@@ -1,0 +1,37 @@
+{
+  "milestone": "101-color-sorting",
+  "capturedAt": "2026-02-11T12:03:44.376Z",
+  "url": "http://localhost:4173",
+  "scores": {
+    "performance": 0.99,
+    "accessibility": 1,
+    "bestPractices": 1,
+    "seo": 1
+  },
+  "metrics": {
+    "firstContentfulPaint": {
+      "value": 1764.6705,
+      "display": "1.8 s"
+    },
+    "largestContentfulPaint": {
+      "value": 1764.6705,
+      "display": "1.8 s"
+    },
+    "totalBlockingTime": {
+      "value": 0,
+      "display": "0 ms"
+    },
+    "cumulativeLayoutShift": {
+      "value": 0,
+      "display": "0"
+    },
+    "speedIndex": {
+      "value": 2450.699960000027,
+      "display": "2.5 s"
+    },
+    "timeToInteractive": {
+      "value": 1764.6705000000002,
+      "display": "1.8 s"
+    }
+  }
+}
