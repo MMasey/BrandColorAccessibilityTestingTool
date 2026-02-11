@@ -292,6 +292,11 @@ function createColorStore() {
         return false;
       }
 
+      // Store original order on first manual move (if not already stored)
+      if (state.sortCriteria === 'manual' && state.originalColorOrder.length === 0) {
+        state.originalColorOrder = [...state.colors];
+      }
+
       const newColors = [...state.colors];
       const [removed] = newColors.splice(fromIndex, 1);
       if (!removed) return false;
@@ -449,7 +454,7 @@ function createColorStore() {
       return {
         criteria: state.sortCriteria,
         direction: state.sortDirection,
-        isSorted: state.sortCriteria !== 'manual',
+        isSorted: state.sortCriteria !== 'manual' || state.originalColorOrder.length > 0,
       };
     },
 

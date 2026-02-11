@@ -9,10 +9,10 @@ test.describe('Brand Color Accessibility Tool', () => {
   });
 
   test('should load the application', async ({ page }) => {
-    await expect(page).toHaveTitle(/Brand Color Accessibility Tool/);
+    await expect(page).toHaveTitle(/Brand Colour Accessibility Tool/);
 
     const heading = page.locator('h1');
-    await expect(heading).toContainText('Brand Color Accessibility Tool');
+    await expect(heading).toContainText('Brand Colour Accessibility Tool');
   });
 
   test('should have skip link for accessibility', async ({ page }) => {
