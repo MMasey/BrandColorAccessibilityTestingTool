@@ -53,7 +53,7 @@ test.describe('Color Palette Functionality', () => {
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
   });
 
-  test('should add a color to the palette', async ({ page }) => {
+  test('should add a colour to the palette', async ({ page }) => {
     // Find the color input inside the shadow DOM
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
@@ -66,7 +66,7 @@ test.describe('Color Palette Functionality', () => {
     await expect(colorSwatch).toHaveCount(1);
   });
 
-  test('should show contrast grid with two colors', async ({ page }) => {
+  test('should show contrast grid with two colours', async ({ page }) => {
     const colorInput = page.locator('color-palette').locator('color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
     const addButton = page.locator('color-palette color-input .add-btn');
@@ -232,7 +232,7 @@ test.describe('Accessibility Audit (axe-core)', () => {
     expect(accessibilityScanResults.violations).toEqual([]);
   });
 
-  test('should have no accessibility violations with colors added', async ({ page }) => {
+  test('should have no accessibility violations with colours added', async ({ page }) => {
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
 
@@ -339,7 +339,7 @@ test.describe('Visual UX Review - Screenshots', () => {
     });
   });
 
-  test('capture with colors - desktop light mode', async ({ page }) => {
+  test('capture with colours - desktop light mode', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // Add sample brand colors
@@ -355,12 +355,12 @@ test.describe('Visual UX Review - Screenshots', () => {
 
     await page.waitForTimeout(500);
     await page.screenshot({
-      path: 'e2e/screenshots/desktop-with-colors-light.png',
+      path: 'e2e/screenshots/desktop-with-colours-light.png',
       fullPage: true,
     });
   });
 
-  test('capture with colors - desktop dark mode', async ({ page }) => {
+  test('capture with colours - desktop dark mode', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // Enable dark mode
@@ -381,12 +381,12 @@ test.describe('Visual UX Review - Screenshots', () => {
 
     await page.waitForTimeout(500);
     await page.screenshot({
-      path: 'e2e/screenshots/desktop-with-colors-dark.png',
+      path: 'e2e/screenshots/desktop-with-colours-dark.png',
       fullPage: true,
     });
   });
 
-  test('capture with colors - desktop high contrast mode', async ({ page }) => {
+  test('capture with colours - desktop high contrast mode', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // Enable high contrast mode
@@ -407,12 +407,12 @@ test.describe('Visual UX Review - Screenshots', () => {
 
     await page.waitForTimeout(500);
     await page.screenshot({
-      path: 'e2e/screenshots/desktop-with-colors-high-contrast.png',
+      path: 'e2e/screenshots/desktop-with-colours-high-contrast.png',
       fullPage: true,
     });
   });
 
-  test('capture with colors - mobile', async ({ page }) => {
+  test('capture with colours - mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     // Add sample brand colors
@@ -428,7 +428,7 @@ test.describe('Visual UX Review - Screenshots', () => {
 
     await page.waitForTimeout(500);
     await page.screenshot({
-      path: 'e2e/screenshots/mobile-with-colors.png',
+      path: 'e2e/screenshots/mobile-with-colours.png',
       fullPage: true,
     });
   });

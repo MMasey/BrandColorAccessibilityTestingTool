@@ -160,7 +160,7 @@ test.describe('Accessibility Validation (WCAG 2.1 AA)', () => {
     expect(accessibilityScanResults.violations).toEqual([]);
   });
 
-  test('with colors passes accessibility audit', async ({ page }) => {
+  test('with colours passes accessibility audit', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
@@ -278,7 +278,7 @@ test.describe('Visual Regression', () => {
     });
   });
 
-  test('with 4 colors matches baseline', async ({ page }) => {
+  test('with 4 colours matches baseline', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
