@@ -369,4 +369,288 @@ describe('colorStore', () => {
       expect(colorStore.getColors()).toHaveLength(1);
     });
   });
+
+  describe('sortColorsPalette', () => {
+    it('sorts colors by luminance ascending', () => {
+      colorStore.addColors(['#000000', '#FFFFFF', '#808080']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+
+      const colors = colorStore.getColors();
+      expect(colors[0]?.hex).toBe('#FFFFFF'); // Lightest first
+      expect(colors[2]?.hex).toBe('#000000'); // Darkest last
+    });
+
+    it('sorts colors by luminance descending', () => {
+      colorStore.addColors(['#000000', '#FFFFFF', '#808080']);
+      colorStore.sortColorsPalette('luminance', 'descending');
+
+      const colors = colorStore.getColors();
+      expect(colors[0]?.hex).toBe('#000000'); // Darkest first
+      expect(colors[2]?.hex).toBe('#FFFFFF'); // Lightest last
+    });
+
+    it('stores original order on first sort', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const originalOrder = colorStore.getColors().map(c => c.hex);
+
+      colorStore.sortColorsPalette('luminance', 'ascending');
+
+      const state = colorStore.getState();
+      expect(state.originalColorOrder.map(c => c.hex)).toEqual(originalOrder);
+    });
+
+    it('does not overwrite original order on subsequent sorts', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+      const firstOriginal = colorStore.getState().originalColorOrder.map(c => c.hex);
+
+      colorStore.sortColorsPalette('luminance', 'descending');
+
+      const state = colorStore.getState();
+      expect(state.originalColorOrder.map(c => c.hex)).toEqual(firstOriginal);
+    });
+
+    it('emits sort-changed and colors-changed events', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const listener = vi.fn();
+      colorStore.subscribe(listener);
+
+      colorStore.sortColorsPalette('luminance', 'ascending');
+
+      expect(listener).toHaveBeenCalledWith({
+        type: 'sort-changed',
+        criteria: 'luminance',
+        direction: 'ascending',
+      });
+      expect(listener).toHaveBeenCalledWith({
+        type: 'colors-changed',
+        colors: expect.any(Array),
+      });
+    });
+
+    it('updates sort state', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'descending');
+
+      const sortState = colorStore.getSortState();
+      expect(sortState.criteria).toBe('luminance');
+      expect(sortState.direction).toBe('descending');
+      expect(sortState.isSorted).toBe(true);
+    });
+  });
+
+  describe('reorderColors', () => {
+    it('reorders colors manually', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const colors = colorStore.getColors();
+      const newOrder = [colors[2]!, colors[0]!, colors[1]!]; // Reverse first and last
+
+      colorStore.reorderColors(newOrder);
+
+      const reordered = colorStore.getColors();
+      expect(reordered[0]?.hex).toBe('#0000FF');
+      expect(reordered[1]?.hex).toBe('#FF0000');
+      expect(reordered[2]?.hex).toBe('#00FF00');
+    });
+
+    it('stores original order on first manual reorder', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const originalOrder = colorStore.getColors().map(c => c.hex);
+      const colors = colorStore.getColors();
+      const newOrder = [colors[1]!, colors[0]!, colors[2]!];
+
+      colorStore.reorderColors(newOrder);
+
+      const state = colorStore.getState();
+      expect(state.originalColorOrder.map(c => c.hex)).toEqual(originalOrder);
+    });
+
+    it('sets sort criteria to manual', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+
+      const colors = colorStore.getColors();
+      colorStore.reorderColors([colors[1]!, colors[0]!, colors[2]!]);
+
+      const sortState = colorStore.getSortState();
+      expect(sortState.criteria).toBe('manual');
+    });
+
+    it('warns and does nothing if length mismatch', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const colors = colorStore.getColors();
+
+      colorStore.reorderColors([colors[0]!, colors[1]!]); // Only 2 colors
+
+      expect(consoleSpy).toHaveBeenCalledWith('reorderColors: newOrder length mismatch');
+      expect(colorStore.getColors()).toHaveLength(3); // Unchanged
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('resetToOriginalOrder', () => {
+    it('restores original insertion order after sorting', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const originalOrder = colorStore.getColors().map(c => c.hex);
+
+      colorStore.sortColorsPalette('luminance', 'ascending');
+      colorStore.resetToOriginalOrder();
+
+      const colors = colorStore.getColors();
+      expect(colors.map(c => c.hex)).toEqual(originalOrder);
+    });
+
+    it('restores original order after manual reordering', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const originalOrder = colorStore.getColors().map(c => c.hex);
+      const colors = colorStore.getColors();
+
+      colorStore.reorderColors([colors[2]!, colors[0]!, colors[1]!]);
+      colorStore.resetToOriginalOrder();
+
+      const restoredColors = colorStore.getColors();
+      expect(restoredColors.map(c => c.hex)).toEqual(originalOrder);
+    });
+
+    it('clears originalColorOrder after reset', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+
+      colorStore.resetToOriginalOrder();
+
+      const state = colorStore.getState();
+      expect(state.originalColorOrder).toHaveLength(0);
+    });
+
+    it('sets sort criteria to manual', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+
+      colorStore.resetToOriginalOrder();
+
+      const sortState = colorStore.getSortState();
+      expect(sortState.criteria).toBe('manual');
+    });
+
+    it('emits order-reset and colors-changed events', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+      const listener = vi.fn();
+      colorStore.subscribe(listener);
+
+      colorStore.resetToOriginalOrder();
+
+      expect(listener).toHaveBeenCalledWith({ type: 'order-reset' });
+      expect(listener).toHaveBeenCalledWith({
+        type: 'colors-changed',
+        colors: expect.any(Array),
+      });
+    });
+
+    it('does nothing if no original order stored', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const currentOrder = colorStore.getColors().map(c => c.hex);
+
+      colorStore.resetToOriginalOrder(); // No sort happened yet
+
+      const colors = colorStore.getColors();
+      expect(colors.map(c => c.hex)).toEqual(currentOrder);
+    });
+  });
+
+  describe('originalColorOrder tracking with add/remove', () => {
+    it('updates originalColorOrder when adding color in sorted mode', () => {
+      colorStore.addColors(['#FF0000', '#00FF00']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+
+      colorStore.addColor('#0000FF');
+
+      const state = colorStore.getState();
+      expect(state.originalColorOrder.map(c => c.hex)).toContain('#0000FF');
+    });
+
+    it('does not update originalColorOrder when adding color in manual mode', () => {
+      colorStore.addColors(['#FF0000', '#00FF00']);
+
+      colorStore.addColor('#0000FF');
+
+      const state = colorStore.getState();
+      expect(state.originalColorOrder).toHaveLength(0); // Not tracking yet
+    });
+
+    it('updates originalColorOrder when removing color in sorted mode', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+      const originalBeforeRemove = colorStore.getState().originalColorOrder.map(c => c.hex);
+
+      // Remove the middle color (green)
+      const greenIndex = colorStore.getColors().findIndex(c => c.hex === '#00FF00');
+      colorStore.removeColor(greenIndex);
+
+      const state = colorStore.getState();
+      expect(state.originalColorOrder).toHaveLength(2);
+      expect(state.originalColorOrder.map(c => c.hex)).not.toContain('#00FF00');
+      expect(originalBeforeRemove).toContain('#00FF00'); // Was there before
+    });
+
+    it('preserves originalColorOrder structure after add and reset', () => {
+      colorStore.addColors(['#FF0000', '#00FF00']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+      colorStore.addColor('#0000FF');
+
+      colorStore.resetToOriginalOrder();
+
+      const colors = colorStore.getColors();
+      expect(colors.map(c => c.hex)).toEqual(['#FF0000', '#00FF00', '#0000FF']);
+    });
+
+    it('auto-sorts newly added colors when in sorted mode', () => {
+      colorStore.addColors(['#FF0000', '#0000FF']);
+      colorStore.sortColorsPalette('luminance', 'ascending');
+      const sortedBefore = colorStore.getColors().map(c => c.hex);
+
+      colorStore.addColor('#00FF00'); // Green - high luminance
+
+      const colors = colorStore.getColors();
+      expect(colors).toHaveLength(3);
+      // Should be sorted by luminance (ascending = lightest first)
+      // Green (#00FF00) has high luminance, so should be near the top
+      const greenIndex = colors.findIndex(c => c.hex === '#00FF00');
+      expect(greenIndex).toBe(0); // Green should be first (lightest)
+      expect(colors[2]?.hex).toBe('#0000FF'); // Blue should be last (darkest)
+    });
+  });
+
+  describe('moveColor', () => {
+    it('moves color from one index to another', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+
+      colorStore.moveColor(0, 2); // Move first to last
+
+      const colors = colorStore.getColors();
+      expect(colors[2]?.hex).toBe('#FF0000');
+    });
+
+    it('returns false for invalid indices', () => {
+      colorStore.addColors(['#FF0000', '#00FF00']);
+
+      const result = colorStore.moveColor(0, 5); // Out of bounds
+
+      expect(result).toBe(false);
+    });
+
+    it('emits colors-changed event', () => {
+      colorStore.addColors(['#FF0000', '#00FF00', '#0000FF']);
+      const listener = vi.fn();
+      colorStore.subscribe(listener);
+
+      colorStore.moveColor(0, 1);
+
+      expect(listener).toHaveBeenCalledWith({
+        type: 'colors-changed',
+        colors: expect.any(Array),
+      });
+    });
+  });
 });

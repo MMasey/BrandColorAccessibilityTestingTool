@@ -100,17 +100,24 @@ function createColorStore() {
       // Add to array
       const newColors = [...state.colors, color];
 
+      // If we're tracking original order, append the new color to it
+      const newOriginalOrder = state.originalColorOrder.length > 0
+        ? [...state.originalColorOrder, color]
+        : [];
+
       // If currently sorted (not manual mode), re-apply sort
       if (state.sortCriteria !== 'manual') {
         const sortedColors = applySorting(newColors, state.sortCriteria, state.sortDirection);
         state = {
           ...state,
           colors: sortedColors,
+          originalColorOrder: newOriginalOrder,
         };
       } else {
         state = {
           ...state,
           colors: newColors,
+          originalColorOrder: newOriginalOrder,
         };
       }
 
@@ -126,17 +133,24 @@ function createColorStore() {
     addColorObject(color: Color): Color {
       const newColors = [...state.colors, { ...color }];
 
+      // If we're tracking original order, append the new color to it
+      const newOriginalOrder = state.originalColorOrder.length > 0
+        ? [...state.originalColorOrder, { ...color }]
+        : [];
+
       // If currently sorted (not manual mode), re-apply sort
       if (state.sortCriteria !== 'manual') {
         const sortedColors = applySorting(newColors, state.sortCriteria, state.sortDirection);
         state = {
           ...state,
           colors: sortedColors,
+          originalColorOrder: newOriginalOrder,
         };
       } else {
         state = {
           ...state,
           colors: newColors,
+          originalColorOrder: newOriginalOrder,
         };
       }
 
@@ -167,17 +181,24 @@ function createColorStore() {
       if (newColors.length > 0) {
         const allColors = [...state.colors, ...newColors];
 
+        // If we're tracking original order, append the new colors to it
+        const newOriginalOrder = state.originalColorOrder.length > 0
+          ? [...state.originalColorOrder, ...newColors]
+          : [];
+
         // If currently sorted (not manual mode), re-apply sort
         if (state.sortCriteria !== 'manual') {
           const sortedColors = applySorting(allColors, state.sortCriteria, state.sortDirection);
           state = {
             ...state,
             colors: sortedColors,
+            originalColorOrder: newOriginalOrder,
           };
         } else {
           state = {
             ...state,
             colors: allColors,
+            originalColorOrder: newOriginalOrder,
           };
         }
 
@@ -193,9 +214,18 @@ function createColorStore() {
     removeColor(index: number): boolean {
       if (index < 0 || index >= state.colors.length) return false;
 
+      const removedColor = state.colors[index];
+      const newColors = state.colors.filter((_, i) => i !== index);
+
+      // If we're tracking original order, remove the color from it too
+      const newOriginalOrder = state.originalColorOrder.length > 0
+        ? state.originalColorOrder.filter(c => c !== removedColor)
+        : [];
+
       state = {
         ...state,
-        colors: state.colors.filter((_, i) => i !== index),
+        colors: newColors,
+        originalColorOrder: newOriginalOrder,
       };
 
       emit({ type: 'colors-changed', colors: state.colors });

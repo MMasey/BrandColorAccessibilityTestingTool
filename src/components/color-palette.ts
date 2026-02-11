@@ -347,35 +347,54 @@ export class ColorPalette extends LitElement {
 
     if (prefersReducedMotion) {
       // No animation - just update immediately
-      if (this.store.moveColor(fromIndex, toIndex)) {
-        const color = this.store.colors[toIndex];
-        const colorLabel = color?.label || color?.hex;
-        this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
-        this.manageFocusAfterMove(toIndex, fromIndex);
+      const currentColors = this.store.colors;
+      const newColors = [...currentColors];
+      const [movedColor] = newColors.splice(fromIndex, 1);
 
-        // Clear flag after update completes
-        this.updateComplete.then(() => {
-          this.isReordering = false;
-        });
-      } else {
+      if (!movedColor) {
+        console.warn('Failed to move color: no color at fromIndex', { fromIndex });
         this.isReordering = false;
+        return;
       }
+
+      newColors.splice(toIndex, 0, movedColor);
+      this.store.reorderColors(newColors);
+
+      const color = this.store.colors[toIndex];
+      const colorLabel = color?.label || color?.hex;
+      this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
+      this.manageFocusAfterMove(toIndex, fromIndex);
+
+      // Clear flag after update completes
+      this.updateComplete.then(() => {
+        this.isReordering = false;
+      });
       return;
     }
 
     // Immediately update store and move focus BEFORE animation
     // This prevents rapid key presses from moving the same color multiple times
-    if (!this.store.moveColor(fromIndex, toIndex)) {
-      this.isReordering = false;
-      return;
+    {
+      const currentColors = this.store.colors;
+      const newColors = [...currentColors];
+      const [movedColor] = newColors.splice(fromIndex, 1);
+
+      if (!movedColor) {
+        console.warn('Failed to move color: no color at fromIndex', { fromIndex });
+        this.isReordering = false;
+        return;
+      }
+
+      newColors.splice(toIndex, 0, movedColor);
+      this.store.reorderColors(newColors);
+
+      const color = this.store.colors[toIndex];
+      const colorLabel = color?.label || color?.hex;
+      this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
+
+      // Move focus immediately to new position
+      this.manageFocusAfterMove(toIndex, fromIndex);
     }
-
-    const color = this.store.colors[toIndex];
-    const colorLabel = color?.label || color?.hex;
-    this.statusMessage = `${colorLabel} moved to position ${toIndex + 1}`;
-
-    // Move focus immediately to new position
-    this.manageFocusAfterMove(toIndex, fromIndex);
 
     // Now animate the visual transition
     // Wait for DOM to render with new order first
@@ -661,11 +680,12 @@ export class ColorPalette extends LitElement {
             )}
 
             <!-- Drop indicator - positioned by JavaScript -->
-            <div
+            <li
               class="drop-indicator"
               style="${this.getDropIndicatorStyle()}"
               aria-hidden="true"
-            ></div>
+              role="presentation"
+            ></li>
           </ul>
 
           <div class="actions">
