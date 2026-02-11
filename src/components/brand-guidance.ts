@@ -109,7 +109,7 @@ export class BrandGuidance extends LitElement {
 
         <div class="content">
           <p class="message">
-            <strong>Many colors detected (${this.colorCount}).</strong> Modern brand guidelines typically use 3-5 core colors for consistency and simplicity.
+            <strong>Many colours detected (${this.colorCount}).</strong> Modern brand guidelines typically use 3-5 core colours for consistency and simplicity.
           </p>
         </div>
 

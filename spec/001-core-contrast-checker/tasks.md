@@ -140,4 +140,4 @@ All tasks completed. The tool is now:
 - ✅ Deployed to GitHub Pages
 - ✅ Open source with MIT license
 
-Next: [Phase 2 - APCA & Exports](../002-apca-exports/spec.md)
+Next: Any feature from [100-105](../PROJECT.md#feature-roadmap) can be implemented independently

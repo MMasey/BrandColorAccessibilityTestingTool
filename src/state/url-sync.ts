@@ -60,6 +60,11 @@ export function initializeFromURL(): void {
     colorStore.setGridCellSize(urlState.cellSize);
   }
 
+  // Initialize sort from URL
+  if (urlState.sortCriteria && urlState.sortCriteria !== 'manual') {
+    colorStore.sortColorsPalette(urlState.sortCriteria, urlState.sortDirection ?? 'ascending');
+  }
+
   // Set up state change listeners to update URL
   setupURLUpdateListeners();
 
@@ -75,7 +80,7 @@ function setupURLUpdateListeners(): void {
   colorStore.subscribe((event) => {
     if (isSyncing) return;
 
-    if (event.type === 'colors-changed' || event.type === 'grid-filters-changed' || event.type === 'grid-cell-size-changed') {
+    if (event.type === 'colors-changed' || event.type === 'grid-filters-changed' || event.type === 'grid-cell-size-changed' || event.type === 'sort-changed') {
       syncStateToURL();
     }
   });
@@ -95,6 +100,7 @@ function syncStateToURL(): void {
   const theme = themeStore.theme;
   const filters = colorStore.getGridFilters();
   const cellSize = colorStore.getGridCellSize();
+  const { criteria: sortCriteria, direction: sortDirection } = colorStore.getSortState();
 
   const urlState: Partial<URLState> = {
     colors: colors.map(c => hexToURLColor(c.hex)),
@@ -102,6 +108,8 @@ function syncStateToURL(): void {
     theme,
     filters: [...filters],
     cellSize,
+    sortCriteria,
+    sortDirection,
   };
 
   // Only include labels if any color has a label
@@ -146,6 +154,11 @@ function setupPopStateHandler(): void {
       // Sync cell size
       if (urlState.cellSize) {
         colorStore.setGridCellSize(urlState.cellSize);
+      }
+
+      // Sync sort
+      if (urlState.sortCriteria) {
+        colorStore.sortColorsPalette(urlState.sortCriteria, urlState.sortDirection ?? 'ascending');
       }
     } finally {
       isSyncing = false;

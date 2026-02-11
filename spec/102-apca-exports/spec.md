@@ -4,8 +4,8 @@
 Add APCA (Accessible Perceptual Contrast Algorithm) support and code export functionality for integrating accessible color palettes into projects.
 
 # Inputs
-- Existing color palette from Phase 1
-- Algorithm selection (WCAG 2.1, APCA, or both)
+- Existing color palette from color store
+- Algorithm selection (WCAG 2.2, APCA, or both)
 - Export format selection
 
 # Outputs
@@ -15,7 +15,7 @@ Add APCA (Accessible Perceptual Contrast Algorithm) support and code export func
 - **Sass export**: Variables with utility classes
 
 # Constraints
-- Must maintain WCAG 2.1 as default/fallback
+- Must maintain WCAG 2.2 as default/fallback
 - Exports should be copy-paste ready
 - APCA thresholds per WCAG 3.0 draft
 
@@ -31,9 +31,9 @@ Add APCA (Accessible Perceptual Contrast Algorithm) support and code export func
 - `src/utils/contrast.ts` - Extend with APCA algorithm
 
 # Out of Scope
-- No image exports → Phase 3
-- No PDF exports → Phase 3
-- No AI generation → Phase 4
+- No image exports → Feature 103
+- No PDF exports → Feature 103
+- No AI generation → Feature 104
 
 # Done
 - User can toggle between WCAG and APCA algorithms

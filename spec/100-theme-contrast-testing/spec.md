@@ -4,7 +4,7 @@
 Ensure the app's own theme colors (light, dark, high-contrast) meet WCAG contrast requirements, providing clear test failures if theme CSS is modified to non-compliant values.
 
 # Inputs
-- Theme color definitions from `src/styles/global.css`
+- Theme color definitions from `src/styles/themes/*.css` (light.css, dark.css, high-contrast.css)
 - Theme modes: `light`, `dark`, `high-contrast`
 - WCAG thresholds from `src/utils/contrast.ts`
 
@@ -17,8 +17,8 @@ Ensure the app's own theme colors (light, dark, high-contrast) meet WCAG contras
 - Use existing `getContrastRatio()` and `WCAG_THRESHOLDS` from `src/utils/contrast.ts`
 - Unit tests run via Vitest (existing pattern in `src/utils/contrast.test.ts`)
 - E2E tests run via Playwright (existing pattern in `e2e/app.spec.ts`)
-- Light/dark modes: WCAG AA minimum (4.5:1 normal text, 3:1 large/UI)
-- High contrast mode: WCAG AAA minimum (7:1 normal text, 4.5:1 large)
+- Light/dark modes: WCAG 2.2 AA minimum (4.5:1 normal text, 3:1 large/UI)
+- High contrast mode: WCAG 2.2 AAA minimum (7:1 normal text, 4.5:1 large)
 
 # Requirements
 - Create theme color configuration extracting hex values from CSS for each theme
@@ -29,7 +29,8 @@ Ensure the app's own theme colors (light, dark, high-contrast) meet WCAG contras
 # Dependencies
 - `src/utils/contrast.ts` - Reuse contrast calculation functions
 - `src/utils/color-parser.ts` - Reuse `parseHex()` for color conversion
-- `src/styles/global.css` - Source of truth for theme color values
+- `src/styles/themes/*.css` - Source of truth for theme color values (organized per theme)
+- `src/styles/themes/_tokens.css` - Documents all theme token variables
 - `src/utils/contrast.test.ts` - Pattern reference for unit test structure
 
 # Out of Scope

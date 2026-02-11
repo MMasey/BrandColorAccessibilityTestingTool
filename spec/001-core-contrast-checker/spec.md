@@ -1,7 +1,7 @@
 # Core Contrast Checker
 
 # Goal
-Build a web-based tool that validates brand color palettes against WCAG 2.1 accessibility standards. Users enter colors and see a contrast grid showing all foreground/background combinations with pass/fail indicators.
+Build a web-based tool that validates brand color palettes against WCAG 2.2 accessibility standards. Users enter colors and see a contrast grid showing all foreground/background combinations with pass/fail indicators.
 
 # Inputs
 - **Colors**: Hex (#RRGGBB, #RGB), RGB, HSL formats
@@ -17,8 +17,8 @@ Build a web-based tool that validates brand color palettes against WCAG 2.1 acce
 - **Grid filters**: Show/hide by compliance level
 
 # Constraints
-- Tool itself must meet WCAG AA compliance
-- WCAG 2.1 contrast formula: (L1 + 0.05) / (L2 + 0.05)
+- Tool itself must meet WCAG 2.2 AA compliance
+- WCAG 2.x contrast formula: (L1 + 0.05) / (L2 + 0.05)
 - Thresholds: AA (4.5:1 normal, 3:1 large), AAA (7:1 normal, 4.5:1 large)
 - No backend required - all client-side
 - Responsive: 375px mobile to 1920px desktop
@@ -40,10 +40,10 @@ Build a web-based tool that validates brand color palettes against WCAG 2.1 acce
 - `src/state/url-state.ts` - URL synchronization
 
 # Out of Scope
-- **No APCA algorithm** → Phase 2
-- **No CSS/SCSS exports** → Phase 2
-- **No image/PDF exports** → Phase 3
-- **No AI color generation** → Phase 4
+- **No APCA algorithm** → Feature 102
+- **No CSS/SCSS exports** → Feature 102
+- **No image/PDF exports** → Feature 103
+- **No AI color generation** → Feature 104
 - **No visual color picker** → Deferred
 - **No bulk paste** → Deferred
 

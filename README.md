@@ -1,19 +1,19 @@
-# Brand Color Accessibility Tool
+# Brand Colour Accessibility Tool
 
-A web-based tool for testing and validating brand color palettes against WCAG 2.1 accessibility standards. Helps designers and developers ensure their color combinations meet contrast requirements for text readability.
+A web-based tool for testing and validating brand colour palettes against WCAG 2.2 accessibility standards. Helps designers and developers ensure their colour combinations meet contrast requirements for text readability.
 
 🚀 **[Try it live](https://mmasey.github.io/BrandColorAccessibilityTestingTool/)**
 
 ## Features
 
-- **Color Input**: Enter colors in hex (#RRGGBB, #RGB), RGB, or HSL formats
+- **Colour Input**: Enter colours in hex (#RRGGBB, #RGB), RGB, or HSL formats
 - **Contrast Grid**: Visual matrix showing all foreground/background combinations
 - **WCAG Compliance**: Pass/fail indicators for AA and AAA levels
 - **Text Size Toggle**: Switch between normal and large text thresholds
 - **Theme Modes**: Light, dark, and high contrast options
-- **Shareable URLs**: Colors encoded in URL parameters for easy sharing
+- **Shareable URLs**: Colours encoded in URL parameters for easy sharing
 - **Responsive Design**: Works on mobile, tablet, and desktop
-- **Accessible**: The tool itself meets WCAG AA compliance
+- **Accessible**: The tool itself meets WCAG 2.2 AA compliance
 
 ## Getting Started
 
@@ -77,21 +77,21 @@ npm run test:e2e:ui
 src/
 ├── components/     # Lit web components
 │   ├── app-shell.ts        # Main application container
-│   ├── color-palette.ts    # Color input and palette management
-│   ├── color-input.ts      # Individual color input
-│   ├── color-swatch.ts     # Visual color display
+│   ├── color-palette.ts    # Colour input and palette management
+│   ├── color-input.ts      # Individual colour input
+│   ├── color-swatch.ts     # Visual colour display
 │   ├── contrast-grid.ts    # Contrast matrix display
 │   ├── contrast-cell.ts    # Individual grid cell
 │   ├── grid-filters.ts     # Filter and view controls
 │   ├── text-size-toggle.ts # Normal/large text toggle
 │   └── theme-switcher.ts   # Theme mode selector
 ├── state/          # State management
-│   ├── color-store.ts      # Color palette store
+│   ├── color-store.ts      # Colour palette store
 │   ├── theme-store.ts      # Theme state
-│   └── url-sync.ts         # URL state synchronization
+│   └── url-sync.ts         # URL state synchronisation
 ├── utils/          # Core utilities
 │   ├── color-parser.ts     # Parse hex, RGB, HSL formats
-│   ├── color-converter.ts  # Color space conversions
+│   ├── color-converter.ts  # Colour space conversions
 │   └── contrast.ts         # WCAG contrast calculations
 ├── styles/         # Global styles
 │   └── global.css          # Theme tokens and design system
@@ -120,7 +120,7 @@ Large text is defined as 18pt (24px) or 14pt (18.5px) bold.
 This tool is built with accessibility as a core feature:
 
 - Full keyboard navigation
-- Screen reader optimized with ARIA labels
+- Screen reader optimised with ARIA labels
 - Visible focus states
 - Minimum 44x44px touch targets
 - Respects `prefers-reduced-motion`

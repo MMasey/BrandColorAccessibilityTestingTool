@@ -388,7 +388,7 @@ export class ColorInput extends LitElement {
           <div
             class="color-box"
             role="img"
-            aria-label="${this.parsedColor ? `Color preview: ${this.parsedColor.hex}` : 'No color selected'}"
+            aria-label="${this.parsedColor ? `Colour preview: ${this.parsedColor.hex}` : 'No colour selected'}"
           ></div>
 
           <!-- Input fields matching color-swatch info section -->
@@ -415,7 +415,7 @@ export class ColorInput extends LitElement {
               placeholder="${this.labelPlaceholder}"
               ?disabled="${this.disabled}"
               @input="${this.handleLabelInput}"
-              aria-label="Color label (optional)"
+              aria-label="Colour label (optional)"
               maxlength="50"
             />
           </div>
@@ -426,8 +426,8 @@ export class ColorInput extends LitElement {
             class="add-btn"
             ?disabled="${this.disabled}"
             @click="${this.handleAdd}"
-            aria-label="Add color to palette"
-            title="Add color to palette"
+            aria-label="Add colour to palette"
+            title="Add colour to palette"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M12 5v14M5 12h14" />
