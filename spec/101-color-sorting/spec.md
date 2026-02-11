@@ -31,17 +31,16 @@ Enable users to sort their color palette by luminance and manually reorder color
 - Implement luminance sorting algorithm (lightest to darkest)
 - Add sort controls UI (dropdown + direction toggle)
 - Show "Manual Order" as default (insertion order)
-- When sorted, show "Sorted" indicator and "Reset" button
-- Disable direction toggle when in manual mode
-- Auto-sort newly added colors when in sorted mode
+- When sorted, show "Reset" button only (presence of button signals sorted state)
+- Hide direction toggle when in manual mode (not applicable, not just disabled)
+- Auto-sort newly added colours when in sorted mode
 
 ## Manual Reordering
 - Auto-show reorder controls (drag handles + move buttons) when Manual Order selected
 - Auto-hide reorder controls when sorted mode selected
-- Provide three reordering methods:
+- Provide two reordering methods:
   1. **Drag-and-drop**: Drag handle with mouse/touch
   2. **Keyboard buttons**: Move up/down arrow buttons (44x44px minimum)
-  3. **Keyboard drag**: Drag handle focusable and draggable via keyboard
 
 ## Drag-and-Drop Interaction
 
@@ -85,11 +84,11 @@ Enable users to sort their color palette by luminance and manually reorder color
   - No disabled buttons - consistent interaction model
   - Shake animation respects `prefers-reduced-motion`
 - Screen reader announcements:
-  - "Color [label/hex] added to palette"
-  - "Colors sorted: [criteria]"
+  - "Colour [label/hex] added to palette"
+  - "Colours sorted: [criteria]"
   - "Sort direction changed: [direction]"
   - "[label/hex] moved to position [n]"
-  - "Colors reset to original order"
+  - "Colours reset to original order"
   - "Cannot move up - already at beginning of list" (boundary reached)
   - "Cannot move down - already at end of list" (boundary reached)
 - ARIA live regions (polite, atomic)
@@ -97,11 +96,13 @@ Enable users to sort their color palette by luminance and manually reorder color
 - Drag handle has role="img" and descriptive aria-label
 
 ## State Management
-- Store original color order on first sort/reorder
+- Store original colour order on first sort/reorder
 - Reset button restores original insertion order
 - Clear original order after reset
 - Track sort criteria and direction in state
-- Re-apply sort when adding colors in sorted mode
+- Re-apply sort when adding colours in sorted mode
+- Sync sort criteria and direction to URL query string (`sortBy`, `sortDir` params)
+- Restore sort state from URL on page load and browser back/forward navigation
 
 # Dependencies
 - Phase 1 complete (color palette component exists)
@@ -112,12 +113,12 @@ Enable users to sort their color palette by luminance and manually reorder color
 
 # Out of Scope
 - Additional sort criteria (contrast score, WCAG pass rate, hue, alphabetical)
-- URL persistence of sort order
 - Saving custom sort preferences (no user accounts)
-- Sorting by color name/brand (no semantic color data)
+- Sorting by colour name/brand (no semantic colour data)
 - Multi-select for batch reordering
 - Undo/redo history (single reset is sufficient)
 - Custom drag implementation (HTML5 drag-and-drop provides better native support)
+- Keyboard drag via the drag handle (WCAG 2.5.7 is met by keyboard move buttons; deferred to a future ticket)
 
 # Done
 - ✅ User can sort palette by luminance (lightest ↔ darkest)
@@ -135,5 +136,6 @@ Enable users to sort their color palette by luminance and manually reorder color
 - ✅ Reorder controls auto-show when Manual Order selected
 - ✅ New colors auto-sorted when in sorted mode
 - ✅ Reset button restores original insertion order
+- ✅ Sort criteria and direction persist in URL — shareable links preserve sort state
 - ✅ All animations respect `prefers-reduced-motion`
 - ✅ All interactive elements meet 44x44px touch target minimum per WCAG 2.2 2.5.8
