@@ -32,7 +32,7 @@ function calculateAverageContrast(color: Color, palette: Color[]): number {
 
   for (const other of palette) {
     // Don't compare color with itself
-    if (other.hex === color.hex) continue;
+    if (other === color) continue;
 
     totalContrast += getContrastRatio(color.rgb, other.rgb);
     comparisons++;
@@ -57,7 +57,7 @@ function calculatePassRate(color: Color, palette: Color[]): number {
 
   for (const other of palette) {
     // Don't compare color with itself
-    if (other.hex === color.hex) continue;
+    if (other === color) continue;
 
     const ratio = getContrastRatio(color.rgb, other.rgb);
     if (ratio >= aaThreshold) {
