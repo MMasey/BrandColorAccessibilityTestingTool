@@ -16,7 +16,7 @@ import { test } from '@playwright/test';
  * - Minimal (2 colours)
  * - Small (3 colours)
  * - Ideal (4 colours)
- * - Stress (10+ colors with long labels)
+ * - Stress (10+ colours with long labels)
  *
  * Input format: "#hex, Label" or just "#hex" (comma-separated)
  */
