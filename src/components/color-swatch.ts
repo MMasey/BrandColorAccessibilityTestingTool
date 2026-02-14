@@ -117,15 +117,16 @@ export class ColorSwatch extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 4px;
+      gap: var(--space-xs);
       border-right: 1px solid var(--theme-input-border-color);
     }
 
     /*
-     * WCAG 2.5.8 (Target Size, Minimum — Level AA): buttons are 44×24px.
-     * Two buttons with 4px gap gives a centre-to-centre distance of 28px,
-     * exceeding the required 24px. Width remains 44px, meeting the full
-     * 44×44px recommendation (WCAG 2.5.5) in the horizontal axis.
+     * WCAG 2.5.8 (Target Size, Minimum — Level AA) requires a minimum target
+     * size of 24×24 CSS px (or sufficient spacing between smaller targets).
+     * These controls provide a 44px wide × 24px high touch target, so they
+     * meet the 24px minimum dimension while the 44px width aligns with the
+     * 44×44px recommendation in WCAG 2.5.5 on the horizontal axis.
      */
     .reorder-btn {
       width: var(--touch-target-min, 44px);
@@ -141,7 +142,7 @@ export class ColorSwatch extends LitElement {
       cursor: pointer;
       transition: color var(--transition-fast, 150ms ease),
                   background var(--transition-fast, 150ms ease);
-      font-size: 0.6875rem;
+      font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold, 600);
     }
 
