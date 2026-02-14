@@ -1,0 +1,37 @@
+{
+  "milestone": "reorder-btn-height",
+  "capturedAt": "2026-02-14T06:27:02.114Z",
+  "url": "http://localhost:4173",
+  "scores": {
+    "performance": 0.95,
+    "accessibility": 1,
+    "bestPractices": 1,
+    "seo": 1
+  },
+  "metrics": {
+    "firstContentfulPaint": {
+      "value": 1436.4940000000001,
+      "display": "1.4 s"
+    },
+    "largestContentfulPaint": {
+      "value": 1587.9940000000001,
+      "display": "1.6 s"
+    },
+    "totalBlockingTime": {
+      "value": 237.74900000000002,
+      "display": "240 ms"
+    },
+    "cumulativeLayoutShift": {
+      "value": 0.038882138517618466,
+      "display": "0.039"
+    },
+    "speedIndex": {
+      "value": 2585.308104836029,
+      "display": "2.6 s"
+    },
+    "timeToInteractive": {
+      "value": 1756.2701000000002,
+      "display": "1.8 s"
+    }
+  }
+}
