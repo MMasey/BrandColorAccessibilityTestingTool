@@ -22,7 +22,7 @@ test.describe('Layout Consistency', () => {
     // Add two colors WITH labels so we compare like-for-like
     // (swatches without labels are shorter by design)
     // Needs 2 colors so we can switch to luminance sort, which hides the reorder controls.
-    // Reorder controls (2×44px buttons) intentionally make swatches taller in manual mode.
+    // Reorder controls (2×24px buttons) intentionally make swatches taller in manual mode.
     const hexInput = page.locator('color-palette color-input #hex-input');
     const labelInput = page.locator('color-palette color-input .label-input');
     const addButton = page.locator('color-palette color-input .add-btn');
