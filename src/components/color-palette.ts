@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import Sortable from 'sortablejs';
 import { ColorStoreController } from '../state';
 import type { Color } from '../utils';
 import type { ColorInput } from './color-input';
@@ -88,73 +89,12 @@ export class ColorPalette extends LitElement {
       transition: gap 250ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Expand gaps when dragging for better drop targeting */
-    /* When dragging, shrink all cards to create visual gaps */
-    .colors-list.dragging-active > li {
-      transform: scaleY(0.92);
-      opacity: 0.85;
-    }
-
-    /* Smooth transition for card shrinking */
-    .colors-list > li {
-      transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
-                  opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .colors-list > li {
-        transition: none;
-      }
-
-      .colors-list.dragging-active > li {
-        transform: none;
-        opacity: 0.85;
-      }
-    }
-
-    /* Drop indicator - JavaScript-managed element */
-    .drop-indicator {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--theme-primary-color, #0066cc);
-      z-index: 1000;
-      pointer-events: none;
-      transition: opacity 150ms ease, top 150ms ease;
-      border-radius: 2px;
-      box-shadow: 0 0 12px rgba(0, 102, 204, 0.6);
-    }
-
-    .drop-indicator::before,
-    .drop-indicator::after {
-      content: '';
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: var(--theme-primary-color, #0066cc);
-      border-radius: 50%;
-      top: 50%;
-      transform: translateY(-50%);
-      box-shadow: 0 0 8px rgba(0, 102, 204, 0.8);
-    }
-
-    .drop-indicator::before {
-      left: -5px;
-    }
-
-    .drop-indicator::after {
-      right: -5px;
-    }
-
-    .drop-indicator.hidden {
-      opacity: 0;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .colors-list {
-        transition: none;
-      }
+    /* SortableJS ghost (placeholder shown at original position while dragging) */
+    .colors-list > li.sortable-ghost {
+      opacity: 0.4;
+      background: var(--theme-card-bg-color);
+      border: 2px dashed var(--theme-primary-color, #0066cc);
+      border-radius: var(--radius-md, 0.5rem);
     }
 
     .colors-list > li {
@@ -241,20 +181,12 @@ export class ColorPalette extends LitElement {
   `;
 
   private store = new ColorStoreController(this);
-  private isReordering = false; // Prevent concurrent moves
-  private activeAnimations: Animation[] = []; // Track ongoing animations
+  private isReordering = false; // Prevent concurrent moves (keyboard reorder)
+  private activeAnimations: Animation[] = []; // Track ongoing animations (keyboard reorder)
+  private sortable: Sortable | null = null;
 
   @state()
   private statusMessage = '';
-
-  @state()
-  private isDraggingCard = false; // Track if any card is being dragged
-
-  @state()
-  private dropIndicatorIndex = -1; // Which gap to show drop indicator in
-
-  @state()
-  private dropIndicatorPosition: 'before' | 'after' | 'none' = 'none'; // Where in the gap
 
   private handleAddColor(e: CustomEvent<AddColorEventDetail>): void {
     const { color } = e.detail;
@@ -292,28 +224,10 @@ export class ColorPalette extends LitElement {
   }
 
   /**
-   * Clear all drag states from all color swatches
-   */
-  private clearAllDragStates(): void {
-    const colorsList = this.shadowRoot?.querySelector('.colors-list');
-    if (!colorsList) return;
-
-    const swatches = colorsList.querySelectorAll('color-swatch');
-    swatches.forEach((swatch) => {
-      swatch.removeAttribute('drag-position');
-      swatch.removeAttribute('dragging');
-      swatch.removeAttribute('drag-over');
-    });
-  }
-
-  /**
    * Handle color reordering via keyboard arrow buttons (WCAG 2.2 2.5.7)
    * Uses Web Animations API for smooth, reliable animations
    */
   private handleColorMove(e: CustomEvent<SwatchMoveEventDetail>): void {
-    // Clear any stuck drag states first
-    this.clearAllDragStates();
-
     // Prevent concurrent moves (indices may be stale during re-render)
     if (this.isReordering) {
       console.warn('Move blocked - reorder in progress');
@@ -398,9 +312,6 @@ export class ColorPalette extends LitElement {
       // Cancel any ongoing animations first
       this.activeAnimations.forEach(anim => anim.cancel());
       this.activeAnimations = [];
-
-      // Clear all drag states again to prevent visual conflicts during animation
-      this.clearAllDragStates();
 
       // Clear all transforms and z-indices from previous animations/drags
       listItems.forEach((li) => {
@@ -515,84 +426,86 @@ export class ColorPalette extends LitElement {
     this.statusMessage = e.detail.message;
   }
 
-  private handleDragStateChange(e: CustomEvent<{dragging: boolean, draggedIndex?: number}>): void {
-    this.isDraggingCard = e.detail.dragging;
+  /**
+   * Apply a drag reorder from SortableJS — updates the store and announces to screen readers.
+   * No animation needed here since SortableJS already animated the drag.
+   */
+  private applyReorder(fromIndex: number, toIndex: number): void {
+    const currentColors = this.store.colors;
+    const newColors = [...currentColors];
+    const [movedColor] = newColors.splice(fromIndex, 1);
+    if (!movedColor) return;
+    newColors.splice(toIndex, 0, movedColor);
+    this.store.reorderColors(newColors);
 
-    // Clear drop indicator when drag ends
-    if (!e.detail.dragging) {
-      this.dropIndicatorIndex = -1;
-      this.dropIndicatorPosition = 'none';
-    }
-  }
-
-  private handleDropPositionChange(e: CustomEvent<{targetIndex: number, position: 'before' | 'after' | 'none'}>): void {
-    this.dropIndicatorIndex = e.detail.targetIndex;
-    this.dropIndicatorPosition = e.detail.position;
-
-    // Update indicator position when drop position changes
-    this.updateDropIndicatorPosition();
+    const color = this.store.colors[toIndex];
+    this.statusMessage = `${color?.label || color?.hex} moved to position ${toIndex + 1}`;
   }
 
   /**
-   * Get the inline style for the drop indicator based on current drop position
+   * Initialise (or reinitialise) SortableJS on the colour list.
+   * Called from updated() whenever the list is present in the DOM.
+   *
+   * NOTE: SortableJS uses native HTML5 drag-and-drop (forceFallback: false) so that
+   * the browser renders an accurate drag ghost from the live shadow DOM.  With
+   * forceFallback: true the ghost is built via cloneNode(true) which does not copy
+   * Lit's JavaScript-rendered shadow DOM, producing a blank drag image.
+   * Mobile touch drag therefore still requires a short press-and-hold (browser
+   * default); the ▲/▼ keyboard buttons remain the recommended mobile interface.
    */
-  private getDropIndicatorStyle(): string {
-    if (this.dropIndicatorIndex === -1 || this.dropIndicatorPosition === 'none') {
-      return 'display: none;';
+  private initSortable(): void {
+    const list = this.shadowRoot?.querySelector<HTMLElement>('.colors-list');
+    if (!list) return;
+
+    if (this.sortable) {
+      this.sortable.destroy();
+      this.sortable = null;
     }
 
-    // We need to calculate position based on the li elements
-    // This will be updated after render when we can measure actual positions
-    return 'display: block; opacity: 0;'; // Hidden by default, will be positioned via updateComplete
-  }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /**
-   * Update drop indicator position after render (when we can measure actual DOM positions)
-   */
-  private updateDropIndicatorPosition(): void {
-    if (this.dropIndicatorIndex === -1 || this.dropIndicatorPosition === 'none') {
-      return;
-    }
-
-    this.updateComplete.then(() => {
-      const colorsList = this.shadowRoot?.querySelector('.colors-list');
-      const wrapper = this.shadowRoot?.querySelector('.colors-list-wrapper') as HTMLElement | null;
-      const dropIndicator = this.shadowRoot?.querySelector('.drop-indicator') as HTMLElement;
-
-      if (!colorsList || !wrapper || !dropIndicator) return;
-
-      const listItems = Array.from(colorsList.querySelectorAll('li'));
-      const targetLi = listItems[this.dropIndicatorIndex];
-
-      if (!targetLi) {
-        dropIndicator.style.opacity = '0';
-        return;
-      }
-
-      const targetRect = targetLi.getBoundingClientRect();
-      const wrapperRect = wrapper.getBoundingClientRect();
-
-      // Position relative to wrapper using viewport coordinates (no scrollTop needed —
-      // the indicator lives outside the scrollable list so its containing block doesn't scroll)
-      const relativeTop = targetRect.top - wrapperRect.top;
-
-      let indicatorTop: number;
-      const indicatorHeight = 4; // Thin line indicator
-
-      // With card shrinking, we position at the exact edge of the card
-      if (this.dropIndicatorPosition === 'before') {
-        // Position at top edge of card
-        indicatorTop = relativeTop - (indicatorHeight / 2);
-      } else {
-        // Position at bottom edge of card
-        indicatorTop = relativeTop + targetRect.height - (indicatorHeight / 2);
-      }
-
-      dropIndicator.style.top = `${indicatorTop}px`;
-      dropIndicator.style.opacity = '1';
+    this.sortable = Sortable.create(list, {
+      animation: prefersReducedMotion ? 0 : 150,
+      ghostClass: 'sortable-ghost',
+      scroll: true,          // Auto-scroll the list when dragging near top/bottom edge
+      scrollSensitivity: 60, // px from edge to trigger scroll
+      scrollSpeed: 8,
+      onEnd: (evt: Sortable.SortableEvent) => {
+        const fromIndex = evt.oldIndex;
+        const toIndex = evt.newIndex;
+        if (fromIndex === undefined || toIndex === undefined || fromIndex === toIndex) return;
+        this.applyReorder(fromIndex, toIndex);
+      },
     });
   }
 
+  override updated(changedProperties: Map<string, unknown>): void {
+    super.updated(changedProperties);
+
+    const showReorderControls = this.store.getSortState().criteria === 'manual';
+    const hasColors = this.store.colors.length > 0;
+
+    if (showReorderControls && hasColors) {
+      if (!this.sortable) {
+        // List just appeared in the DOM — initialise SortableJS
+        this.initSortable();
+      }
+    } else {
+      // Manual mode off, or list empty — tear down so we don't hold a stale reference
+      if (this.sortable) {
+        this.sortable.destroy();
+        this.sortable = null;
+      }
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this.sortable) {
+      this.sortable.destroy();
+      this.sortable = null;
+    }
+  }
 
   render() {
     const colors = this.store.colors;
@@ -636,10 +549,9 @@ export class ColorPalette extends LitElement {
         </div>
 
         ${colors.length > 0 ? html`
-          <!-- Wrapper provides the positioning context for the drop indicator -->
           <div class="colors-list-wrapper">
             <!-- Using native ul/li instead of ARIA roles for better semantics -->
-            <ul class="colors-list ${this.isDraggingCard ? 'dragging-active' : ''}">
+            <ul class="colors-list">
               ${colors.map((color, index) => html`
                   <li
                     data-color-id="${color.hex}"
@@ -656,21 +568,11 @@ export class ColorPalette extends LitElement {
                       @label-change="${(e: CustomEvent<LabelChangeEventDetail>) => this.updateColorLabel(index, e.detail.label)}"
                       @swatch-move="${this.handleColorMove}"
                       @boundary-reached="${this.handleBoundaryReached}"
-                      @clear-all-drag-states="${this.clearAllDragStates}"
-                      @drag-state-change="${this.handleDragStateChange}"
-                      @drop-position-change="${this.handleDropPositionChange}"
                     ></color-swatch>
                   </li>
                 `
               )}
             </ul>
-
-            <!-- Drop indicator - absolutely positioned sibling to the list, managed by JS -->
-            <div
-              class="drop-indicator"
-              style="${this.getDropIndicatorStyle()}"
-              aria-hidden="true"
-            ></div>
           </div>
 
           <div class="actions">
