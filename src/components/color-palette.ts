@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 import Sortable from 'sortablejs';
 import { ColorStoreController } from '../state';
 import type { Color } from '../utils';
@@ -552,7 +553,7 @@ export class ColorPalette extends LitElement {
           <div class="colors-list-wrapper">
             <!-- Using native ul/li instead of ARIA roles for better semantics -->
             <ul class="colors-list">
-              ${colors.map((color, index) => html`
+              ${repeat(colors, color => color.hex, (color, index) => html`
                   <li
                     data-color-id="${color.hex}"
                   >
