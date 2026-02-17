@@ -185,6 +185,7 @@ export class ColorPalette extends LitElement {
   private isReordering = false; // Prevent concurrent moves (keyboard reorder)
   private activeAnimations: Animation[] = []; // Track ongoing animations (keyboard reorder)
   private sortable: Sortable | null = null;
+  private _dragNextSibling: Node | null = null; // Tracks original next sibling before drag
 
   @state()
   private statusMessage = '';
@@ -471,10 +472,33 @@ export class ColorPalette extends LitElement {
       scroll: true,          // Auto-scroll the list when dragging near top/bottom edge
       scrollSensitivity: 60, // px from edge to trigger scroll
       scrollSpeed: 8,
+      onStart: (evt: Sortable.SortableEvent) => {
+        // Record the item's original next sibling so we can restore it in onEnd.
+        // SortableJS only moves the <li> element, leaving Lit's comment-node
+        // ChildPart markers in place. If we let SortableJS's DOM change stand,
+        // repeat() reconciles the markers (not the <li> elements), causing
+        // visual positions to diverge from store order on subsequent interactions.
+        this._dragNextSibling = evt.item.nextSibling;
+      },
       onEnd: (evt: Sortable.SortableEvent) => {
         const fromIndex = evt.oldIndex;
         const toIndex = evt.newIndex;
+        const nextSibling = this._dragNextSibling;
+        this._dragNextSibling = null;
+
         if (fromIndex === undefined || toIndex === undefined || fromIndex === toIndex) return;
+
+        // Revert SortableJS's DOM change before updating state.
+        // repeat() tracks ChildParts via comment-node markers. SortableJS only
+        // moves the <li> element, leaving markers in their original positions.
+        // This desync causes repeat() to move markers correctly on re-render but
+        // leave <li> elements in wrong visual slots. Reverting here lets
+        // repeat() reconcile from a consistent baseline — and since microtasks
+        // run before the next paint, the revert is never visible to the user.
+        if (nextSibling !== null) {
+          evt.from.insertBefore(evt.item, nextSibling);
+        }
+
         this.applyReorder(fromIndex, toIndex);
       },
     });
