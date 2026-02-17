@@ -2,6 +2,8 @@
 
 This document provides context and guidelines for working with the Brand Color Accessibility Testing Tool codebase.
 
+> **Note**: This repository also contains `CLAUDE.md` which provides a high-level overview of the architecture, roadmap, and design values. Both documents complement each other - this file focuses on detailed coding guidelines while `CLAUDE.md` provides strategic context.
+
 ## Project Overview
 
 A web-based tool for testing and validating brand color palettes against WCAG 2.1 accessibility standards. The tool helps designers and developers ensure their color combinations meet contrast requirements for text readability.
@@ -233,3 +235,24 @@ Large text: 18pt (24px) or 14pt (18.5px) bold
 - CSS custom properties are used extensively for theming
 - Components use shadow DOM for style encapsulation
 - The tool itself is a single-page application (SPA)
+
+## Validation Checklist
+
+Before committing changes, ensure:
+
+1. **Type Check**: Run `npm run build` to verify TypeScript compilation
+2. **Unit Tests**: Run `npm run test:run` to ensure all unit tests pass
+3. **E2E Tests**: Run `npm run test:e2e` to verify end-to-end functionality
+4. **Code Style**: Follow the coding conventions outlined above
+5. **Accessibility**: New UI features must meet WCAG 2.1 AA standards minimum
+6. **Documentation**: Update relevant documentation for significant changes
+
+## Custom Agents and Instructions
+
+This repository includes specialized configurations:
+
+- **Custom Agents**: See `.github/agents/` for specialized agents (e.g., test-specialist)
+- **Path-Specific Instructions**: See `.github/instructions/` for file-type specific guidelines
+- **Setup Steps**: See `.github/copilot-setup-steps.yml` for environment setup automation
+
+When assigned tasks, Copilot coding agent will automatically use these configurations to provide better results.

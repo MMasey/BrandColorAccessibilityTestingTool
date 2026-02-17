@@ -1,0 +1,12 @@
+# GitHub Copilot Setup Steps
+# This file defines steps to prepare the development environment for Copilot coding agent.
+# It ensures dependencies are installed before Copilot starts working on tasks.
+
+steps:
+  # Install Node.js dependencies
+  - run: npm ci
+    name: Install dependencies
+    
+  # Install Playwright browsers for E2E testing
+  - run: npx playwright install --with-deps chromium
+    name: Install Playwright browsers
