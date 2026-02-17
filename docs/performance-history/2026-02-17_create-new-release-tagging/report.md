@@ -1,14 +1,14 @@
 # Lighthouse Performance Report
 
 **Milestone:** create-new-release-tagging
-**Captured:** 2026-02-17T15:58:58.064Z
+**Captured:** 2026-02-17T16:18:01.634Z
 **URL:** http://localhost:4173
 
 ## Scores
 
 | Category | Score |
 |----------|-------|
-| Performance | 100 (Good) |
+| Performance | 94 (Good) |
 | Accessibility | 100 (Good) |
 | Best Practices | 100 (Good) |
 | SEO | 100 (Good) |
@@ -17,12 +17,12 @@
 
 | Metric | Value |
 |--------|-------|
-| First Contentful Paint (FCP) | 1.3 s |
-| Largest Contentful Paint (LCP) | 1.3 s |
-| Total Blocking Time (TBT) | 20 ms |
+| First Contentful Paint (FCP) | 1.6 s |
+| Largest Contentful Paint (LCP) | 1.8 s |
+| Total Blocking Time (TBT) | 250 ms |
 | Cumulative Layout Shift (CLS) | 0.039 |
-| Speed Index | 1.3 s |
-| Time to Interactive | 1.3 s |
+| Speed Index | 2.6 s |
+| Time to Interactive | 1.9 s |
 
 ## Performance Goals
 
