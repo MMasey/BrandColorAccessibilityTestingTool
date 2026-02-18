@@ -35,23 +35,6 @@ export class ColorSwatch extends LitElement {
                   border-width var(--transition-fast, 150ms ease);
     }
 
-    .swatch-container[draggable="true"] {
-      cursor: grab;
-    }
-
-    .swatch-container[draggable="true"]:active {
-      cursor: grabbing;
-    }
-
-    :host([dragging]) .swatch-container {
-      opacity: 0.8;
-      cursor: grabbing;
-      transform: scale(1.02);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      z-index: 100;
-    }
-
-
     /* Shake animation for boundary collision (respects prefers-reduced-motion) */
     @media (prefers-reduced-motion: no-preference) {
       @keyframes shake {
@@ -408,26 +391,6 @@ export class ColorSwatch extends LitElement {
   @property({ type: Boolean, reflect: true })
   shake = false;
 
-  /** Track drag state - reflected to host for styling */
-  @property({ type: Boolean, reflect: true, attribute: 'dragging' })
-  isDragging = false;
-
-  @property({ type: Boolean, reflect: true, attribute: 'drag-over' })
-  isDragOver = false;
-
-  /** Track where to show drop indicator: 'before' or 'after' */
-  @property({ type: String, reflect: true, attribute: 'drag-position' })
-  dragPosition: 'before' | 'after' | 'none' = 'none';
-
-  /** Store the index being dragged (accessible during dragover) */
-  private static draggedIndex: number = -1;
-
-  /** Timeout for clearing stuck drag states */
-  private dragCleanupTimeout?: number;
-
-  /** Timeout for debouncing drag leave */
-  private dragLeaveTimeout?: number;
-
   private handleRemove(e: Event): void {
     e.stopPropagation();
     this.dispatchEvent(new CustomEvent('swatch-remove', {
@@ -491,181 +454,6 @@ export class ColorSwatch extends LitElement {
   private handleInputChange(e: Event): void {
     const input = e.target as HTMLInputElement;
     this.editValue = input.value;
-  }
-
-  // ========================================================================
-  // HTML5 Drag-and-Drop
-  // ========================================================================
-
-  private handleDragStart(e: DragEvent): void {
-    if (!this.draggableSwatch || !this.manualReorderEnabled) return;
-
-    // Clear any previous cleanup timeout
-    if (this.dragCleanupTimeout) {
-      window.clearTimeout(this.dragCleanupTimeout);
-    }
-
-    this.isDragging = true;
-    ColorSwatch.draggedIndex = this.index; // Store for use in dragover
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', this.index.toString());
-    }
-
-    // Notify parent that dragging has started, including which index is being dragged
-    this.dispatchEvent(new CustomEvent('drag-state-change', {
-      detail: { dragging: true, draggedIndex: this.index },
-      bubbles: true,
-      composed: true,
-    }));
-
-    // Safety: clear drag state after 2 seconds if dragend doesn't fire
-    this.dragCleanupTimeout = window.setTimeout(() => {
-      this.clearDragState();
-      // Also clear all other swatches in case they're stuck
-      this.dispatchEvent(new CustomEvent('clear-all-drag-states', {
-        bubbles: true,
-        composed: true,
-      }));
-    }, 2000);
-  }
-
-  private handleDragEnd(): void {
-    if (this.dragCleanupTimeout) {
-      window.clearTimeout(this.dragCleanupTimeout);
-    }
-    this.clearDragState();
-
-    // Notify parent that dragging has ended
-    this.dispatchEvent(new CustomEvent('drag-state-change', {
-      detail: { dragging: false },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private clearDragState(): void {
-    // Clear any pending timeouts
-    if (this.dragLeaveTimeout) {
-      window.clearTimeout(this.dragLeaveTimeout);
-      this.dragLeaveTimeout = undefined;
-    }
-
-    this.isDragging = false;
-    this.isDragOver = false;
-    this.dragPosition = 'none';
-    ColorSwatch.draggedIndex = -1;
-  }
-
-  private handleDragOver(e: DragEvent): void {
-    if (!this.draggableSwatch || !this.manualReorderEnabled) return;
-    e.preventDefault();
-    e.stopPropagation(); // Prevent bubbling to parent elements
-
-    // Clear any pending drag leave timeout since we're still over the element
-    if (this.dragLeaveTimeout) {
-      window.clearTimeout(this.dragLeaveTimeout);
-      this.dragLeaveTimeout = undefined;
-    }
-
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
-    }
-
-    // Don't show indicator on the element being dragged
-    if (ColorSwatch.draggedIndex === this.index) {
-      this.isDragOver = false;
-      this.dragPosition = 'none';
-      return;
-    }
-
-    this.isDragOver = true;
-
-    // Calculate drop position using middle as boundary for larger drop zones
-    const rect = this.getBoundingClientRect();
-    const relativeY = e.clientY - rect.top;
-    const middle = rect.height / 2;
-
-    // Simple half-split: top half = before, bottom half = after
-    const newPosition: 'before' | 'after' = relativeY < middle ? 'before' : 'after';
-
-    // Only update if position actually changed to reduce visual jumps
-    if (this.dragPosition !== newPosition) {
-      this.dragPosition = newPosition;
-    }
-
-    // Notify parent about drop position for visual indicator
-    this.dispatchEvent(new CustomEvent('drop-position-change', {
-      detail: {
-        targetIndex: this.index,
-        position: this.dragPosition,
-      },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private handleDragLeave(): void {
-    // Debounce drag leave to prevent flickering when moving over child elements
-    // or when the indicator itself causes slight layout changes
-    if (this.dragLeaveTimeout) {
-      window.clearTimeout(this.dragLeaveTimeout);
-    }
-
-    this.dragLeaveTimeout = window.setTimeout(() => {
-      this.isDragOver = false;
-      this.dragPosition = 'none';
-      this.dragLeaveTimeout = undefined;
-
-      // Notify parent to hide drop indicator
-      this.dispatchEvent(new CustomEvent('drop-position-change', {
-        detail: {
-          targetIndex: -1,
-          position: 'none',
-        },
-        bubbles: true,
-        composed: true,
-      }));
-    }, 100);
-  }
-
-  private handleDrop(e: DragEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!this.draggableSwatch || !this.manualReorderEnabled) return;
-    if (!e.dataTransfer) return;
-
-    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-    let toIndex = this.index;
-
-    // If dropping "after", adjust the target index
-    if (this.dragPosition === 'after') {
-      toIndex = this.index + 1;
-    }
-
-    // When moving forward (fromIndex < toIndex), after removal the indices shift
-    // so we need to adjust toIndex down by 1
-    if (fromIndex < toIndex) {
-      toIndex = toIndex - 1;
-    }
-
-    // Clear all drag states immediately
-    this.clearDragState();
-
-    if (fromIndex !== toIndex && !isNaN(fromIndex)) {
-      this.dispatchEvent(new CustomEvent('swatch-move', {
-        detail: { fromIndex, toIndex },
-        bubbles: true,
-        composed: true,
-      }));
-    }
-
-    // Broadcast to clear all other swatches too
-    this.dispatchEvent(new CustomEvent('clear-all-drag-states', {
-      bubbles: true,
-      composed: true,
-    }));
   }
 
   // ========================================================================
@@ -738,12 +526,6 @@ export class ColorSwatch extends LitElement {
       <div
         class="swatch-container"
         style="--swatch-color: ${this.color.hex}"
-        draggable="${this.draggableSwatch && this.manualReorderEnabled ? 'true' : 'false'}"
-        @dragstart="${this.handleDragStart}"
-        @dragend="${this.handleDragEnd}"
-        @dragover="${this.handleDragOver}"
-        @dragleave="${this.handleDragLeave}"
-        @drop="${this.handleDrop}"
       >
         <!-- WCAG 2.2 2.5.7: Keyboard alternative to dragging -->
         ${this.draggableSwatch && this.manualReorderEnabled ? html`
