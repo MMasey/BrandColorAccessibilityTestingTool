@@ -1,7 +1,11 @@
 /**
  * Lighthouse Performance Audit Script
  *
- * Captures Lighthouse metrics for tracking performance over time.
+ * Runs Lighthouse LIGHTHOUSE_RUNS times (default 3) and reports the median
+ * run selected by Total Blocking Time — the most variable metric. This
+ * approach follows the Lighthouse team's recommendation for stable CI results
+ * on shared runners where a single run can be skewed by transient CPU load.
+ *
  * Run with: npx tsx scripts/capture-lighthouse.ts "milestone-name"
  *
  * Output: docs/performance-history/YYYY-MM-DD_HHMM_milestone-name/
@@ -11,6 +15,13 @@ import lighthouse from 'lighthouse';
 import * as chromeLauncher from 'chrome-launcher';
 import * as fs from 'fs';
 import * as path from 'path';
+
+const _parsedRuns = parseInt(process.env.LIGHTHOUSE_RUNS ?? '3', 10);
+if (process.env.LIGHTHOUSE_RUNS !== undefined && (!Number.isInteger(_parsedRuns) || _parsedRuns < 1)) {
+  console.error(`Error: LIGHTHOUSE_RUNS must be a positive integer (got "${process.env.LIGHTHOUSE_RUNS}")`);
+  process.exit(1);
+}
+const RUNS = Number.isInteger(_parsedRuns) && _parsedRuns >= 1 ? _parsedRuns : 3;
 
 interface LighthouseResult {
   categories: {
@@ -33,6 +44,9 @@ interface MetricsSummary {
   milestone: string;
   capturedAt: string;
   url: string;
+  runs: number;
+  medianRunIndex: number;
+  tbtRange: { min: number; max: number };
   scores: {
     performance: number;
     accessibility: number;
@@ -71,11 +85,50 @@ async function runLighthouse(url: string): Promise<LighthouseResult> {
   }
 }
 
+/**
+ * Run Lighthouse N times and return the median run selected by TBT.
+ * Using the median-by-TBT run (rather than per-metric medians) gives a
+ * self-consistent set of metrics from a single real measurement.
+ */
+async function runMultiple(url: string, runs: number): Promise<{
+  medianResult: LighthouseResult;
+  medianRunIndex: number;
+  tbtRange: { min: number; max: number };
+}> {
+  const results: LighthouseResult[] = [];
+
+  for (let i = 1; i <= runs; i++) {
+    console.log(`  Run ${i}/${runs}...`);
+    results.push(await runLighthouse(url));
+  }
+
+  // Sort by TBT ascending, pick the middle run
+  const sorted = [...results].sort(
+    (a, b) =>
+      a.audits['total-blocking-time'].numericValue -
+      b.audits['total-blocking-time'].numericValue
+  );
+  const medianIdx = Math.floor(runs / 2);
+  const medianResult = sorted[medianIdx];
+
+  const tbts = sorted.map(r => r.audits['total-blocking-time'].numericValue);
+  const tbtRange = { min: tbts[0], max: tbts[tbts.length - 1] };
+
+  // Report the 1-based index of the chosen run in the original order
+  const medianRunIndex = results.indexOf(medianResult) + 1;
+
+  return { medianResult, medianRunIndex, tbtRange };
+}
+
 function formatScore(score: number): string {
   const percentage = Math.round(score * 100);
   if (percentage >= 90) return `${percentage} (Good)`;
   if (percentage >= 50) return `${percentage} (Needs Improvement)`;
   return `${percentage} (Poor)`;
+}
+
+function formatMs(ms: number): string {
+  return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`;
 }
 
 function generateMarkdownReport(summary: MetricsSummary): string {
@@ -84,6 +137,7 @@ function generateMarkdownReport(summary: MetricsSummary): string {
 **Milestone:** ${summary.milestone}
 **Captured:** ${summary.capturedAt}
 **URL:** ${summary.url}
+**Methodology:** Median of ${summary.runs} runs (selected by TBT — run ${summary.medianRunIndex}). TBT range across runs: ${formatMs(summary.tbtRange.min)}–${formatMs(summary.tbtRange.max)}.
 
 ## Scores
 
@@ -133,17 +187,14 @@ async function main(): Promise<void> {
 
   let folderName: string;
   if (isCI) {
-    // CI: Date + branch name (same-day pushes overwrite, maintains date ordering)
     folderName = `${date}_${sanitizedName}`;
   } else {
-    // Local: Date + time for more granular historical tracking
     const time = now.toTimeString().slice(0, 5).replace(':', ''); // HHMM format
     folderName = `${date}_${time}_${sanitizedName}`;
   }
 
   const outputDir = path.join(process.cwd(), 'docs', 'performance-history', folderName);
 
-  // In CI, overwrite existing folder; locally, error to prevent accidental overwrites
   if (fs.existsSync(outputDir)) {
     if (isCI) {
       fs.rmSync(outputDir, { recursive: true });
@@ -161,16 +212,19 @@ async function main(): Promise<void> {
 
   console.log(`\nRunning Lighthouse audit: ${milestoneName}`);
   console.log(`URL: ${baseUrl}`);
+  console.log(`Runs: ${RUNS} (reporting median by TBT)`);
   console.log(`Output: ${outputDir}\n`);
 
   try {
-    console.log('Running Lighthouse (this may take a minute)...');
-    const result = await runLighthouse(baseUrl);
+    const { medianResult: result, medianRunIndex, tbtRange } = await runMultiple(baseUrl, RUNS);
 
     const summary: MetricsSummary = {
       milestone: milestoneName,
       capturedAt: new Date().toISOString(),
       url: baseUrl,
+      runs: RUNS,
+      medianRunIndex,
+      tbtRange,
       scores: {
         performance: result.categories.performance.score,
         accessibility: result.categories.accessibility.score,
@@ -218,7 +272,7 @@ async function main(): Promise<void> {
     );
 
     // Print summary
-    console.log('\n=== Lighthouse Results ===\n');
+    console.log('\n=== Lighthouse Results (median run) ===\n');
     console.log(`Performance:    ${formatScore(summary.scores.performance)}`);
     console.log(`Accessibility:  ${formatScore(summary.scores.accessibility)}`);
     console.log(`Best Practices: ${formatScore(summary.scores.bestPractices)}`);
@@ -226,7 +280,7 @@ async function main(): Promise<void> {
     console.log('\n=== Core Web Vitals ===\n');
     console.log(`FCP: ${summary.metrics.firstContentfulPaint.display}`);
     console.log(`LCP: ${summary.metrics.largestContentfulPaint.display}`);
-    console.log(`TBT: ${summary.metrics.totalBlockingTime.display}`);
+    console.log(`TBT: ${summary.metrics.totalBlockingTime.display}  (range: ${formatMs(tbtRange.min)}–${formatMs(tbtRange.max)})`);
     console.log(`CLS: ${summary.metrics.cumulativeLayoutShift.display}`);
     console.log(`\nFull report saved to: ${outputDir}/report.md`);
 
