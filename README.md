@@ -106,14 +106,41 @@ src/
 - **[Vitest](https://vitest.dev/)** - Unit testing
 - **[Playwright](https://playwright.dev/)** - End-to-end testing
 
-## WCAG Contrast Thresholds
+## Contrast Algorithm
 
-| Level | Normal Text | Large Text |
-|-------|-------------|------------|
-| AAA   | 7:1         | 4.5:1      |
-| AA    | 4.5:1       | 3:1        |
+The tool uses the **WCAG 2.2 relative luminance formula** — the same algorithm that underpins all W3C contrast guidance and is the current industry standard for web accessibility.
 
-Large text is defined as 18pt (24px) or 14pt (18.5px) bold.
+### Why this algorithm?
+
+The W3C contrast ratio formula was chosen because:
+
+- It is the normative definition used by WCAG 2.2 Success Criteria 1.4.3 and 1.4.6
+- It is universally understood by designers, developers, and auditors
+- Results are directly comparable to every major accessibility checker (axe, Lighthouse, browser DevTools, etc.)
+- It is a well-specified, reproducible calculation with no tooling variation
+
+> **Note on APCA:** The newer APCA (Advanced Perceptual Contrast Algorithm) proposed for WCAG 3.0 is *not* implemented. WCAG 3.0 is still a working draft and APCA is not yet a normative requirement. We may add APCA as a secondary metric in a future release — see the [roadmap](spec/PROJECT.md).
+
+### How it works
+
+1. **Linearise** each sRGB channel using gamma correction (per IEC 61966-2-1)
+2. **Compute relative luminance**: `L = 0.2126R + 0.7152G + 0.0722B`
+3. **Compute contrast ratio**: `(L_lighter + 0.05) / (L_darker + 0.05)`
+
+The result is a value from 1:1 (no contrast) to 21:1 (black on white).
+
+### Thresholds
+
+Covers **SC 1.4.3 Contrast (Minimum)** and **SC 1.4.6 Contrast (Enhanced)**:
+
+| Badge | Ratio (normal text) | Ratio (large text) | Success Criterion          |
+|-------|--------------------|--------------------|----------------------------|
+| AAA   | ≥ 7:1              | ≥ 4.5:1            | 1.4.6 Contrast (Enhanced)  |
+| AA    | ≥ 4.5:1            | ≥ 3:1              | 1.4.3 Contrast (Minimum)   |
+| AA 18+| —                  | ≥ 3:1              | 1.4.3 Contrast (Minimum)   |
+| Fail  | < 3:1              | < 3:1              | —                          |
+
+Large text is defined as **18pt (24px) regular** or **14pt (18.5px) bold** and above.
 
 ## Accessibility
 
