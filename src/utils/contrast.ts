@@ -1,14 +1,14 @@
 /**
- * WCAG 2.1 Contrast calculation utilities
+ * WCAG 2.2 Contrast calculation utilities
  *
- * Implements the contrast ratio formula from WCAG 2.1:
- * https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html
+ * Implements the contrast ratio formula from WCAG 2.2:
+ * https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
  */
 
 import type { RGB, WCAGLevel, TextSize, ContrastResult, Color } from './color-types';
 
 /**
- * WCAG 2.1 Contrast thresholds
+ * WCAG 2.2 Contrast thresholds
  */
 export const WCAG_THRESHOLDS = {
   // Normal text (< 18pt or < 14pt bold)
@@ -47,7 +47,7 @@ function srgbToLinear(channel: number): number {
 
 /**
  * Calculate relative luminance of a color
- * Per WCAG 2.1 specification
+ * Per WCAG 2.2 specification
  *
  * Formula: L = 0.2126 * R + 0.7152 * G + 0.0722 * B
  * Where R, G, B are linear RGB values
@@ -65,7 +65,7 @@ export function getRelativeLuminance(rgb: RGB): number {
 
 /**
  * Calculate contrast ratio between two colors
- * Per WCAG 2.1 specification
+ * Per WCAG 2.2 specification
  *
  * Formula: (L1 + 0.05) / (L2 + 0.05)
  * Where L1 is the lighter color's luminance
