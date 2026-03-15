@@ -43,24 +43,33 @@ jobs:
       - name: Run unit tests
         run: npm run test:run
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
-      - name: Build application for E2E
-        run: npm run build
-        env:
-          NODE_ENV: production
+      - name: Install Playwright OS dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
 
       - name: Run E2E tests
         run: npx playwright test --project=chromium
 
   # ──────────────────────────────────────────────────────────────────────────
   # Gate 2: production build (only after tests pass)
+  # Only runs on main — prevents workflow_dispatch from deploying a branch.
   # ──────────────────────────────────────────────────────────────────────────
   build:
     name: Build Application
     runs-on: ubuntu-latest
     needs: test
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
@@ -89,6 +98,7 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
