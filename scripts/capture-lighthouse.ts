@@ -16,7 +16,12 @@ import * as chromeLauncher from 'chrome-launcher';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const RUNS = parseInt(process.env.LIGHTHOUSE_RUNS ?? '3', 10);
+const _parsedRuns = parseInt(process.env.LIGHTHOUSE_RUNS ?? '3', 10);
+if (process.env.LIGHTHOUSE_RUNS !== undefined && (!Number.isInteger(_parsedRuns) || _parsedRuns < 1)) {
+  console.error(`Error: LIGHTHOUSE_RUNS must be a positive integer (got "${process.env.LIGHTHOUSE_RUNS}")`);
+  process.exit(1);
+}
+const RUNS = Number.isInteger(_parsedRuns) && _parsedRuns >= 1 ? _parsedRuns : 3;
 
 interface LighthouseResult {
   categories: {
