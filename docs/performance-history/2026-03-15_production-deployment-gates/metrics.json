@@ -1,12 +1,12 @@
 {
   "milestone": "production-deployment-gates",
-  "capturedAt": "2026-03-15T19:35:41.675Z",
+  "capturedAt": "2026-03-15T19:42:13.876Z",
   "url": "http://localhost:4173",
   "runs": 3,
   "medianRunIndex": 3,
   "tbtRange": {
-    "min": 8,
-    "max": 203
+    "min": 0,
+    "max": 6
   },
   "scores": {
     "performance": 1,
@@ -16,15 +16,15 @@
   },
   "metrics": {
     "firstContentfulPaint": {
-      "value": 1204.82505,
+      "value": 1205.24505,
       "display": "1.2 s"
     },
     "largestContentfulPaint": {
-      "value": 1384.32505,
+      "value": 1382.74505,
       "display": "1.4 s"
     },
     "totalBlockingTime": {
-      "value": 9,
+      "value": 5,
       "display": "10 ms"
     },
     "cumulativeLayoutShift": {
@@ -32,11 +32,11 @@
       "display": "0.039"
     },
     "speedIndex": {
-      "value": 1204.82505,
+      "value": 1205.24505,
       "display": "1.2 s"
     },
     "timeToInteractive": {
-      "value": 1413.82505,
+      "value": 1410.24505,
       "display": "1.4 s"
     }
   }

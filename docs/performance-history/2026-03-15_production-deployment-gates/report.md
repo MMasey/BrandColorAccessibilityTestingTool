@@ -1,9 +1,9 @@
 # Lighthouse Performance Report
 
 **Milestone:** production-deployment-gates
-**Captured:** 2026-03-15T19:35:41.675Z
+**Captured:** 2026-03-15T19:42:13.876Z
 **URL:** http://localhost:4173
-**Methodology:** Median of 3 runs (selected by TBT — run 3). TBT range across runs: 8 ms–203 ms.
+**Methodology:** Median of 3 runs (selected by TBT — run 3). TBT range across runs: 0 ms–6 ms.
 
 ## Scores
 
