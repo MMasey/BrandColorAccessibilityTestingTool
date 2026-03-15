@@ -1,0 +1,43 @@
+{
+  "milestone": "production-deployment-gates",
+  "capturedAt": "2026-03-15T19:35:41.675Z",
+  "url": "http://localhost:4173",
+  "runs": 3,
+  "medianRunIndex": 3,
+  "tbtRange": {
+    "min": 8,
+    "max": 203
+  },
+  "scores": {
+    "performance": 1,
+    "accessibility": 1,
+    "bestPractices": 1,
+    "seo": 1
+  },
+  "metrics": {
+    "firstContentfulPaint": {
+      "value": 1204.82505,
+      "display": "1.2 s"
+    },
+    "largestContentfulPaint": {
+      "value": 1384.32505,
+      "display": "1.4 s"
+    },
+    "totalBlockingTime": {
+      "value": 9,
+      "display": "10 ms"
+    },
+    "cumulativeLayoutShift": {
+      "value": 0.038882138517618466,
+      "display": "0.039"
+    },
+    "speedIndex": {
+      "value": 1204.82505,
+      "display": "1.2 s"
+    },
+    "timeToInteractive": {
+      "value": 1413.82505,
+      "display": "1.4 s"
+    }
+  }
+}
