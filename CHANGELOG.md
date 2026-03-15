@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-03-15
+
+### Fixed
+- Lighthouse capture script now runs 3× and reports the median run by TBT, eliminating false performance regressions caused by shared CI runner noise (#28)
+- Validates `LIGHTHOUSE_RUNS` env var and exits with a clear error for invalid values
+
 ## [0.3.1] - 2026-03-15
 
 ### Fixed
