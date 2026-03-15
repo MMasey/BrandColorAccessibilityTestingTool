@@ -274,7 +274,7 @@ export class AppShell extends LitElement {
             </a>
             and
             <a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-enhanced.html" target="_blank" rel="noopener">
-              1.4.6 (AAA)
+              WCAG 2.2 SC 1.4.6 (AAA)
             </a>
           </p>
         </div>

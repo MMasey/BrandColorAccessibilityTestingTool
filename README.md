@@ -133,12 +133,12 @@ The result is a value from 1:1 (no contrast) to 21:1 (black on white).
 
 Covers **SC 1.4.3 Contrast (Minimum)** and **SC 1.4.6 Contrast (Enhanced)**:
 
-| Badge | Ratio (normal text) | Ratio (large text) | Success Criterion |
-|-------|--------------------|--------------------|-------------------|
-| AAA   | ≥ 7:1              | ≥ 4.5:1            | 1.4.6 Enhanced    |
-| AA    | ≥ 4.5:1            | ≥ 3:1              | 1.4.3 Minimum     |
-| AA 18+| ≥ 3:1 (large only) | —                  | 1.4.3 Minimum     |
-| Fail  | < 3:1              | < 3:1              | —                 |
+| Badge | Ratio (normal text) | Ratio (large text) | Success Criterion          |
+|-------|--------------------|--------------------|----------------------------|
+| AAA   | ≥ 7:1              | ≥ 4.5:1            | 1.4.6 Contrast (Enhanced)  |
+| AA    | ≥ 4.5:1            | ≥ 3:1              | 1.4.3 Contrast (Minimum)   |
+| AA 18+| —                  | ≥ 3:1              | 1.4.3 Contrast (Minimum)   |
+| Fail  | < 3:1              | < 3:1              | —                          |
 
 Large text is defined as **18pt (24px) regular** or **14pt (18.5px) bold** and above.
 
