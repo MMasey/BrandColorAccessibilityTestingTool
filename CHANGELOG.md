@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-03-15
+
+### Fixed
+- Production deploy workflow now requires unit and E2E tests to pass before building or deploying (#30)
+- `build` and `deploy` jobs are guarded with `github.ref == 'refs/heads/main'` so `workflow_dispatch` from a non-main branch runs tests only and never deploys
+- Playwright browsers are now cached (keyed by OS + `package-lock.json`) to reduce CI time on subsequent deploys
+- Removed redundant `npm run build` from the test gate (Playwright uses `npm run dev` via the `webServer` config)
+
 ## [0.3.2] - 2026-03-15
 
 ### Fixed
