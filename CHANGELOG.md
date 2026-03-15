@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-03-15
+
+### Fixed
+- Footer now correctly references both WCAG 2.2 SC 1.4.3 (AA) and SC 1.4.6 (AAA) with separate links (#26)
+- Updated all WCAG 2.1 references in contrast utility to WCAG 2.2 (algorithm unchanged)
+
+### Documentation
+- Added *Contrast Algorithm* section to README explaining the relative luminance formula, rationale for WCAG over APCA, and an expanded threshold table mapping badge levels to their Success Criteria
+
 ## [0.3.0] - 2026-02-18
 
 ### Fixed
