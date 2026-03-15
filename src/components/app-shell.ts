@@ -270,7 +270,11 @@ export class AppShell extends LitElement {
           <p>
             Built for accessibility. Evaluates contrast against
             <a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html" target="_blank" rel="noopener">
-              WCAG 2.2 Success Criterion 1.4.3
+              WCAG 2.2 SC 1.4.3 (AA)
+            </a>
+            and
+            <a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-enhanced.html" target="_blank" rel="noopener">
+              WCAG 2.2 SC 1.4.6 (AAA)
             </a>
           </p>
         </div>
