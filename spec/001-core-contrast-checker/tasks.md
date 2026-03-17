@@ -17,7 +17,7 @@
 - [x] 2.1 Create color parser module (hex, RGB, HSL)
 - [x] 2.2 Create color converter utilities
 - [x] 2.3 Implement relative luminance calculator
-- [x] 2.4 Implement WCAG 2.1 contrast ratio calculator
+- [x] 2.4 Implement WCAG 2.2 contrast ratio calculator
 - [x] 2.5 Create WCAG compliance evaluator
 
 ## 3. State Management ✓
