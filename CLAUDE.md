@@ -2,6 +2,15 @@
 
 A web-based tool for testing brand colour combinations against WCAG accessibility contrast requirements.
 
+## General Rules
+When working with git (commits, PRs, branch operations), always confirm the plan with me before executing. Never make autonomous commits or create PRs without explicit approval.
+
+## Project Context
+Primary languages: TypeScript, Markdown. Project involves accessibility-focused tooling. When generating content or making edits, prioritize accessibility best practices.
+
+## Environment
+On Windows, use absolute paths for file operations outside the current repo. Always verify path resolution before creating directories or files in new locations.
+
 ## Tech Stack
 
 - **Framework**: Lit 3.x (Web Components)
@@ -42,11 +51,13 @@ All features are independent and can be implemented in any order. Original "phas
 | ID | Name | Status |
 |----|------|--------|
 | 100 | Theme Contrast Testing | Planned |
-| 101 | Colour Palette Sorting & Reordering | Planned |
+| 101 | Colour Palette Sorting & Reordering | ✅ Complete |
 | 102 | APCA & Code Exports | Planned |
 | 103 | Visual Exports | Planned |
 | 104 | AI Colour Generation | Planned |
 | 105 | AI Mockup Generation (Paid) | Planned |
+| 106 | Artistic Grid Mode | Planned |
+| 107 | Contrast Results List View | Planned |
 
 All specs follow the SPECKL format with `README.md` + `spec.md`.
 
