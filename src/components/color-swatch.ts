@@ -594,7 +594,7 @@ export class ColorSwatch extends LitElement {
               <button
                 type="button"
                 class="label label-editable"
-                title="Click to edit label"
+                aria-label="Edit label: ${label}"
                 @click="${this.startEditing}"
               >
                 ${label}
@@ -607,7 +607,6 @@ export class ColorSwatch extends LitElement {
               <button
                 type="button"
                 class="label label-editable label-placeholder"
-                title="Click to add label"
                 @click="${this.startEditing}"
               >
                 Add label

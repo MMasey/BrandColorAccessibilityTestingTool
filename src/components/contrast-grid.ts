@@ -445,7 +445,7 @@ export class ContrastGrid extends LitElement {
         class="grid-wrapper"
         tabindex="0"
         role="region"
-        aria-label="Contrast grid. Use arrow keys to scroll when focused."
+        aria-label="Contrast results"
         @keydown="${this.handleGridKeydown}"
       >
         <div class="grid-container">
@@ -510,9 +510,8 @@ export class ContrastGrid extends LitElement {
                   return html`
                     <div
                       class="cell-wrapper"
-                      role="${isFiltered ? 'presentation' : 'cell'}"
+                      role="cell"
                       aria-label="${isFiltered ? '' : cellLabel}"
-                      aria-hidden="${isFiltered ? 'true' : 'false'}"
                     >
                       <contrast-cell
                         .result="${result}"
