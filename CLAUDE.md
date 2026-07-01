@@ -58,6 +58,7 @@ All features are independent and can be implemented in any order. Original "phas
 | 105 | AI Mockup Generation (Paid) | Planned |
 | 106 | Artistic Grid Mode | Planned |
 | 107 | Contrast Results List View | Planned |
+| 108 | Embeddable Widget | Planned |
 
 All specs follow the SPECKL format with `README.md` + `spec.md`.
 

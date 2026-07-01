@@ -48,6 +48,7 @@ All features are independent and can be implemented in any order. They share a c
 | 105 | [AI Mockup Generation (Paid)](105-ai-mockups/spec.md) | Planned | Phase 1, optionally 104 |
 | 106 | [Artistic Grid Mode](106-artistic-grid-mode/spec.md) | Planned | Phase 1 |
 | 107 | [Contrast Results List View](107-list-view/spec.md) | Planned | Phase 1 |
+| 108 | [Embeddable Widget](108-embeddable-widget/spec.md) | Planned | Phase 1 |
 
 ## Current Status
 
