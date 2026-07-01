@@ -116,6 +116,55 @@ Configured in [.mcp.json](.mcp.json) and available to Claude during development:
 |------|---------|---------|
 | `wcag` | `wcag-guidelines-mcp` | Query WCAG 2.x success criteria, techniques, and understanding docs |
 | `playwright` | `@playwright/mcp` | Browser automation for E2E testing and UI verification |
+| `axe` | `dequesystems/axe-mcp-server` (Docker) | Deque axe accessibility scanning + guided fixes for live/rendered UI |
+
+### Using the `axe` MCP server during development
+
+The `axe` server (Deque) runs accessibility scans against rendered markup and returns
+actionable, standards-mapped fixes. Because this tool's whole purpose is accessibility, treat
+axe as a first-class part of the dev loop, not an afterthought:
+
+- **Scan before finishing UI work.** After changing any component's markup, ARIA, roles,
+  landmarks, focus order, or live regions, run an axe scan on the affected view and resolve
+  every violation before considering the task done.
+- **Verify a11y fixes, don't assume them.** When implementing accessibility changes (e.g. the
+  Florian Beijers bundles), confirm the fix with an axe scan rather than reasoning alone.
+- **Complement, don't replace, the E2E gate.** `@axe-core/playwright` in the E2E suite is the
+  automated CI gate; the axe MCP server is for interactive, in-the-loop checking and richer
+  remediation guidance while developing. Both should agree before opening a PR.
+- **Prefer real fixes over rule suppression.** Never silence a violation to make a scan pass;
+  fix the underlying markup/semantics.
+
+> **Requires setup.** The axe MCP server is Deque's commercial product: it runs via Docker and
+> needs a Deque account. Without credentials the server simply won't start — the `wcag` and
+> `playwright` servers, the app, and all tests still work.
+
+#### Providing the key securely (never commit it)
+
+`.mcp.json` never contains the key — it references `${AXE_API_KEY}`, which Claude Code expands
+from your **environment** at launch. Keys live only in your local environment, never in git:
+
+- Secrets belong in a gitignored `.env` (patterns `.env`, `.env.local`, `.env.*.local` are
+  ignored). The tracked, secret-free [`.env.example`](.env.example) documents the variable —
+  copy it to `.env` and fill in your key.
+- **The key must be in the environment of the process that launches Claude Code** (MCP `${VAR}`
+  expansion reads the process env, not a `.env` file automatically). Set it one of these ways:
+
+  ```powershell
+  # Windows PowerShell — current session only:
+  $env:AXE_API_KEY = "your-key"
+  # Windows — persist for your user (new terminals pick it up):
+  setx AXE_API_KEY "your-key"
+  ```
+  ```bash
+  # macOS/Linux — current session:
+  export AXE_API_KEY="your-key"
+  # or auto-load a gitignored .env with a tool like direnv / dotenvx before launching
+  ```
+
+- Provide **exactly one** of `AXE_API_KEY` or `AXE_ACCESS_TOKEN` (the server errors if both are
+  set). Rotate the key via the Deque portal if it is ever exposed.
+- **Never** paste a real key into `.mcp.json`, `.env.example`, commits, code, or chat.
 
 ## Testing Strategy
 

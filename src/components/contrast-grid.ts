@@ -445,7 +445,7 @@ export class ContrastGrid extends LitElement {
         class="grid-wrapper"
         tabindex="0"
         role="region"
-        aria-label="Contrast results"
+        aria-label="Contrast results grid, scrollable"
         @keydown="${this.handleGridKeydown}"
       >
         <div class="grid-container">

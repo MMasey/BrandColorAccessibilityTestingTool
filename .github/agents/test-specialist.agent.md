@@ -148,6 +148,21 @@ Every E2E test must:
 3. Test keyboard navigation where applicable
 4. Ensure focus management is correct
 
+### axe MCP Server
+
+An `axe` MCP server (Deque) is configured in `.mcp.json`. Use it during development as a
+complement to the automated `@axe-core/playwright` checks:
+
+- After changing component markup, ARIA, roles, landmarks, or focus handling, run an axe
+  scan on the rendered view and resolve every violation before finishing.
+- Use it to reproduce and confirm the fix for reported accessibility issues, then encode the
+  expectation as an `@axe-core/playwright` assertion so the CI gate catches regressions.
+- The MCP server is for interactive scanning/guidance; the E2E `@axe-core/playwright` suite is
+  the enforced gate. Both should be clean before a PR.
+- Never suppress a rule to make a scan pass — fix the underlying semantics.
+- Requires Docker + a Deque `AXE_API_KEY`/`AXE_ACCESS_TOKEN`; if unavailable, rely on the
+  `@axe-core/playwright` E2E checks.
+
 ## What Makes a Good Test
 
 - **Clear**: Test name explains what is being tested

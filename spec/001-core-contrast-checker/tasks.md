@@ -137,13 +137,13 @@ Issues found during a live screen reader testing session. Full details in
 
 ### Bundle A — Quick Fixes (ship as one PR)
 
-- [ ] A1 `app-shell.ts` line 251 — change `<aside class="sidebar">` to `<section class="sidebar">` (`complementary` landmark is wrong for primary controls)
-- [ ] A2 `color-input.ts` lines 317–321, 374, 439–442 — debounce `hasInput` to blur/600 ms; always render error container in DOM; replace `role="alert"` with `role="status"` + `aria-live="polite"`
-- [ ] A3 `color-palette.ts` line 579 — add `aria-label="Colour palette"` to `<ul class="colors-list">`
-- [ ] A4 `color-swatch.ts` lines 594–601 — add `aria-label="Edit label: ${label}"` to edit button when label exists; remove both `title` attributes (C1 handled here)
-- [ ] A5 `contrast-grid.ts` line 448 — change grid wrapper `aria-label` to `"Contrast results"` (drop scroll instruction)
-- [ ] A6 `contrast-grid.ts` lines 511–516 — remove `role="presentation"` / `aria-hidden` swap on filtered cells; keep cells in accessibility tree as empty `role="cell"`
-- [ ] A7 `contrast-cell.ts` line 232 — expand `getAriaLabel()` to list all satisfied levels (AAA → "Passes AAA, AA, and large text (AA18)"; AA → "Passes AA and large text (AA18)"; AA18 → "Passes large text only (AA18)"; DNP → "Does not pass any WCAG level")
+- [x] A1 `app-shell.ts` line 251 — change `<aside class="sidebar">` to `<section class="sidebar">` (`complementary` landmark is wrong for primary controls)
+- [x] A2 `color-input.ts` lines 317–321, 374, 439–442 — debounce `hasInput` to blur/600 ms; always render error container in DOM; replace `role="alert"` with `role="status"` + `aria-live="polite"`
+- [x] A3 `color-palette.ts` line 579 — add `aria-label="Colour palette"` to `<ul class="colors-list">`
+- [x] A4 `color-swatch.ts` lines 594–601 — add `aria-label="Edit label: ${label}"` to edit button when label exists; remove both `title` attributes (C1 handled here)
+- [x] A5 `contrast-grid.ts` line 448 — drop scroll instruction from grid wrapper `aria-label`; named `"Contrast results grid, scrollable"` (distinct from the parent `<section aria-label="Contrast results">` to avoid duplicate region landmarks)
+- [x] A6 `contrast-grid.ts` lines 511–516 — remove `role="presentation"` / `aria-hidden` swap on filtered cells; keep cells in accessibility tree as empty `role="cell"`
+- [x] A7 `contrast-cell.ts` line 232 — expand `getAriaLabel()` to list all satisfied levels (AAA → "Passes AAA, AA, and large text (AA18)"; AA → "Passes AA and large text (AA18)"; AA18 → "Passes large text only (AA18)"; DNP → "Does not pass any WCAG level")
 
 ### Bundle B — Contrast Grid Table Refactor (separate PR)
 
@@ -151,7 +151,7 @@ Issues found during a live screen reader testing session. Full details in
 
 ### Bundle C — `title` Attribute Audit
 
-- [ ] C1 Handled by A4 above (edit label buttons in `color-swatch.ts`)
+- [x] C1 Handled by A4 above (edit label buttons in `color-swatch.ts`)
 - [x] C2 `contrast-grid.ts` — `title` on column/row headers is visual-only tooltip; acceptable, no change needed
 - [x] C3 `contrast-cell.ts` — `title` on WCAG badge is visual-only tooltip; acceptable, no change needed
 

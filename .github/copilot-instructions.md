@@ -6,7 +6,7 @@ This document provides context and guidelines for working with the Brand Color A
 
 ## Project Overview
 
-A web-based tool for testing and validating brand color palettes against WCAG 2.1 accessibility standards. The tool helps designers and developers ensure their color combinations meet contrast requirements for text readability.
+A web-based tool for testing and validating brand color palettes against WCAG 2.2 accessibility standards. The tool helps designers and developers ensure their color combinations meet contrast requirements for text readability.
 
 ## Tech Stack
 
@@ -194,6 +194,22 @@ This tool is built with accessibility as a core feature:
 - Test user workflows and component interactions
 - Test responsive behavior and keyboard navigation
 - Use page object pattern for complex pages
+
+## Accessibility Tooling (axe MCP Server)
+
+Accessibility is this project's core purpose, so use the configured `axe` MCP server
+(Deque, defined in [.mcp.json](../.mcp.json)) as part of the normal development loop:
+
+- **Scan rendered UI after markup/ARIA changes.** Any time you touch roles, landmarks,
+  labels, focus order, or live regions, run an axe scan on the affected view and fix every
+  violation before calling the work done.
+- **Verify accessibility fixes with a scan**, don't rely on reasoning alone.
+- **It complements the CI gate, not replaces it.** `@axe-core/playwright` in the E2E suite is
+  the automated gate; the axe MCP server is for interactive checking and remediation guidance
+  while coding. Both should be clean before opening a PR.
+- **Fix the root cause; never suppress a rule** just to make a scan pass.
+- The server needs Docker + a Deque `AXE_API_KEY`/`AXE_ACCESS_TOKEN`. If it isn't available,
+  fall back to the `@axe-core/playwright` E2E checks — but still run those before a PR.
 
 ## WCAG Contrast Standards
 

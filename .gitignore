@@ -29,10 +29,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Environment files
+# Environment files (never commit real secrets/keys)
 .env
 .env.local
 .env.*.local
+# ...but keep the documented, secret-free template tracked
+!.env.example
 
 # Test coverage
 coverage/

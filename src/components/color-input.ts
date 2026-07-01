@@ -295,6 +295,15 @@ export class ColorInput extends LitElement {
     this.parseColor();
   }
 
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // Avoid a pending debounce firing on a removed element
+    if (this._debounceTimer !== null) {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = null;
+    }
+  }
+
   updated(changedProperties: Map<string, unknown>): void {
     if (changedProperties.has('value') || changedProperties.has('label')) {
       this.parseColor();
