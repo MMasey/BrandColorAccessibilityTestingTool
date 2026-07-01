@@ -452,10 +452,9 @@ export class ColorInput extends LitElement {
         </div>
 
         <p
-          class="error-text"
+          class="${showError ? 'error-text' : 'sr-only'}"
           role="status"
           aria-live="polite"
-          aria-hidden="${showError ? 'false' : 'true'}"
         >${showError ? (this.value.trim() ? 'Invalid color format' : 'Enter a color value') : ''}</p>
       </div>
     `;
