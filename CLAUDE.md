@@ -107,6 +107,15 @@ Plus `system` mode that respects OS preferences.
 
 CSS variables defined in `src/styles/themes/*.css` (light, dark, high-contrast).
 
+## MCP Servers
+
+Configured in [.mcp.json](.mcp.json) and available to Claude during development:
+
+| Name | Package | Purpose |
+|------|---------|---------|
+| `wcag` | `wcag-guidelines-mcp` | Query WCAG 2.x success criteria, techniques, and understanding docs |
+| `playwright` | `@playwright/mcp` | Browser automation for E2E testing and UI verification |
+
 ## Testing Strategy
 
 | Type | Tool | Location | Command |
