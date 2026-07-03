@@ -40,6 +40,10 @@ jobs:
     name: Capture Visual Milestone
     runs-on: ubuntu-latest
     needs: test
+    # Only capture/commit quality artifacts on release PRs (targeting main).
+    # Feature PRs skip this to avoid bot commits that re-trigger the workflow
+    # and stack up "action_required" runs that block merge.
+    if: github.base_ref == 'main'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -84,6 +88,8 @@ jobs:
     name: Lighthouse Audit
     runs-on: ubuntu-latest
     needs: test
+    # Release PRs only (see visual-milestone note above).
+    if: github.base_ref == 'main'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -161,7 +167,8 @@ jobs:
     name: Commit Quality Artifacts
     runs-on: ubuntu-latest
     needs: [visual-milestone, lighthouse]
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # Release PRs only, and never for forks (no write access to push back).
+    if: github.base_ref == 'main' && github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v4
         with:
