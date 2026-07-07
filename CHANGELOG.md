@@ -27,7 +27,7 @@ Accessibility release: fixes from the Florian Beijers screen reader review (16 M
 - Grid scroll region label simplified to "Contrast results" — scroll instructions were noise for screen reader users (Bundle A5); the label is also differentiated from the results heading to avoid duplicate landmark names
 - Filtered grid cells stay in the accessibility tree as empty cells, so screen reader row/column counts remain correct (Bundle A6); they no longer carry an empty `aria-label` attribute, which could override the cell's natural name in some screen readers
 - Colour input debounce timer is cleared on disconnect, preventing callbacks on detached elements
-- CI: quality artifacts (visual milestones, Lighthouse reports) are only captured on release PRs — the bot commit previously pushed to every PR left a required check stuck pending and blocked merges
+- CI: quality artifacts (visual milestones, Lighthouse reports) are only captured on release PRs — the bot commit previously pushed to every PR left a required check stuck pending and blocked merges; the artifacts job also now skips pushing when the PR head is already a bot artifacts commit, ending the capture → commit → re-trigger loop on release PRs
 
 ### Documentation
 - Remaining WCAG 2.1 references updated to WCAG 2.2 in theme CSS headers, E2E suite descriptions, and specs

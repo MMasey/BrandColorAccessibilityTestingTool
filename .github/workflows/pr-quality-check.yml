@@ -175,19 +175,38 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Captured artifacts are never byte-identical (Lighthouse timings vary),
+      # so committing after every run would move the PR head, re-trigger the
+      # workflow, and loop forever. If the head is already a bot artifacts
+      # commit, this run exists only to green the checks on it — skip the push.
+      - name: Check whether head is already an artifacts commit
+        id: head_check
+        run: |
+          AUTHOR=$(git log -1 --pretty=%an)
+          SUBJECT=$(git log -1 --pretty=%s)
+          if [ "$AUTHOR" = "github-actions[bot]" ] && [ "$SUBJECT" = "chore: add visual milestone and lighthouse report" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Head is already an artifacts commit; skipping commit to avoid a re-trigger loop."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Download visual milestone
+        if: steps.head_check.outputs.skip != 'true'
         uses: actions/download-artifact@v4
         with:
           name: visual-milestone
           path: docs/visual-history/
 
       - name: Download Lighthouse report
+        if: steps.head_check.outputs.skip != 'true'
         uses: actions/download-artifact@v4
         with:
           name: lighthouse-report
           path: docs/performance-history/
 
       - name: Commit artifacts
+        if: steps.head_check.outputs.skip != 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
