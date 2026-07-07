@@ -55,7 +55,9 @@ export {
   WCAG_BADGE_COLORS,
   WCAG_BADGE_LABELS,
   WCAG_BADGE_TITLES,
+  WCAG_LEVEL_ANNOUNCEMENTS,
   getBadgeClass,
   getBadgeLabel,
   getBadgeTitle,
+  getLevelAnnouncement,
 } from './wcag-config';

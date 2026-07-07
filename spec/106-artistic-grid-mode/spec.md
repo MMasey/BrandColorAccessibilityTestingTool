@@ -34,7 +34,7 @@ Enable users to create artistic 2D color patterns and shareable art URLs by deco
 - Generates 2×3 grid with artistic intent
 
 **ARIA/Accessibility**:
-- Art mode still maintains `role="table"` structure for screen readers
+- Art mode still maintains the native `<table>` structure for screen readers (the grid is a native table since the Bundle B1 refactor)
 - Cell labels remain in `aria-label` attributes even when visually hidden
 - Complies with WCAG 2.2 AA (tool must remain accessible even in art mode)
 
@@ -129,7 +129,7 @@ Enable users to create artistic 2D color patterns and shareable art URLs by deco
   - Hide all text content (labels, contrast ratios, WCAG badges)
   - Hide column/row headers (color names and dots)
   - Hide legend
-  - Keep `role="table"` and `aria-label` attributes for accessibility
+  - Keep the native `<table>` structure and `aria-label` attributes for accessibility
   - Apply CSS class `art-mode` for styling (e.g., remove borders, increase cell size)
 
 **Blend Mode Rendering**:

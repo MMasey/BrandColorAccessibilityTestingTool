@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Grid header cells redesigned: a full-width colour chip sits flush with the top of the cell (square-cornered, tab-like) above a left-aligned label, giving colour names the full cell width so they wrap less and read more easily
+
+### Fixed
+- Contrast grid now uses a native `<table>` (`<caption>`, `<thead>`, `<th scope>`, `<td>`) instead of div+ARIA roles, giving more reliable screen reader table navigation (Florian Beijers review, Bundle B1)
+- Grid axis labelling is plain language: the table caption reads "Each row is a foreground (text) colour; each column is a background colour" (replacing the arrow shorthand), and the cryptic "FG \ BG" corner cell is now a visual-only "↓ Foreground / → Background" orientation hint, empty for assistive tech
+- WCAG level announcements heard on grid cells now list all satisfied levels (e.g. "Passes AAA, AA, and large text (AA18)") — the A7 wording previously only existed inside `contrast-cell` and was masked by the grid's own cell labels
+- Same-colour diagonal cells now announce "Same colour" instead of a misleading contrast result
+
 ## [0.3.3] - 2026-03-15
 
 ### Fixed

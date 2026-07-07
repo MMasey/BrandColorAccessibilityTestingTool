@@ -6,6 +6,7 @@ import {
   getBadgeClass,
   getBadgeLabel,
   getBadgeTitle,
+  getLevelAnnouncement,
 } from '../utils';
 
 /**
@@ -231,15 +232,7 @@ export class ContrastCell extends LitElement {
   private getAriaLabel(): string {
     if (!this.result) return 'No contrast data';
 
-    let levelDesc: string;
-    switch (this.result.level) {
-      case 'AAA':  levelDesc = 'Passes AAA, AA, and large text (AA18)'; break;
-      case 'AA':   levelDesc = 'Passes AA and large text (AA18)'; break;
-      case 'AA18': levelDesc = 'Passes large text only (AA18)'; break;
-      default:     levelDesc = 'Does not pass any WCAG level';
-    }
-
-    return `Contrast ratio ${this.result.ratioString}. ${levelDesc}`;
+    return `Contrast ratio ${this.result.ratioString}. ${getLevelAnnouncement(this.result.level)}`;
   }
 
   render() {
