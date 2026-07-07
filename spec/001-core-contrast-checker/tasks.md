@@ -147,7 +147,7 @@ Issues found during a live screen reader testing session. Full details in
 
 ### Bundle B — Contrast Grid Table Refactor (separate PR)
 
-- [ ] B1 `contrast-grid.ts` — convert `div`+ARIA roles to native `<table>` / `<tr>` / `<th scope="col|row">` / `<td>`; move axis label into `<caption>`; replace `display: contents` rows with standard `<tr>` layout; use `position: sticky` on `<th>` for sticky headers
+- [x] B1 `contrast-grid.ts` — convert `div`+ARIA roles to native `<table>` / `<tr>` / `<th scope="col|row">` / `<td>`; move axis label into `<caption>`; replace `display: contents` rows with standard `<tr>` layout; use `position: sticky` on `<th>` for sticky headers. Also: shared `getLevelAnnouncement()` util so the A7 wording is announced on the `<td>` labels (previously masked); diagonal cells announce "Same colour"; caption is a plain-language sentence explaining rows/columns (replaces arrow shorthand); corner cell is a visual-only "↓ Foreground / → Background" hint in an AT-empty `<td>` (replaces "FG \ BG")
 
 ### Bundle C — `title` Attribute Audit
 

@@ -11,6 +11,9 @@ import {
 /**
  * Contrast cell component showing the contrast ratio and WCAG compliance badge.
  * Used as a cell in the contrast grid.
+ *
+ * Purely visual for assistive tech: the grid's `<td>` aria-label is the single
+ * announcement source, and the grid renders this element with aria-hidden.
  */
 @customElement('contrast-cell')
 export class ContrastCell extends LitElement {
@@ -228,20 +231,6 @@ export class ContrastCell extends LitElement {
   @property({ type: String, reflect: true, attribute: 'cell-size' })
   cellSize: 'small' | 'medium' | 'large' = 'medium';
 
-  private getAriaLabel(): string {
-    if (!this.result) return 'No contrast data';
-
-    let levelDesc: string;
-    switch (this.result.level) {
-      case 'AAA':  levelDesc = 'Passes AAA, AA, and large text (AA18)'; break;
-      case 'AA':   levelDesc = 'Passes AA and large text (AA18)'; break;
-      case 'AA18': levelDesc = 'Passes large text only (AA18)'; break;
-      default:     levelDesc = 'Does not pass any WCAG level';
-    }
-
-    return `Contrast ratio ${this.result.ratioString}. ${levelDesc}`;
-  }
-
   render() {
     if (!this.result) return html`<div class="cell">—</div>`;
 
@@ -251,7 +240,6 @@ export class ContrastCell extends LitElement {
         <div
           class="cell same-color"
           style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
-          aria-label="Same colour"
         >
           <span class="ratio">—</span>
         </div>
@@ -262,7 +250,6 @@ export class ContrastCell extends LitElement {
       <div
         class="cell"
         style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
-        aria-label="${this.getAriaLabel()}"
       >
         <span class="ratio">${this.result.ratioString}</span>
         <span

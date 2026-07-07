@@ -2,7 +2,7 @@ import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ColorStoreController } from '../state';
 import type { GridFilterLevel } from '../state/color-store';
-import { generateContrastMatrix, WCAG_BADGE_COLORS } from '../utils';
+import { generateContrastMatrix, getLevelAnnouncement, WCAG_BADGE_COLORS } from '../utils';
 import type { Color, ContrastResult, WCAGLevel } from '../utils';
 import './contrast-cell';
 
@@ -44,30 +44,39 @@ export class ContrastGrid extends LitElement {
       display: inline-block;
     }
 
+    /*
+      Native table. The 1px gap between cells comes from border-spacing over
+      the table background (same visual as the previous CSS grid gap).
+      Table elements keep their default display values — overriding display
+      on table/tr/th/td can silently strip table semantics in some browsers,
+      which is exactly the fragility this native structure exists to avoid.
+      Flex layout lives on inner divs (.color-indicator) instead.
+    */
     .grid {
-      display: grid;
-      gap: 1px;
+      border-collapse: separate;
+      border-spacing: 1px;
+      table-layout: fixed;
       background: var(--theme-input-border-color, #d4d4d4);
       position: relative;
-      width: fit-content;
     }
 
-    /* Data cell wrappers - constrain to grid cell size */
+    caption {
+      caption-side: top;
+      text-align: left;
+      background: var(--theme-page-bg-color);
+    }
+
+    /* Data cells - constrain to grid cell size */
     .cell-wrapper {
       width: var(--cell-size, 5.5rem);
       height: var(--cell-size, 5.5rem);
+      padding: 0;
       overflow: hidden;
     }
 
-    /* Row wrappers for ARIA table structure - display:contents keeps grid layout intact */
-    .grid-row {
-      display: contents;
-    }
-
     .header-cell {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      vertical-align: top;
+      text-align: left;
       padding: var(--space-xs, 0.25rem);
       background: var(--theme-card-bg-color, #f5f5f5);
       font-size: var(--font-size-xs, 0.75rem);
@@ -86,6 +95,9 @@ export class ContrastGrid extends LitElement {
         font-weight: var(--font-weight-semibold, 600);
         width: var(--row-header-width, 5.5rem);
         height: var(--header-height, 2.5rem);
+        /* Align the hint text with neighbouring header labels, which sit
+           below the full-bleed colour chip (0.5rem) and gap (0.25rem) */
+        padding-top: calc(0.5rem + var(--space-xs, 0.25rem));
       }
 
       &.column-header {
@@ -97,7 +109,6 @@ export class ContrastGrid extends LitElement {
       }
 
       &.row-header {
-        justify-content: flex-start;
         position: sticky;
         left: 0;
         z-index: 2;
@@ -106,51 +117,40 @@ export class ContrastGrid extends LitElement {
       }
     }
 
+    /* Colour chip stacked above the label: the swatch spans the full cell
+       width so the colour has presence, and the text keeps the full width
+       to reduce wrapping of longer colour names. */
     .color-indicator {
       display: flex;
-      align-items: center;
-      gap: var(--space-xs, 0.25rem);
-      max-width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.25rem;
+      width: 100%;
       min-width: 0;
     }
 
-    .color-dot {
-      width: 1rem;
-      height: 1rem;
-      border-radius: 50%;
+    /* Full-bleed strip: negative margins cancel the cell padding so the
+       colour meets the cell edges like a tab. Square corners - the strip
+       merges with the cell edge, so a radius would leave odd notches. */
+    .color-chip {
+      height: 0.5rem;
+      margin: calc(-1 * var(--space-xs, 0.25rem)) calc(-1 * var(--space-xs, 0.25rem)) 0;
       border: 1px solid var(--theme-input-border-color, #d4d4d4);
       flex-shrink: 0;
-
-      @media (max-width: 640px) {
-        width: 0.75rem;
-        height: 0.75rem;
-      }
     }
 
     .color-label {
-      flex: 1;
       min-width: 0;
-      max-width: 8rem;
+      max-width: 100%;
       line-height: 1.3;
-      /* Limit to 2 lines with ellipsis */
+      /* Line limit varies with cell size (1 line in compact mode) */
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: var(--header-label-lines, 2);
       -webkit-box-orient: vertical;
       overflow: hidden;
       word-break: break-word;
       overflow-wrap: break-word;
       text-overflow: ellipsis;
-
-      @media (max-width: 640px) {
-        max-width: 2.5rem;
-        -webkit-line-clamp: 1;
-        font-size: var(--font-size-xs, 0.75rem);
-      }
-
-      @media (min-width: 641px) and (max-width: 1023px) {
-        max-width: 4rem;
-        -webkit-line-clamp: 1;
-      }
     }
 
     .empty-state {
@@ -207,21 +207,29 @@ export class ContrastGrid extends LitElement {
       }
     }
 
-    .axis-label {
+    /* Caption text explaining the table structure. Sticky so it stays in
+       view when the table is wider than the scroll wrapper. */
+    .caption-text {
+      display: block;
+      position: sticky;
+      left: 0;
+      width: max-content;
+      max-width: 100%;
       font-size: var(--font-size-xs, 0.75rem);
       color: var(--theme-text-muted-color);
-      text-align: center;
       padding: var(--space-xs, 0.25rem);
-
-      @media (max-width: 640px) {
-        font-size: var(--font-size-xs, 0.75rem);
-        text-align: left;
-      }
     }
 
-    .row-axis-label {
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
+    /* Visual-only orientation hint in the sticky corner cell (the caption
+       scrolls out of view on tall grids). Hidden from assistive tech - the
+       caption and header labels carry the same information. */
+    .corner-label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      font-size: 0.625rem;
+      line-height: 1.2;
+      text-align: left;
     }
 
     /* Screen reader only - visually hidden but accessible */
@@ -253,7 +261,7 @@ export class ContrastGrid extends LitElement {
         border: 2px solid CanvasText;
       }
 
-      .color-dot {
+      .color-chip {
         /* MUST preserve actual color for the preview */
         forced-color-adjust: none;
         border: 2px solid CanvasText;
@@ -305,12 +313,18 @@ export class ContrastGrid extends LitElement {
     }
   }
 
+  /** Column header height: fits the colour chip + label (see getHeaderLabelLines) */
   private getHeaderHeight(): string {
     switch (this.store.gridCellSize) {
-      case 'small': return '2rem';
-      case 'large': return '3rem';
-      default: return '2.5rem';
+      case 'small': return '2.25rem';
+      case 'large': return '3.25rem';
+      default: return '3.25rem';
     }
+  }
+
+  /** Max label lines in header cells; compact mode keeps headers to one line */
+  private getHeaderLabelLines(): number {
+    return this.store.gridCellSize === 'small' ? 1 : 2;
   }
 
   private mapWCAGLevelToFilterLevel(level: WCAGLevel): GridFilterLevel {
@@ -419,17 +433,12 @@ export class ContrastGrid extends LitElement {
     }
 
     const matrix = this.getContrastMatrix();
-    const gridSize = colors.length + 1;
     const summary = this.getAccessibilitySummary(matrix);
 
     return html`
       <!-- Screen reader summary announced on updates -->
       <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
         ${summary}
-      </div>
-
-      <div class="axis-label">
-        ↓ Foreground (text) &nbsp;&nbsp;|&nbsp;&nbsp; Background →
       </div>
 
       <!--
@@ -449,86 +458,103 @@ export class ContrastGrid extends LitElement {
         @keydown="${this.handleGridKeydown}"
       >
         <div class="grid-container">
-          <div
+          <!--
+            width calc: table-layout fixed needs an explicit width. Columns are
+            one row-header plus one cell per colour; border-spacing adds
+            (columns + 1) x 1px gaps.
+          -->
+          <table
             class="grid"
-            role="table"
-            aria-label="Contrast ratios between foreground and background colours"
             style="
               --cell-size: ${this.getCellSize()};
               --row-header-width: ${this.getRowHeaderWidth()};
               --header-height: ${this.getHeaderHeight()};
-              grid-template-columns: var(--row-header-width) repeat(${gridSize - 1}, var(--cell-size));
-              grid-template-rows: var(--header-height) repeat(${gridSize - 1}, var(--cell-size));
+              --header-label-lines: ${this.getHeaderLabelLines()};
+              width: calc(var(--row-header-width) + ${colors.length} * var(--cell-size) + ${colors.length + 2}px);
             "
           >
-            <!-- Header row -->
-            <div class="grid-row" role="row">
-              <!-- Corner cell -->
-              <div class="header-cell corner" role="columnheader">
-                <span aria-label="Foreground versus Background">FG \\ BG</span>
-              </div>
+            <caption>
+              <span class="caption-text">
+                Each row is a foreground (text) colour; each column is a background colour.
+              </span>
+            </caption>
 
-              <!-- Column headers (background colors) -->
-              ${colors.map((color) => html`
-                <div
-                  class="header-cell column-header"
-                  role="columnheader"
-                  aria-label="Background: ${this.getColorLabel(color)}"
-                  title="${this.getColorLabel(color)}"
-                >
-                  <div class="color-indicator">
-                    <div class="color-dot" style="background: ${color.hex}" aria-hidden="true"></div>
-                    <span class="color-label">${this.getColorLabel(color)}</span>
-                  </div>
-                </div>
-              `)}
-            </div>
+            <thead>
+              <tr>
+                <!-- Corner cell: visual orientation hint only. A plain <td>
+                     so assistive tech sees a standard empty corner cell - the
+                     caption and header labels already explain the axes. -->
+                <td class="header-cell corner">
+                  <span class="corner-label" aria-hidden="true">
+                    <span>↓ Foreground</span>
+                    <span>→ Background</span>
+                  </span>
+                </td>
 
-            <!-- Data rows -->
-            ${colors.map((fgColor, fgIndex) => html`
-              <div class="grid-row" role="row">
-                <!-- Row header (foreground color) -->
-                <div
-                  class="header-cell row-header"
-                  role="rowheader"
-                  aria-label="Foreground: ${this.getColorLabel(fgColor)}"
-                  title="${this.getColorLabel(fgColor)}"
-                >
-                  <div class="color-indicator">
-                    <div class="color-dot" style="background: ${fgColor.hex}" aria-hidden="true"></div>
-                    <span class="color-label">${this.getColorLabel(fgColor)}</span>
-                  </div>
-                </div>
-
-                <!-- Cells -->
-                ${colors.map((bgColor, bgIndex) => {
-                  const result = matrix[fgIndex]?.[bgIndex] ?? null;
-                  const isFiltered = this.isCellFiltered(result);
-                  const cellLabel = result
-                    ? `${this.getColorLabel(fgColor)} on ${this.getColorLabel(bgColor)}: ${result.ratioString}, ${result.level === 'DNP' ? 'Does not pass' : 'Passes ' + result.level}`
-                    : 'No result';
-                  return html`
-                    <div
-                      class="cell-wrapper"
-                      role="cell"
-                      aria-label="${isFiltered ? '' : cellLabel}"
-                    >
-                      <contrast-cell
-                        .result="${result}"
-                        fg-color="${fgColor.hex}"
-                        bg-color="${bgColor.hex}"
-                        ?same-color="${fgIndex === bgIndex}"
-                        ?compact="${this.compact}"
-                        ?filtered="${isFiltered}"
-                        cell-size="${this.store.gridCellSize}"
-                        aria-hidden="${isFiltered ? 'true' : 'false'}"
-                      ></contrast-cell>
+                <!-- Column headers (background colors) -->
+                ${colors.map((color) => html`
+                  <th
+                    scope="col"
+                    class="header-cell column-header"
+                    aria-label="Background: ${this.getColorLabel(color)}"
+                    title="${this.getColorLabel(color)}"
+                  >
+                    <div class="color-indicator">
+                      <div class="color-chip" style="background: ${color.hex}" aria-hidden="true"></div>
+                      <span class="color-label">${this.getColorLabel(color)}</span>
                     </div>
-                  `;
-                })}
-              </div>
-            `)}
-          </div>
+                  </th>
+                `)}
+              </tr>
+            </thead>
+
+            <tbody>
+              ${colors.map((fgColor, fgIndex) => html`
+                <tr>
+                  <!-- Row header (foreground color) -->
+                  <th
+                    scope="row"
+                    class="header-cell row-header"
+                    aria-label="Foreground: ${this.getColorLabel(fgColor)}"
+                    title="${this.getColorLabel(fgColor)}"
+                  >
+                    <div class="color-indicator">
+                      <div class="color-chip" style="background: ${fgColor.hex}" aria-hidden="true"></div>
+                      <span class="color-label">${this.getColorLabel(fgColor)}</span>
+                    </div>
+                  </th>
+
+                  <!-- Cells -->
+                  ${colors.map((bgColor, bgIndex) => {
+                    const result = matrix[fgIndex]?.[bgIndex] ?? null;
+                    const isFiltered = this.isCellFiltered(result);
+                    const cellLabel = fgIndex === bgIndex
+                      ? 'Same colour'
+                      : result
+                        ? `${this.getColorLabel(fgColor)} on ${this.getColorLabel(bgColor)}: ${result.ratioString}, ${getLevelAnnouncement(result.level)}`
+                        : 'No result';
+                    return html`
+                      <td
+                        class="cell-wrapper"
+                        aria-label="${isFiltered ? '' : cellLabel}"
+                      >
+                        <contrast-cell
+                          .result="${result}"
+                          fg-color="${fgColor.hex}"
+                          bg-color="${bgColor.hex}"
+                          ?same-color="${fgIndex === bgIndex}"
+                          ?compact="${this.compact}"
+                          ?filtered="${isFiltered}"
+                          cell-size="${this.store.gridCellSize}"
+                          aria-hidden="true"
+                        ></contrast-cell>
+                      </td>
+                    `;
+                  })}
+                </tr>
+              `)}
+            </tbody>
+          </table>
         </div>
       </div>
 

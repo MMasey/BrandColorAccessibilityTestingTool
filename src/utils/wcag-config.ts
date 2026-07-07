@@ -58,6 +58,25 @@ export function getBadgeTitle(level: WCAGLevel): string {
 }
 
 /**
+ * Screen reader announcements for each WCAG level.
+ * Higher levels explicitly list the lower levels they satisfy (AAA implies AA
+ * and AA18) — with one cell read at a time the implication is non-obvious.
+ */
+export const WCAG_LEVEL_ANNOUNCEMENTS: Record<WCAGLevel, string> = {
+  AAA: 'Passes AAA, AA, and large text (AA18)',
+  AA: 'Passes AA and large text (AA18)',
+  AA18: 'Passes large text only (AA18)',
+  DNP: 'Does not pass any WCAG level',
+};
+
+/**
+ * Get the screen reader announcement for a WCAG level
+ */
+export function getLevelAnnouncement(level: WCAGLevel): string {
+  return WCAG_LEVEL_ANNOUNCEMENTS[level];
+}
+
+/**
  * Generate CSS for WCAG badge styles
  * Returns a string that can be used in a css`` template literal
  */
