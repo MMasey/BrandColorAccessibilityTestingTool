@@ -1,0 +1,43 @@
+{
+  "milestone": "v0.4.0",
+  "capturedAt": "2026-07-07T15:09:43.148Z",
+  "url": "http://localhost:4173",
+  "runs": 3,
+  "medianRunIndex": 2,
+  "tbtRange": {
+    "min": 0,
+    "max": 9
+  },
+  "scores": {
+    "performance": 1,
+    "accessibility": 1,
+    "bestPractices": 1,
+    "seo": 1
+  },
+  "metrics": {
+    "firstContentfulPaint": {
+      "value": 1205.4033,
+      "display": "1.2 s"
+    },
+    "largestContentfulPaint": {
+      "value": 1383.4033,
+      "display": "1.4 s"
+    },
+    "totalBlockingTime": {
+      "value": 6,
+      "display": "10 ms"
+    },
+    "cumulativeLayoutShift": {
+      "value": 0.03888213851761847,
+      "display": "0.039"
+    },
+    "speedIndex": {
+      "value": 1205.4033,
+      "display": "1.2 s"
+    },
+    "timeToInteractive": {
+      "value": 1411.4033,
+      "display": "1.4 s"
+    }
+  }
+}
