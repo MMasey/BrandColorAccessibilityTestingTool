@@ -1,12 +1,12 @@
 /**
  * Dark Theme
  *
- * WCAG 2.1 Level AA minimum:
+ * WCAG 2.2 Level AA minimum:
  * - Normal text: 4.5:1 contrast ratio
  * - Large text / UI components: 3:1 contrast ratio
  *
  * All color pairs in this theme have been validated to meet or exceed
- * WCAG 2.1 Level AAA (7:1 for normal text, 4.5:1 for large text).
+ * WCAG 2.2 Level AAA (7:1 for normal text, 4.5:1 for large text).
  *
  * This theme is activated by:
  * - OS preference: prefers-color-scheme: dark

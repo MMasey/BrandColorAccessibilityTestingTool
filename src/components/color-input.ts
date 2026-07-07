@@ -263,6 +263,8 @@ export class ColorInput extends LitElement {
   @state()
   private hasInput = false;
 
+  private _debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
   /**
    * Focus the color input field
    */
@@ -293,6 +295,15 @@ export class ColorInput extends LitElement {
     this.parseColor();
   }
 
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // Avoid a pending debounce firing on a removed element
+    if (this._debounceTimer !== null) {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = null;
+    }
+  }
+
   updated(changedProperties: Map<string, unknown>): void {
     if (changedProperties.has('value') || changedProperties.has('label')) {
       this.parseColor();
@@ -317,9 +328,22 @@ export class ColorInput extends LitElement {
   private handleColorInput(e: Event): void {
     const input = e.target as HTMLInputElement;
     this.value = input.value;
-    this.hasInput = true;
     this.parseColor();
     this.emitChange();
+    // Debounce error display — avoid announcing on every keystroke
+    if (this._debounceTimer !== null) clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(() => {
+      this.hasInput = true;
+      this._debounceTimer = null;
+    }, 600);
+  }
+
+  private handleColorBlur(): void {
+    if (this._debounceTimer !== null) {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = null;
+    }
+    if (this.value.trim()) this.hasInput = true;
   }
 
   private handleLabelInput(e: Event): void {
@@ -401,6 +425,7 @@ export class ColorInput extends LitElement {
               placeholder="${this.placeholder}"
               ?disabled="${this.disabled}"
               @input="${this.handleColorInput}"
+              @blur="${this.handleColorBlur}"
               aria-invalid="${showError ? 'true' : 'false'}"
               autocomplete="off"
               spellcheck="false"
@@ -435,11 +460,11 @@ export class ColorInput extends LitElement {
           </button>
         </div>
 
-        ${showError ? html`
-          <p class="error-text" role="alert">
-            ${this.value.trim() ? 'Invalid color format' : 'Enter a color value'}
-          </p>
-        ` : null}
+        <p
+          class="${showError ? 'error-text' : 'sr-only'}"
+          role="status"
+          aria-live="polite"
+        >${showError ? (this.value.trim() ? 'Invalid color format' : 'Enter a color value') : ''}</p>
       </div>
     `;
   }

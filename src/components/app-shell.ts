@@ -248,13 +248,13 @@ export class AppShell extends LitElement {
 
       <main>
         <div class="layout">
-          <aside class="sidebar" aria-label="Colour palette controls">
+          <section class="sidebar" aria-label="Colour palette controls">
             <color-palette></color-palette>
 
             <div class="controls-section">
               <grid-filters></grid-filters>
             </div>
-          </aside>
+          </section>
 
           <section class="grid-section" aria-label="Contrast results">
             <div class="grid-header">
