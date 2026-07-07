@@ -546,7 +546,7 @@ export class ContrastGrid extends LitElement {
                           ?compact="${this.compact}"
                           ?filtered="${isFiltered}"
                           cell-size="${this.store.gridCellSize}"
-                          aria-hidden="${isFiltered ? 'true' : 'false'}"
+                          aria-hidden="true"
                         ></contrast-cell>
                       </td>
                     `;
