@@ -7,7 +7,7 @@ import AxeBuilder from '@axe-core/playwright';
  * These tests validate:
  * 1. Layout consistency - components that should match do match
  * 2. Visual regression - screenshots compared against baselines
- * 3. Accessibility - WCAG 2.1 AA compliance via axe-core
+ * 3. Accessibility - WCAG 2.2 AA compliance via axe-core
  * 4. Design tokens - CSS custom properties are applied correctly
  */
 
@@ -152,7 +152,7 @@ test.describe('Layout Consistency', () => {
   });
 });
 
-test.describe('Accessibility Validation (WCAG 2.1 AA)', () => {
+test.describe('Accessibility Validation (WCAG 2.2 AA)', () => {
   test('empty state passes accessibility audit', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');

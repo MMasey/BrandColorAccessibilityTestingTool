@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    },
+    "wcag": {
+      "command": "npx",
+      "args": ["-y", "wcag-guidelines-mcp"]
+    },
+    "axe": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "dequesystems/axe-mcp-server:latest"
+      ],
+      "env": {
+        "AXE_API_KEY": "${AXE_API_KEY}"
+      }
+    }
+  }
+}

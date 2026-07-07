@@ -576,7 +576,7 @@ export class ColorPalette extends LitElement {
         ${colors.length > 0 ? html`
           <div class="colors-list-wrapper">
             <!-- Using native ul/li instead of ARIA roles for better semantics -->
-            <ul class="colors-list">
+            <ul class="colors-list" aria-label="Colour palette">
               ${repeat(colors, color => color.hex, (color, index) => html`
                   <li
                     data-color-id="${color.hex}"
