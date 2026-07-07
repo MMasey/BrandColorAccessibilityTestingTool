@@ -527,7 +527,10 @@ export class ContrastGrid extends LitElement {
                   <!-- Cells -->
                   ${colors.map((bgColor, bgIndex) => {
                     const result = matrix[fgIndex]?.[bgIndex] ?? null;
-                    const isFiltered = this.isCellFiltered(result);
+                    // Same-colour diagonal cells are structural markers, not
+                    // results — never filter them out (their 1:1 ratio would
+                    // otherwise count as DNP and vanish with "failed" hidden)
+                    const isFiltered = fgIndex !== bgIndex && this.isCellFiltered(result);
                     const cellLabel = fgIndex === bgIndex
                       ? 'Same colour'
                       : result

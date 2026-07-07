@@ -18,7 +18,7 @@ Accessibility release: fixes from the Florian Beijers screen reader review (16 M
 - Contrast grid now uses a native `<table>` (`<caption>`, `<thead>`, `<th scope>`, `<td>`) instead of div+ARIA roles, giving more reliable screen reader table navigation (Florian Beijers review, Bundle B1)
 - Grid axis labelling is plain language: the table caption reads "Each row is a foreground (text) colour; each column is a background colour" (replacing the arrow shorthand), and the cryptic "FG \ BG" corner cell is now a visual-only "↓ Foreground / → Background" orientation hint, empty for assistive tech
 - WCAG level announcements heard on grid cells now list all satisfied levels (e.g. "Passes AAA, AA, and large text (AA18)") — the A7 wording previously only existed inside `contrast-cell` and was masked by the grid's own cell labels
-- Same-colour diagonal cells now announce "Same colour" instead of a misleading contrast result
+- Same-colour diagonal cells now announce "Same colour" instead of a misleading contrast result, and are never hidden by the "failed" results filter (their 1:1 ratio previously counted as a failing result)
 - Each grid cell is announced exactly once: the `<td>` label is the single announcement source, and the inner visual component is hidden from assistive tech (its old labels sat on generic divs, where `aria-label` is prohibited and unreliably exposed)
 - Colour palette sidebar is a `<section>` instead of an `<aside>`, since its controls are primary content, not complementary (Bundle A1)
 - Colour input errors use an always-present polite `role="status"` live region (toggled by class, announced on blur or after a pause) instead of an eager `role="alert"` injected mid-keystroke (Bundle A2)
