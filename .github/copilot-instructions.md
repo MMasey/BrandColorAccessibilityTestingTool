@@ -175,7 +175,7 @@ This tool is built with accessibility as a core feature:
 - **Minimum touch targets** - 44x44px minimum for interactive elements
 - **Motion sensitivity** - Respect `prefers-reduced-motion` media query
 - **Color scheme** - Respect `prefers-color-scheme` media query
-- **WCAG AA compliance** - The tool itself must meet WCAG 2.1 AA standards
+- **WCAG AA compliance** - The tool itself must meet WCAG 2.2 AA standards
 
 ## Testing Guidelines
 
@@ -260,7 +260,7 @@ Before committing changes, ensure:
 2. **Unit Tests**: Run `npm run test:run` to ensure all unit tests pass
 3. **E2E Tests**: Run `npm run test:e2e` to verify end-to-end functionality
 4. **Code Style**: Follow the coding conventions outlined above
-5. **Accessibility**: New UI features must meet WCAG 2.1 AA standards minimum
+5. **Accessibility**: New UI features must meet WCAG 2.2 AA standards minimum
 6. **Documentation**: Update relevant documentation for significant changes
 
 ## Custom Agents and Instructions

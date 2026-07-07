@@ -17,6 +17,8 @@
         "run",
         "--rm",
         "-i",
+        "-e",
+        "AXE_API_KEY",
         "dequesystems/axe-mcp-server:latest"
       ],
       "env": {
