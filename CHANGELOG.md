@@ -25,14 +25,15 @@ Accessibility release: fixes from the Florian Beijers screen reader review (16 M
 - Colour list now has an accessible name ("Colour palette") for screen reader list navigation (Bundle A3)
 - Label edit button announces its action ("Edit label: …") instead of just the colour name, and unreliable `title` tooltips were removed (Bundle A4)
 - Grid scroll region label simplified to "Contrast results" — scroll instructions were noise for screen reader users (Bundle A5); the label is also differentiated from the results heading to avoid duplicate landmark names
-- Filtered grid cells stay in the accessibility tree as empty cells, so screen reader row/column counts remain correct (Bundle A6)
+- Filtered grid cells stay in the accessibility tree as empty cells, so screen reader row/column counts remain correct (Bundle A6); they no longer carry an empty `aria-label` attribute, which could override the cell's natural name in some screen readers
 - Colour input debounce timer is cleared on disconnect, preventing callbacks on detached elements
 - CI: quality artifacts (visual milestones, Lighthouse reports) are only captured on release PRs — the bot commit previously pushed to every PR left a required check stuck pending and blocked merges
 
 ### Documentation
 - Remaining WCAG 2.1 references updated to WCAG 2.2 in theme CSS headers, E2E suite descriptions, and specs
 - New specs: Feature 107 (Contrast Results List View, promoted to next up), Feature 108 (Embeddable Widget); Feature 102 extended with contrast algorithm choice
-- MCP servers for development (`wcag`, `playwright`, Deque `axe`) configured in `.mcp.json`, with keys supplied via environment variables only and a secret-free `.env.example`
+- MCP servers for development (`wcag`, `playwright`, Deque `axe`) configured in `.mcp.json`, with keys supplied via environment variables only and a secret-free `.env.example`; the axe Docker container now receives `AXE_API_KEY` via a pass-through `-e` flag
+- Contributor guidance (`.github/copilot-instructions.md`) updated from WCAG 2.1 to 2.2, completing the docs sweep
 
 ## [0.3.3] - 2026-03-15
 

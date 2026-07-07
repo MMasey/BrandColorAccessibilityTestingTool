@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ColorStoreController } from '../state';
 import type { GridFilterLevel } from '../state/color-store';
@@ -536,7 +536,7 @@ export class ContrastGrid extends LitElement {
                     return html`
                       <td
                         class="cell-wrapper"
-                        aria-label="${isFiltered ? '' : cellLabel}"
+                        aria-label="${isFiltered ? nothing : cellLabel}"
                       >
                         <contrast-cell
                           .result="${result}"
