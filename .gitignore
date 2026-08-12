@@ -55,3 +55,9 @@ e2e/**/*-snapshots/
 
 # Claude Code
 .claude/settings.local.json
+# Re-include the release skill: machine-level excludes files with the
+# Visual Studio "[Rr]elease/" pattern would otherwise silently ignore it
+!.claude/skills/release/
+
+# Playwright MCP browser session artifacts
+.playwright-mcp/
