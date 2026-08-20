@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Contrast Results List View (feature 107, from the Florian Beijers review): a Table / List toggle beneath the results heading switches between the existing grid and a new list view that groups colour pairs under plain-language WCAG headings ("Excellent: passes AAA", "Good: passes AA", "Large text only: passes AA 18+", "Do not use: fails WCAG"), each with a one-line explanation of when the combinations are safe to use. WCAG contrast is symmetric, so each unordered pair appears once rather than in both directions, halving the list. Two "Aa" samples per entry (one each way round) show the pairing works whichever colour is the text. Entries are written to be read aloud: "Black and White, contrast 21 to 1" speaks naturally in screen readers, where the colon in "21:1" is silent and ambiguous. The list navigates sequentially without encountering a table and copy-pastes cleanly into other documents (the samples are CSS-generated, so they stay out of copied text and screen reader output). Empty level groups are omitted, and the existing AAA / AA / AA Large / Failed filters apply to both views
+- The active view persists to the URL (`?view=list`), so shared links open in the chosen view; the param is omitted for the default table view to keep URLs clean
+- A hint beneath the toggle notes that the list view is easier to navigate with a screen reader
+
+### Changed
+- Results section heading renamed from "Contrast Grid" to "Contrast Results", since it now covers both the table and list views; the empty-state message matches ("Add colors to see contrast results.")
+
 ## [0.4.0] - 2026-07-07
 
 Accessibility release: fixes from the Florian Beijers screen reader review (16 March 2026), Bundles A and B1.
