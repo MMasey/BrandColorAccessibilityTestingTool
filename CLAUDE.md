@@ -5,11 +5,21 @@ A web-based tool for testing brand colour combinations against WCAG accessibilit
 ## General Rules
 When working with git (commits, PRs, branch operations), always confirm the plan with me before executing. Never make autonomous commits or create PRs without explicit approval.
 
+- **Derive, don't guess.** Before drafting a commit message, run `git log --oneline -50` and check [CONTRIBUTING.md](CONTRIBUTING.md) — this repo uses Conventional Commits with scopes like `a11y`, `ci`, and feature IDs (`101`). Same principle for code style: read neighbouring files first.
+- **Tests green before a PR, not after.** `npx tsc --noEmit`, `npm run test:run`, and `npm run test:e2e` must all pass locally before opening any PR (the `pre-pr` skill runs the full gate).
+- **Release PRs to `main` merge with a merge commit — never squash.** The v0.3.3 squash diverged main from develop. After a release, sync main back into develop via a `chore/sync-main-vX.Y.Z` PR (the `release` skill has the full process).
+- **Facts in documents must be re-derived** from the current repo state at the time of writing (counts, estimates, version numbers). Flag anything unverifiable as UNVERIFIED instead of guessing.
+- For open-ended debugging, state a hypothesis before investigating, and check it against the evidence before changing anything.
+
 ## Project Context
 Primary languages: TypeScript, Markdown. Project involves accessibility-focused tooling. When generating content or making edits, prioritize accessibility best practices.
 
 ## Environment
 On Windows, use absolute paths for file operations outside the current repo. Always verify path resolution before creating directories or files in new locations.
+
+- **Never use bash heredocs** (for commit messages or anything else) — on Windows they leak stray `@` characters and quoting mangles the payload. Write multi-line content (commit messages, JSON payloads, scripts) to a temp file and pass the file path: `git commit -F <file>`, `command < file.json`.
+- Prefer PowerShell-native commands in the PowerShell tool and POSIX syntax in the Bash tool — don't mix.
+- Assume CRLF line endings when writing hook or script files that other Windows tooling will consume.
 
 ## Tech Stack
 
@@ -70,6 +80,13 @@ All specs follow the SPECKL format with `README.md` + `spec.md`.
 4. **Keyboard Navigation**: Full keyboard support for all interactions
 5. **Touch-Friendly**: Minimum 44px touch targets
 
+### Screen-reader-facing text conventions
+
+- **No symbol glyphs** (`→`, `▲`, `✓`) in accessible names, live-region announcements, or visually-hidden text. Purely decorative glyphs belong in CSS `content` so screen readers skip them.
+- **Plain, outcome-first wording** — state the result before the mechanism ("Colours sorted lightest first", not "Sort order → lightness ascending").
+- **Named view toggles are radio groups**, not `role="switch"` — switch is for on/off of a single function, not choosing between named views (grid/list).
+- **One announcement source per concept** — e.g. the contrast grid `td` is the single announcement source per cell; don't layer duplicate labels inside it.
+
 ## Explicit Non-Goals
 
 - **Not a design system**: This is a single-purpose tool, not a component library
@@ -118,6 +135,11 @@ Configured in [.mcp.json](.mcp.json) and available to Claude during development:
 | `playwright` | `@playwright/mcp` | Browser automation for E2E testing and UI verification |
 | `axe` | `dequesystems/axe-mcp-server` (Docker) | Deque axe accessibility scanning + guided fixes for live/rendered UI |
 
+### MCP servers are preconditions, not conveniences
+
+- Before starting a task that needs an MCP server (browser verification → `playwright`, accessibility scans → `axe`, WCAG citations → `wcag`), confirm the server is actually connected by checking its tools are available.
+- If a required server is unavailable or **drops mid-task, STOP and say so** — do not silently fall back to improvised workarounds (raw HTTP calls, hand-rolled scripts). The one sanctioned fallback: if `axe` is unavailable, use the `@axe-core/playwright` checks in the E2E suite and say that's what happened.
+
 ### Using the `axe` MCP server during development
 
 The `axe` server (Deque) runs accessibility scans against rendered markup and returns
@@ -165,6 +187,17 @@ from your **environment** at launch. Keys live only in your local environment, n
 - Provide **exactly one** of `AXE_API_KEY` or `AXE_ACCESS_TOKEN` (the server errors if both are
   set). Rotate the key via the Deque portal if it is ever exposed.
 - **Never** paste a real key into `.mcp.json`, `.env.example`, commits, code, or chat.
+
+## Project Skills
+
+Repeatable workflows live in [.claude/skills/](.claude/skills/) — prefer them over ad-hoc reconstruction:
+
+| Skill | Use when |
+|-------|----------|
+| `commit` | Committing work — derives the convention, proposes a split, commits via `git commit -F` |
+| `pre-pr` | Before opening any PR — typecheck, unit, E2E, and quality artifacts for UI changes |
+| `release` | Cutting a Git Flow release — version bump, CHANGELOG, never-squash merge, sync-back |
+| `a11y-audit` | After markup/ARIA/focus changes — axe scans, keyboard pass, SR text review, themes |
 
 ## Testing Strategy
 
