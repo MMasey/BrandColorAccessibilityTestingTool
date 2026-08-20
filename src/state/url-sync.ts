@@ -65,6 +65,11 @@ export function initializeFromURL(): void {
     colorStore.sortColorsPalette(urlState.sortCriteria, urlState.sortDirection ?? 'ascending');
   }
 
+  // Initialize results view from URL
+  if (urlState.view) {
+    colorStore.setResultsView(urlState.view);
+  }
+
   // Set up state change listeners to update URL
   setupURLUpdateListeners();
 
@@ -80,7 +85,7 @@ function setupURLUpdateListeners(): void {
   colorStore.subscribe((event) => {
     if (isSyncing) return;
 
-    if (event.type === 'colors-changed' || event.type === 'grid-filters-changed' || event.type === 'grid-cell-size-changed' || event.type === 'sort-changed') {
+    if (event.type === 'colors-changed' || event.type === 'grid-filters-changed' || event.type === 'grid-cell-size-changed' || event.type === 'results-view-changed' || event.type === 'sort-changed') {
       syncStateToURL();
     }
   });
@@ -100,6 +105,7 @@ function syncStateToURL(): void {
   const theme = themeStore.theme;
   const filters = colorStore.getGridFilters();
   const cellSize = colorStore.getGridCellSize();
+  const view = colorStore.getResultsView();
   const { criteria: sortCriteria, direction: sortDirection } = colorStore.getSortState();
 
   const urlState: Partial<URLState> = {
@@ -110,6 +116,7 @@ function syncStateToURL(): void {
     cellSize,
     sortCriteria,
     sortDirection,
+    view,
   };
 
   // Only include labels if any color has a label
@@ -160,6 +167,9 @@ function setupPopStateHandler(): void {
       if (urlState.sortCriteria) {
         colorStore.sortColorsPalette(urlState.sortCriteria, urlState.sortDirection ?? 'ascending');
       }
+
+      // Sync results view (absent param means default table view)
+      colorStore.setResultsView(urlState.view ?? 'table');
     } finally {
       isSyncing = false;
     }
@@ -174,12 +184,14 @@ export function getShareableURL(): string {
   const theme = themeStore.theme;
   const filters = colorStore.getGridFilters();
   const cellSize = colorStore.getGridCellSize();
+  const view = colorStore.getResultsView();
 
   const urlState: Partial<URLState> = {
     colors: colors.map(c => hexToURLColor(c.hex)),
     theme,
     filters: [...filters],
     cellSize,
+    view,
   };
 
   // Include labels if any exist
