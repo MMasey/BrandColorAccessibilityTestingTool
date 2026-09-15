@@ -15,15 +15,23 @@ type ThemeStoreListener = (state: ThemeStoreState) => void;
 const STORAGE_KEY = 'brand-color-a11y-theme';
 
 class ThemeStoreImpl {
-  private state: ThemeStoreState;
+  private state: ThemeStoreState = { theme: 'system' };
   private listeners: Set<ThemeStoreListener> = new Set();
+  private root: HTMLElement | null = null;
 
-  constructor() {
-    this.state = {
-      theme: this.loadTheme(),
-    };
+  /**
+   * Load the persisted theme and start applying it to `root`.
+   * Deliberately not done in the constructor: importing any state module must
+   * not touch the host document (an embedded widget shares the page).
+   */
+  init(root: HTMLElement = document.documentElement): void {
+    if (this.root) return;
+
+    this.root = root;
+    this.state = { theme: this.loadTheme() };
     this.applyTheme();
     this.setupSystemThemeListener();
+    this.notify();
   }
 
   private loadTheme(): Theme {
@@ -42,7 +50,8 @@ class ThemeStoreImpl {
   }
 
   private applyTheme(): void {
-    const root = document.documentElement;
+    const root = this.root;
+    if (!root) return;
 
     // Remove existing theme attribute
     root.removeAttribute('data-theme');
@@ -108,3 +117,8 @@ class ThemeStoreImpl {
 
 // Singleton instance
 export const themeStore = new ThemeStoreImpl();
+
+/** Load and apply the persisted theme — call once from the main app entry point */
+export function initTheme(root?: HTMLElement): void {
+  themeStore.init(root);
+}
