@@ -10,9 +10,9 @@ import AxeBuilder from '@axe-core/playwright';
  */
 
 async function addColors(page: Page, colors: string[]): Promise<void> {
-  const colorInput = page.locator('color-palette').locator('color-input');
+  const colorInput = page.locator('bca-color-palette').locator('bca-color-input');
   const textInput = colorInput.locator('input[type="text"]').first();
-  const addButton = page.locator('color-palette color-input .add-btn');
+  const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
   for (const color of colors) {
     await textInput.fill(color);
@@ -22,21 +22,21 @@ async function addColors(page: Page, colors: string[]): Promise<void> {
 }
 
 function listOption(page: Page) {
-  return page.locator('results-view-toggle').locator('label', { hasText: 'List' });
+  return page.locator('bca-results-view-toggle').locator('label', { hasText: 'List' });
 }
 
 function tableOption(page: Page) {
-  return page.locator('results-view-toggle').locator('label', { hasText: 'Table' });
+  return page.locator('bca-results-view-toggle').locator('label', { hasText: 'Table' });
 }
 
 test.describe('Results View Toggle', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('toggle is visible with Table active by default', async ({ page }) => {
-    const toggle = page.locator('results-view-toggle');
+    const toggle = page.locator('bca-results-view-toggle');
     await expect(toggle).toBeVisible();
 
     const tableRadio = tableOption(page).locator('input[type="radio"]');
@@ -44,12 +44,12 @@ test.describe('Results View Toggle', () => {
   });
 
   test('section heading reads "Contrast Results"', async ({ page }) => {
-    const heading = page.locator('app-shell').locator('h2.grid-title');
+    const heading = page.locator('bca-app-shell').locator('h2.grid-title');
     await expect(heading).toHaveText('Contrast Results');
   });
 
   test('shows a hint that list view is easier with a screen reader', async ({ page }) => {
-    const hint = page.locator('results-view-toggle').locator('.view-hint');
+    const hint = page.locator('bca-results-view-toggle').locator('.view-hint');
     await expect(hint).toContainText('screen reader');
   });
 
@@ -57,18 +57,18 @@ test.describe('Results View Toggle', () => {
     await addColors(page, ['#000000', '#ffffff']);
 
     // Table view by default
-    await expect(page.locator('contrast-grid')).toBeVisible();
-    await expect(page.locator('contrast-list')).toHaveCount(0);
+    await expect(page.locator('bca-contrast-grid')).toBeVisible();
+    await expect(page.locator('bca-contrast-list')).toHaveCount(0);
 
     // Switch to list view
     await listOption(page).click();
-    await expect(page.locator('contrast-list')).toBeVisible();
-    await expect(page.locator('contrast-grid')).toHaveCount(0);
+    await expect(page.locator('bca-contrast-list')).toBeVisible();
+    await expect(page.locator('bca-contrast-grid')).toHaveCount(0);
 
     // Switch back to table view
     await tableOption(page).click();
-    await expect(page.locator('contrast-grid')).toBeVisible();
-    await expect(page.locator('contrast-list')).toHaveCount(0);
+    await expect(page.locator('bca-contrast-grid')).toBeVisible();
+    await expect(page.locator('bca-contrast-list')).toHaveCount(0);
   });
 
   test('toggle is keyboard operable', async ({ page }) => {
@@ -79,14 +79,14 @@ test.describe('Results View Toggle', () => {
     await page.keyboard.press('Space');
 
     await expect(listRadio).toBeChecked();
-    await expect(page.locator('contrast-list')).toBeVisible();
+    await expect(page.locator('bca-contrast-list')).toBeVisible();
   });
 });
 
 test.describe('Contrast List View', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('groups pairs under WCAG level headings without a table', async ({ page }) => {
@@ -94,7 +94,7 @@ test.describe('Contrast List View', () => {
     await addColors(page, ['#000000', '#ffffff', '#767676']);
     await listOption(page).click();
 
-    const list = page.locator('contrast-list');
+    const list = page.locator('bca-contrast-list');
     const headings = list.locator('h3');
     await expect(headings.first()).toBeVisible();
 
@@ -118,7 +118,7 @@ test.describe('Contrast List View', () => {
     await addColors(page, ['#000000', '#ffffff']);
     await listOption(page).click();
 
-    const list = page.locator('contrast-list');
+    const list = page.locator('bca-contrast-list');
     await expect(list.locator('h3')).toHaveCount(1);
     await expect(list.locator('h3').first()).toContainText('passes AAA');
   });
@@ -127,11 +127,11 @@ test.describe('Contrast List View', () => {
     await addColors(page, ['#000000', '#ffffff']);
     await listOption(page).click();
 
-    const list = page.locator('contrast-list');
+    const list = page.locator('bca-contrast-list');
     await expect(list.locator('h3', { hasText: 'passes AAA' })).toHaveCount(1);
 
     // Turn the AAA filter off - the AAA group disappears
-    const aaaButton = page.locator('grid-filters').locator('button:has-text("AAA")');
+    const aaaButton = page.locator('bca-grid-filters').locator('button:has-text("AAA")');
     await aaaButton.click();
     await expect(list.locator('h3', { hasText: 'passes AAA' })).toHaveCount(0);
 
@@ -143,7 +143,7 @@ test.describe('Contrast List View', () => {
   test('shows the empty state message with fewer than 2 colours', async ({ page }) => {
     await listOption(page).click();
 
-    const list = page.locator('contrast-list');
+    const list = page.locator('bca-contrast-list');
     await expect(list.locator('.empty-state')).toBeVisible();
 
     await addColors(page, ['#000000']);
@@ -156,7 +156,7 @@ test.describe('Contrast List View', () => {
 
     // innerText mirrors what a browser copy operation produces
     // (read from .list-wrapper - the shadow host itself has no light DOM text)
-    const text = await page.locator('contrast-list').locator('.list-wrapper').innerText();
+    const text = await page.locator('bca-contrast-list').locator('.list-wrapper').innerText();
     expect(text).toContain('passes AAA');
     expect(text).toMatch(/#000000 and #FFFFFF, contrast 21 to 1/i);
     // The visual "Aa" sample is CSS-generated and must NOT appear in copied text
@@ -183,13 +183,13 @@ test.describe('Contrast List View', () => {
 test.describe('List View URL Persistence', () => {
   test('?view=list loads the page directly in list view', async ({ page }) => {
     await page.goto('/?colors=000000,FFFFFF&view=list');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
     await page.waitForTimeout(500);
 
-    await expect(page.locator('contrast-list')).toBeVisible();
-    await expect(page.locator('contrast-grid')).toHaveCount(0);
+    await expect(page.locator('bca-contrast-list')).toBeVisible();
+    await expect(page.locator('bca-contrast-grid')).toHaveCount(0);
 
-    const listRadio = page.locator('results-view-toggle')
+    const listRadio = page.locator('bca-results-view-toggle')
       .locator('label', { hasText: 'List' })
       .locator('input[type="radio"]');
     await expect(listRadio).toBeChecked();
@@ -197,7 +197,7 @@ test.describe('List View URL Persistence', () => {
 
   test('switching views updates the URL and table removes the param', async ({ page }) => {
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
     await addColors(page, ['#000000', '#ffffff']);
 
     // Switch to list - URL gains view=list
@@ -213,17 +213,17 @@ test.describe('List View URL Persistence', () => {
 
   test('existing params still work combined with view=list', async ({ page }) => {
     await page.goto('/?colors=000000,FFFFFF&labels=Black,White&theme=dark&view=list');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
     await page.waitForTimeout(500);
 
     // Colours loaded
-    await expect(page.locator('color-swatch')).toHaveCount(2);
+    await expect(page.locator('bca-color-swatch')).toHaveCount(2);
 
     // Theme applied
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 
     // List view active, using the colour labels from the URL
-    const list = page.locator('contrast-list');
+    const list = page.locator('bca-contrast-list');
     await expect(list).toBeVisible();
     await expect(list.locator('li').first()).toContainText('Black and White');
   });

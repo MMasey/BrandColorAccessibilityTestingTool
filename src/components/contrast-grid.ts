@@ -1,5 +1,6 @@
 import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { ColorStoreController } from '../state';
 import type { GridFilterLevel } from '../state/color-store';
 import { generateContrastMatrix, getLevelAnnouncement, WCAG_BADGE_COLORS } from '../utils';
@@ -10,7 +11,7 @@ import './contrast-cell';
  * Contrast grid component showing all foreground/background color combinations.
  * Displays WCAG compliance for each pair.
  */
-@customElement('contrast-grid')
+@defineElement('bca-contrast-grid')
 export class ContrastGrid extends LitElement {
   static styles = css`
     :host {
@@ -541,7 +542,7 @@ export class ContrastGrid extends LitElement {
                         class="cell-wrapper"
                         aria-label="${isFiltered ? nothing : cellLabel}"
                       >
-                        <contrast-cell
+                        <bca-contrast-cell
                           .result="${result}"
                           fg-color="${fgColor.hex}"
                           bg-color="${bgColor.hex}"
@@ -550,7 +551,7 @@ export class ContrastGrid extends LitElement {
                           ?filtered="${isFiltered}"
                           cell-size="${this.store.gridCellSize}"
                           aria-hidden="true"
-                        ></contrast-cell>
+                        ></bca-contrast-cell>
                       </td>
                     `;
                   })}
@@ -585,6 +586,6 @@ export class ContrastGrid extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'contrast-grid': ContrastGrid;
+    'bca-contrast-grid': ContrastGrid;
   }
 }

@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { isValidColor, createColor } from '../utils';
 import type { Color } from '../utils';
 
@@ -11,7 +12,7 @@ import type { Color } from '../utils';
  * @fires color-invalid - When input is not a valid color
  * @fires add-color - When the add button is clicked with a valid color
  */
-@customElement('color-input')
+@defineElement('bca-color-input')
 export class ColorInput extends LitElement {
   static styles = css`
     :host {
@@ -472,6 +473,6 @@ export class ColorInput extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'color-input': ColorInput;
+    'bca-color-input': ColorInput;
   }
 }

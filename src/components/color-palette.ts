@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { state } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { repeat } from 'lit/directives/repeat.js';
 import Sortable from 'sortablejs';
 import { ColorStoreController } from '../state';
@@ -34,7 +35,7 @@ interface LabelChangeEventDetail {
  * Color palette component for managing a list of brand colors.
  * Integrates with the color store for state management.
  */
-@customElement('color-palette')
+@defineElement('bca-color-palette')
 export class ColorPalette extends LitElement {
   static styles = css`
     :host {
@@ -201,7 +202,7 @@ export class ColorPalette extends LitElement {
       this.statusMessage = `Colour ${colorLabel} added to palette`;
 
       // Clear input and focus for next entry
-      const colorInput = this.shadowRoot?.querySelector('color-input') as ColorInput | null;
+      const colorInput = this.shadowRoot?.querySelector('bca-color-input') as ColorInput | null;
       if (colorInput) {
         colorInput.clear();
         requestAnimationFrame(() => {
@@ -404,7 +405,7 @@ export class ColorPalette extends LitElement {
     this.updateComplete.then(() => {
       const colorsList = this.shadowRoot?.querySelector('.colors-list');
       if (colorsList) {
-        const swatchElements = colorsList.querySelectorAll('color-swatch');
+        const swatchElements = colorsList.querySelectorAll('bca-color-swatch');
         const targetSwatch = swatchElements[toIndex];
         if (targetSwatch) {
           const buttons = targetSwatch.shadowRoot?.querySelectorAll<HTMLButtonElement>('.reorder-btn');
@@ -557,20 +558,20 @@ export class ColorPalette extends LitElement {
         </div>
 
         ${colors.length >= 7 ? html`
-          <brand-guidance .colorCount="${colors.length}"></brand-guidance>
+          <bca-brand-guidance .colorCount="${colors.length}"></bca-brand-guidance>
         ` : null}
 
         <!-- Sort controls (shown when 2+ colors) -->
         ${colors.length >= 2 ? html`
-          <sort-controls></sort-controls>
+          <bca-sort-controls></bca-sort-controls>
         ` : null}
 
         <div class="add-section">
-          <color-input
+          <bca-color-input
             placeholder="#000000"
             label-placeholder="Label (optional)"
             @add-color="${this.handleAddColor}"
-          ></color-input>
+          ></bca-color-input>
         </div>
 
         ${colors.length > 0 ? html`
@@ -581,7 +582,7 @@ export class ColorPalette extends LitElement {
                   <li
                     data-color-id="${color.hex}"
                   >
-                    <color-swatch
+                    <bca-color-swatch
                       .color="${color}"
                       .index="${index}"
                       .totalColors="${colors.length}"
@@ -593,7 +594,7 @@ export class ColorPalette extends LitElement {
                       @label-change="${(e: CustomEvent<LabelChangeEventDetail>) => this.updateColorLabel(index, e.detail.label)}"
                       @swatch-move="${this.handleColorMove}"
                       @boundary-reached="${this.handleBoundaryReached}"
-                    ></color-swatch>
+                    ></bca-color-swatch>
                   </li>
                 `
               )}
@@ -622,6 +623,6 @@ export class ColorPalette extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'color-palette': ColorPalette;
+    'bca-color-palette': ColorPalette;
   }
 }

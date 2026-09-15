@@ -28,21 +28,21 @@ const SAMPLE_COLORS = [
 ];
 
 async function waitForApp(page: Page): Promise<void> {
-  await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+  await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   await page.waitForTimeout(300);
 }
 
 async function setTheme(page: Page, theme: string): Promise<void> {
   const labelText = theme === 'high-contrast' ? 'High' : theme.charAt(0).toUpperCase() + theme.slice(1);
-  const themeLabel = page.locator(`theme-switcher label.theme-option:has(span.label:text("${labelText}"))`);
+  const themeLabel = page.locator(`bca-theme-switcher label.theme-option:has(span.label:text("${labelText}"))`);
   await themeLabel.click();
   await page.waitForTimeout(200);
 }
 
 async function addColors(page: Page): Promise<void> {
-  const colorInput = page.locator('color-palette').locator('color-input');
+  const colorInput = page.locator('bca-color-palette').locator('bca-color-input');
   const textInput = colorInput.locator('input[type="text"]').first();
-  const addButton = page.locator('color-palette color-input .add-btn');
+  const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
   for (const color of SAMPLE_COLORS) {
     await textInput.fill(color.hex);

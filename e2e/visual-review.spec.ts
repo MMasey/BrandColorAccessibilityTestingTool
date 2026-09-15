@@ -23,9 +23,9 @@ import { test } from '@playwright/test';
 
 /** Helper to add colors - color-input now has integrated Add button */
 async function addColors(page: any, colors: string[]) {
-  const hexInput = page.locator('color-palette color-input #hex-input');
-  const labelInput = page.locator('color-palette color-input .label-input');
-  const addButton = page.locator('color-palette color-input .add-btn');
+  const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+  const labelInput = page.locator('bca-color-palette bca-color-input .label-input');
+  const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
   for (const color of colors) {
     // Parse "color, label" format
@@ -56,7 +56,7 @@ test.describe('Visual Review - Desktop (1440x900)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('Empty state - no colours', async ({ page }) => {
@@ -121,7 +121,7 @@ test.describe('Visual Review - Desktop Large (1920x1080)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('Ideal state - 4 colours', async ({ page }) => {
@@ -163,7 +163,7 @@ test.describe('Visual Review - Tablet Portrait (768x1024)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('Empty state', async ({ page }) => {
@@ -218,7 +218,7 @@ test.describe('Visual Review - Tablet Landscape (1024x768)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('Ideal state - 4 colours', async ({ page }) => {
@@ -258,7 +258,7 @@ test.describe('Visual Review - Mobile iPhone SE (375x667)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('Empty state', async ({ page }) => {
@@ -293,7 +293,7 @@ test.describe('Visual Review - Mobile iPhone 12 (390x844)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('Empty state', async ({ page }) => {
@@ -327,7 +327,7 @@ test.describe('Visual Review - Mobile iPhone 11 Pro Max (414x896)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 414, height: 896 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('Ideal state - 4 colours', async ({ page }) => {
@@ -354,7 +354,7 @@ test.describe('Visual Review - Grid Overflow & Scrolling', () => {
   test('Desktop - horizontal grid scroll with 15 colours', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     await addColors(page, [
       '#000000', '#1a1a1a', '#333333', '#4a4a4a', '#666666',
@@ -370,7 +370,7 @@ test.describe('Visual Review - Grid Overflow & Scrolling', () => {
   test('Mobile - horizontal grid scroll with 8 colours', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     await addColors(page, [
       '#000000', '#333333', '#666666', '#999999',
