@@ -419,7 +419,7 @@ export class ContrastGrid extends LitElement {
     if (colors.length === 0) {
       return html`
         <div class="empty-state">
-          <p>Add colors to see the contrast grid.</p>
+          <p>Add colors to see contrast results.</p>
         </div>
       `;
     }

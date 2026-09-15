@@ -1,7 +1,10 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { ColorStoreController } from '../state';
 import './color-palette';
 import './contrast-grid';
+import './contrast-list';
+import './results-view-toggle';
 import './theme-switcher';
 import './grid-filters';
 
@@ -11,6 +14,8 @@ import './grid-filters';
  */
 @customElement('app-shell')
 export class AppShell extends LitElement {
+  private store = new ColorStoreController(this);
+
   /**
    * Set up skip link handler to focus the internal <main> element.
    * The skip link is in light DOM (index.html) for native hash navigation,
@@ -174,6 +179,12 @@ export class AppShell extends LitElement {
       justify-content: space-between;
       flex-wrap: wrap;
       gap: var(--space-md, 1rem);
+      margin-bottom: var(--space-sm, 0.5rem);
+    }
+
+    /* View toggle sits as a toolbar row between the heading and the results */
+    results-view-toggle {
+      display: block;
       margin-bottom: var(--space-md, 1rem);
     }
 
@@ -258,9 +269,12 @@ export class AppShell extends LitElement {
 
           <section class="grid-section" aria-label="Contrast results">
             <div class="grid-header">
-              <h2 class="grid-title">Contrast Grid</h2>
+              <h2 class="grid-title">Contrast Results</h2>
             </div>
-            <contrast-grid></contrast-grid>
+            <results-view-toggle></results-view-toggle>
+            ${this.store.resultsView === 'list'
+              ? html`<contrast-list></contrast-list>`
+              : html`<contrast-grid></contrast-grid>`}
           </section>
         </div>
       </main>

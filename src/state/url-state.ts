@@ -4,11 +4,11 @@
  * Handles reading and writing application state to URL parameters
  * for shareable links and progressive enhancement.
  *
- * URL format: ?colors=FF5733,3498DB&labels=Orange,Blue&theme=dark&show=aaa,aa,aa-large&size=small
+ * URL format: ?colors=FF5733,3498DB&labels=Orange,Blue&theme=dark&show=aaa,aa,aa-large&size=small&view=list
  */
 
 import type { Theme } from './theme-store';
-import type { GridFilterLevel, GridCellSize, SortCriteria, SortDirection } from './color-store';
+import type { GridFilterLevel, GridCellSize, ResultsView, SortCriteria, SortDirection } from './color-store';
 
 /** URL parameter names */
 const PARAM_COLORS = 'colors';
@@ -18,6 +18,7 @@ const PARAM_SHOW = 'show';
 const PARAM_SIZE = 'size';
 const PARAM_SORT_BY = 'sortBy';
 const PARAM_SORT_DIR = 'sortDir';
+const PARAM_VIEW = 'view';
 
 /** Valid filter levels for URL params */
 const VALID_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large', 'failed'];
@@ -31,6 +32,9 @@ const VALID_SORT_CRITERIA: SortCriteria[] = ['manual', 'luminance', 'contrast', 
 /** Valid sort directions for URL params */
 const VALID_SORT_DIRECTIONS: SortDirection[] = ['ascending', 'descending'];
 
+/** Valid results views for URL params */
+const VALID_VIEWS: ResultsView[] = ['table', 'list'];
+
 /** Default active filters (show passing, hide failed) */
 const DEFAULT_FILTERS: GridFilterLevel[] = ['aaa', 'aa', 'aa-large'];
 
@@ -43,6 +47,7 @@ export interface URLState {
   cellSize: GridCellSize;      // Grid cell size
   sortCriteria: SortCriteria;  // Sort criteria
   sortDirection: SortDirection; // Sort direction
+  view: ResultsView;           // Contrast results view (table or list)
 }
 
 /** Default state when no URL params present */
@@ -54,6 +59,7 @@ const DEFAULT_STATE: URLState = {
   cellSize: 'medium',
   sortCriteria: 'manual',
   sortDirection: 'ascending',
+  view: 'table',
 };
 
 /**
@@ -114,6 +120,12 @@ export function parseURLState(search: string = window.location.search): Partial<
     state.sortDirection = sortDirParam as SortDirection;
   }
 
+  // Parse results view
+  const viewParam = params.get(PARAM_VIEW);
+  if (viewParam && VALID_VIEWS.includes(viewParam as ResultsView)) {
+    state.view = viewParam as ResultsView;
+  }
+
   return state;
 }
 
@@ -165,6 +177,11 @@ export function serializeURLState(state: Partial<URLState>): string {
     params.set(PARAM_SORT_DIR, state.sortDirection);
   }
 
+  // Serialize results view (only if not table default - keep URLs clean)
+  if (state.view && state.view !== 'table') {
+    params.set(PARAM_VIEW, state.view);
+  }
+
   const search = params.toString();
   return search ? `?${search}` : '';
 }
@@ -200,7 +217,7 @@ export function getFullURLState(search?: string): URLState {
  */
 export function hasURLState(search: string = window.location.search): boolean {
   const params = new URLSearchParams(search);
-  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_SHOW) || params.has(PARAM_SIZE) || params.has(PARAM_SORT_BY) || params.has(PARAM_SORT_DIR);
+  return params.has(PARAM_COLORS) || params.has(PARAM_THEME) || params.has(PARAM_SHOW) || params.has(PARAM_SIZE) || params.has(PARAM_SORT_BY) || params.has(PARAM_SORT_DIR) || params.has(PARAM_VIEW);
 }
 
 /**

@@ -21,6 +21,53 @@ describe('colorStore', () => {
     });
   });
 
+  describe('setResultsView', () => {
+    it('defaults to table view', () => {
+      expect(colorStore.getResultsView()).toBe('table');
+    });
+
+    it('switches to list view', () => {
+      colorStore.setResultsView('list');
+
+      expect(colorStore.getResultsView()).toBe('list');
+    });
+
+    it('switches back to table view', () => {
+      colorStore.setResultsView('list');
+      colorStore.setResultsView('table');
+
+      expect(colorStore.getResultsView()).toBe('table');
+    });
+
+    it('emits results-view-changed event', () => {
+      const listener = vi.fn();
+      colorStore.subscribe(listener);
+
+      colorStore.setResultsView('list');
+
+      expect(listener).toHaveBeenCalledWith({
+        type: 'results-view-changed',
+        view: 'list',
+      });
+    });
+
+    it('does not emit when view is unchanged', () => {
+      const listener = vi.fn();
+      colorStore.subscribe(listener);
+
+      colorStore.setResultsView('table');
+
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('resets to table view on store reset', () => {
+      colorStore.setResultsView('list');
+      colorStore.reset();
+
+      expect(colorStore.getResultsView()).toBe('table');
+    });
+  });
+
   describe('addColor', () => {
     it('adds a valid hex color', () => {
       const color = colorStore.addColor('#FF5500');

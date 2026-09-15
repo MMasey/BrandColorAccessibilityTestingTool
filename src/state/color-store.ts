@@ -15,12 +15,16 @@ export type GridFilterLevel = 'aaa' | 'aa' | 'aa-large' | 'failed';
 /** Grid cell size options */
 export type GridCellSize = 'small' | 'medium' | 'large';
 
+/** Contrast results view options */
+export type ResultsView = 'table' | 'list';
+
 /** Store state shape */
 export interface ColorStoreState {
   colors: Color[];
   selectedAlgorithm: 'wcag' | 'apca' | 'both';
   gridFilters: Set<GridFilterLevel>;
   gridCellSize: GridCellSize;
+  resultsView: ResultsView;
   sortCriteria: SortCriteria;
   sortDirection: SortDirection;
   originalColorOrder: Color[];
@@ -32,6 +36,7 @@ export type ColorStoreEvent =
   | { type: 'algorithm-changed'; algorithm: 'wcag' | 'apca' | 'both' }
   | { type: 'grid-filters-changed'; filters: Set<GridFilterLevel> }
   | { type: 'grid-cell-size-changed'; size: GridCellSize }
+  | { type: 'results-view-changed'; view: ResultsView }
   | { type: 'sort-changed'; criteria: SortCriteria; direction: SortDirection }
   | { type: 'order-reset' }
   | { type: 'state-reset' };
@@ -48,6 +53,7 @@ function createColorStore() {
     selectedAlgorithm: 'wcag',
     gridFilters: new Set(['aaa', 'aa', 'aa-large']),
     gridCellSize: 'medium',
+    resultsView: 'table',
     sortCriteria: 'manual',
     sortDirection: 'ascending',
     originalColorOrder: [],
@@ -373,6 +379,22 @@ function createColorStore() {
     },
 
     /**
+     * Get current results view (table or list)
+     */
+    getResultsView(): ResultsView {
+      return state.resultsView;
+    },
+
+    /**
+     * Set results view (table or list)
+     */
+    setResultsView(view: ResultsView): void {
+      if (state.resultsView === view) return;
+      state = { ...state, resultsView: view };
+      emit({ type: 'results-view-changed', view });
+    },
+
+    /**
      * Sort colors by the specified criteria
      * Stores original order for later reset
      */
@@ -467,6 +489,7 @@ function createColorStore() {
         selectedAlgorithm: 'wcag',
         gridFilters: new Set(['aaa', 'aa', 'aa-large']),
         gridCellSize: 'medium',
+        resultsView: 'table',
         sortCriteria: 'manual',
         sortDirection: 'ascending',
         originalColorOrder: [],

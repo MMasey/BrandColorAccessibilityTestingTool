@@ -50,6 +50,14 @@ export {
   getWCAGLevelDescription,
 } from './contrast';
 
+// Contrast pair grouping (list view)
+export {
+  groupContrastPairs,
+  PAIR_GROUP_ORDER,
+  type ContrastPair,
+  type ContrastPairGroup,
+} from './contrast-pairs';
+
 // WCAG Badge Config
 export {
   WCAG_BADGE_COLORS,

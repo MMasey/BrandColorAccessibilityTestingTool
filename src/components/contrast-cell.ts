@@ -56,16 +56,6 @@ export class ContrastCell extends LitElement {
       background: var(--bg-color, #ffffff);
       position: relative;
       aspect-ratio: 1 / 1;
-
-      &.same-color {
-        background: repeating-linear-gradient(
-          45deg,
-          var(--bg-color, #ffffff),
-          var(--bg-color, #ffffff) 5px,
-          var(--theme-card-bg-color) 5px,
-          var(--theme-card-bg-color) 10px
-        );
-      }
     }
 
     /* Cell size variations - adjust internal styling */
@@ -234,15 +224,14 @@ export class ContrastCell extends LitElement {
   render() {
     if (!this.result) return html`<div class="cell">—</div>`;
 
-    // For same-color cells (diagonal), show em dash instead of ratio
+    // Same-color cells (diagonal) render as a solid swatch of the colour;
+    // the grid's td announces "Same colour" for assistive tech
     if (this.sameColor) {
       return html`
         <div
           class="cell same-color"
           style="--fg-color: ${this.fgColor}; --bg-color: ${this.bgColor}"
-        >
-          <span class="ratio">—</span>
-        </div>
+        ></div>
       `;
     }
 

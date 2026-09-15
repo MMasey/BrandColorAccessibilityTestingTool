@@ -6,7 +6,7 @@
  */
 
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize, type SortCriteria, type SortDirection } from './color-store';
+import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize, type ResultsView, type SortCriteria, type SortDirection } from './color-store';
 import type { Color } from '../utils/color-types';
 
 /**
@@ -69,6 +69,11 @@ export class ColorStoreController implements ReactiveController {
   /** Get current grid cell size */
   get gridCellSize(): GridCellSize {
     return colorStore.getGridCellSize();
+  }
+
+  /** Get current results view (table or list) */
+  get resultsView(): ResultsView {
+    return colorStore.getResultsView();
   }
 
   /** Get full state snapshot */
@@ -136,6 +141,11 @@ export class ColorStoreController implements ReactiveController {
   /** Set grid cell size */
   setGridCellSize(size: GridCellSize): void {
     colorStore.setGridCellSize(size);
+  }
+
+  /** Set results view (table or list) */
+  setResultsView(view: ResultsView): void {
+    colorStore.setResultsView(view);
   }
 
   /** Reset store */

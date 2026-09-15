@@ -40,7 +40,10 @@
       "PowerShell(npx playwright test:*)",
       "PowerShell(gh pr view:*)",
       "PowerShell(gh pr checks:*)",
-      "PowerShell(gh run list:*)"
+      "PowerShell(gh run list:*)",
+      "PowerShell(npx tsc --noEmit)",
+      "PowerShell(npm run dev)",
+      "mcp__playwright__browser_close"
     ],
     "deny": [
       "Read(.env)",
