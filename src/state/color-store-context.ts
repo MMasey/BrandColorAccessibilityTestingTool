@@ -9,4 +9,8 @@
 import { createContext } from '@lit/context';
 import type { ColorStore } from './color-store';
 
-export const colorStoreContext = createContext<ColorStore>(Symbol('color-store'));
+// Contexts match by strict equality. A registry symbol lets separately bundled
+// copies (the app and widget.js on one page) still find each other's provider.
+export const colorStoreContext = createContext<ColorStore>(
+  Symbol.for('brand-color-accessibility-tool.color-store'),
+);

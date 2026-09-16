@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import type { ContextEvent } from '@lit/context';
+import { createContext, type ContextEvent } from '@lit/context';
 import { ColorStoreController } from './color-store-controller';
 import { colorStore, createColorStore, type ColorStore } from './color-store';
 import { colorStoreContext } from './color-store-context';
@@ -41,10 +41,10 @@ class FakeHost extends EventTarget implements ReactiveControllerHost {
     this.controllers.forEach((c) => c.hostDisconnected?.());
   }
 
-  provide(store: ColorStore): void {
+  provide(store: ColorStore, context: typeof colorStoreContext = colorStoreContext): void {
     this.addEventListener('context-request', (event) => {
       const request = event as ContextEvent<typeof colorStoreContext>;
-      if (request.context !== colorStoreContext) return;
+      if (request.context !== context) return;
       request.stopPropagation();
       request.callback(store);
     });
@@ -120,6 +120,24 @@ describe('ColorStoreController', () => {
       const store = createColorStore();
       const host = new FakeHost();
       host.provide(store);
+      const controller = createController(host);
+      host.connect();
+
+      controller.addColor('#003366');
+
+      expect(store.getColors()).toHaveLength(1);
+      expect(colorStore.getColors()).toHaveLength(0);
+    });
+
+    it('uses a store provided through a separately bundled copy of the context', () => {
+      // The app bundle and widget.js on one page each evaluate their own copy
+      // of color-store-context.ts.
+      const otherBundleContext = createContext<ColorStore>(
+        Symbol.for('brand-color-accessibility-tool.color-store'),
+      );
+      const store = createColorStore();
+      const host = new FakeHost();
+      host.provide(store, otherBundleContext);
       const controller = createController(host);
       host.connect();
 
