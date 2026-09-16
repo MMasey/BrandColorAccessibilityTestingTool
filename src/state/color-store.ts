@@ -44,9 +44,12 @@ export type ColorStoreEvent =
 type Listener = (event: ColorStoreEvent) => void;
 
 /**
- * Create the color store singleton
+ * Create a color store instance
+ *
+ * The main app uses the `colorStore` singleton; embedded widgets create one
+ * store per instance so multiple widgets on a page don't share a palette.
  */
-function createColorStore() {
+export function createColorStore() {
   // Initial state
   let state: ColorStoreState = {
     colors: [],

@@ -3,7 +3,33 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { colorStore } from './color-store';
+import { colorStore, createColorStore } from './color-store';
+
+describe('createColorStore', () => {
+  it('creates instances with independent state and subscribers', () => {
+    const first = createColorStore();
+    const second = createColorStore();
+    const secondListener = vi.fn();
+    second.subscribe(secondListener);
+
+    first.addColor('#003366');
+    first.setResultsView('list');
+
+    expect(first.getColors()).toHaveLength(1);
+    expect(second.getColors()).toHaveLength(0);
+    expect(second.getResultsView()).toBe('table');
+    expect(secondListener).not.toHaveBeenCalled();
+  });
+
+  it('does not share state with the singleton', () => {
+    colorStore.reset();
+    const instance = createColorStore();
+
+    instance.addColor('#003366');
+
+    expect(colorStore.getColors()).toHaveLength(0);
+  });
+});
 
 describe('colorStore', () => {
   beforeEach(() => {

@@ -6,11 +6,19 @@
  */
 
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import { colorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize, type ResultsView, type SortCriteria, type SortDirection } from './color-store';
+import { ContextConsumer } from '@lit/context';
+import { colorStore, type ColorStore, type ColorStoreEvent, type ColorStoreState, type GridFilterLevel, type GridCellSize, type ResultsView, type SortCriteria, type SortDirection } from './color-store';
+import { colorStoreContext } from './color-store-context';
 import type { Color } from '../utils/color-types';
+
+type ControllerHost = ReactiveControllerHost & HTMLElement;
 
 /**
  * Reactive controller for connecting Lit components to the color store
+ *
+ * The store is resolved in order: an explicitly injected store, a store
+ * provided via `colorStoreContext` by an ancestor, then the `colorStore`
+ * singleton.
  *
  * Usage:
  * ```ts
@@ -26,17 +34,29 @@ import type { Color } from '../utils/color-types';
  * ```
  */
 export class ColorStoreController implements ReactiveController {
-  private host: ReactiveControllerHost;
+  private host: ControllerHost;
+  private injectedStore: ColorStore | undefined;
+  private contextStore: ContextConsumer<typeof colorStoreContext, ControllerHost> | undefined;
   private unsubscribe: (() => void) | null = null;
 
-  constructor(host: ReactiveControllerHost) {
+  constructor(host: ControllerHost, store?: ColorStore) {
     this.host = host;
+    this.injectedStore = store;
+    if (!store) {
+      // Must be added before this controller: controllers connect in insertion
+      // order, so the context value is resolved by the time we subscribe.
+      this.contextStore = new ContextConsumer(host, { context: colorStoreContext });
+    }
     host.addController(this);
+  }
+
+  private get store(): ColorStore {
+    return this.injectedStore ?? this.contextStore?.value ?? colorStore;
   }
 
   hostConnected(): void {
     // Subscribe to store changes and trigger host update
-    this.unsubscribe = colorStore.subscribe((_event: ColorStoreEvent) => {
+    this.unsubscribe = this.store.subscribe((_event: ColorStoreEvent) => {
       this.host.requestUpdate();
     });
   }
@@ -53,124 +73,124 @@ export class ColorStoreController implements ReactiveController {
 
   /** Get all colors in the palette */
   get colors(): readonly Color[] {
-    return colorStore.getColors();
+    return this.store.getColors();
   }
 
   /** Get selected algorithm */
   get algorithm(): 'wcag' | 'apca' | 'both' {
-    return colorStore.getAlgorithm();
+    return this.store.getAlgorithm();
   }
 
   /** Get active grid filters */
   get gridFilters(): ReadonlySet<GridFilterLevel> {
-    return colorStore.getGridFilters();
+    return this.store.getGridFilters();
   }
 
   /** Get current grid cell size */
   get gridCellSize(): GridCellSize {
-    return colorStore.getGridCellSize();
+    return this.store.getGridCellSize();
   }
 
   /** Get current results view (table or list) */
   get resultsView(): ResultsView {
-    return colorStore.getResultsView();
+    return this.store.getResultsView();
   }
 
   /** Get full state snapshot */
   get state(): Readonly<ColorStoreState> {
-    return colorStore.getState();
+    return this.store.getState();
   }
 
   // Convenience methods that delegate to the store
 
   /** Add a color */
   addColor(input: string | Color, label?: string): Color | null {
-    return colorStore.addColor(input, label);
+    return this.store.addColor(input, label);
   }
 
   /** Add a Color object directly */
   addColorObject(color: Color): Color {
-    return colorStore.addColorObject(color);
+    return this.store.addColorObject(color);
   }
 
   /** Add multiple colors */
   addColors(inputs: (string | [string, string])[]): Color[] {
-    return colorStore.addColors(inputs);
+    return this.store.addColors(inputs);
   }
 
   /** Remove color by index */
   removeColor(index: number): boolean {
-    return colorStore.removeColor(index);
+    return this.store.removeColor(index);
   }
 
   /** Update color at index */
   updateColor(index: number, input: string, label?: string): Color | null {
-    return colorStore.updateColor(index, input, label);
+    return this.store.updateColor(index, input, label);
   }
 
   /** Update color label */
   updateColorLabel(index: number, label: string): boolean {
-    return colorStore.updateColorLabel(index, label);
+    return this.store.updateColorLabel(index, label);
   }
 
   /** Move color from one position to another */
   moveColor(fromIndex: number, toIndex: number): boolean {
-    return colorStore.moveColor(fromIndex, toIndex);
+    return this.store.moveColor(fromIndex, toIndex);
   }
 
   /** Clear all colors */
   clearColors(): void {
-    colorStore.clearColors();
+    this.store.clearColors();
   }
 
   /** Set algorithm */
   setAlgorithm(algorithm: 'wcag' | 'apca' | 'both'): void {
-    colorStore.setAlgorithm(algorithm);
+    this.store.setAlgorithm(algorithm);
   }
 
   /** Toggle a grid filter on/off */
   toggleGridFilter(level: GridFilterLevel): void {
-    colorStore.toggleGridFilter(level);
+    this.store.toggleGridFilter(level);
   }
 
   /** Set all grid filters at once */
   setGridFilters(filters: Set<GridFilterLevel>): void {
-    colorStore.setGridFilters(filters);
+    this.store.setGridFilters(filters);
   }
 
   /** Set grid cell size */
   setGridCellSize(size: GridCellSize): void {
-    colorStore.setGridCellSize(size);
+    this.store.setGridCellSize(size);
   }
 
   /** Set results view (table or list) */
   setResultsView(view: ResultsView): void {
-    colorStore.setResultsView(view);
+    this.store.setResultsView(view);
   }
 
   /** Reset store */
   reset(): void {
-    colorStore.reset();
+    this.store.reset();
   }
 
   /** Sort colors by criteria and direction */
   sortColorsPalette(criteria: SortCriteria, direction: SortDirection = 'ascending'): void {
-    colorStore.sortColorsPalette(criteria, direction);
+    this.store.sortColorsPalette(criteria, direction);
   }
 
   /** Manually reorder colors */
   reorderColors(newOrder: Color[]): void {
-    colorStore.reorderColors(newOrder);
+    this.store.reorderColors(newOrder);
   }
 
   /** Reset to original color order */
   resetToOriginalOrder(): void {
-    colorStore.resetToOriginalOrder();
+    this.store.resetToOriginalOrder();
   }
 
   /** Get current sort state */
   getSortState(): { criteria: SortCriteria; direction: SortDirection; isSorted: boolean } {
-    return colorStore.getSortState();
+    return this.store.getSortState();
   }
 
 }

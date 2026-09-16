@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import type { Color } from '../utils';
 
 /**
@@ -10,7 +11,7 @@ import type { Color } from '../utils';
  * @fires swatch-remove - When the remove button is clicked
  * @fires label-change - When the label is edited (detail: { label: string })
  */
-@customElement('color-swatch')
+@defineElement('bca-color-swatch')
 export class ColorSwatch extends LitElement {
   static styles = css`
     :host {
@@ -634,6 +635,6 @@ export class ColorSwatch extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'color-swatch': ColorSwatch;
+    'bca-color-swatch': ColorSwatch;
   }
 }

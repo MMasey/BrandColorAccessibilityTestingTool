@@ -1,5 +1,5 @@
 import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { ColorStoreController } from '../state';
 import type { GridFilterLevel } from '../state/color-store';
 import { generateContrastMatrix, groupContrastPairs, WCAG_BADGE_COLORS } from '../utils';
@@ -42,7 +42,7 @@ function speakableRatio(ratioString: string): string {
  * under WCAG level headings as semantic lists. Designed to be read
  * sequentially by screen readers and copy-pasted as plain text.
  */
-@customElement('contrast-list')
+@defineElement('bca-contrast-list')
 export class ContrastList extends LitElement {
   static styles = css`
     :host {
@@ -275,6 +275,6 @@ export class ContrastList extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'contrast-list': ContrastList;
+    'bca-contrast-list': ContrastList;
   }
 }

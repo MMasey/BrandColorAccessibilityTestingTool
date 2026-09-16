@@ -1,5 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import type { ContrastResult } from '../utils';
 import {
   WCAG_BADGE_COLORS,
@@ -15,7 +16,7 @@ import {
  * Purely visual for assistive tech: the grid's `<td>` aria-label is the single
  * announcement source, and the grid renders this element with aria-hidden.
  */
-@customElement('contrast-cell')
+@defineElement('bca-contrast-cell')
 export class ContrastCell extends LitElement {
   static styles = css`
     :host {
@@ -257,6 +258,6 @@ export class ContrastCell extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'contrast-cell': ContrastCell;
+    'bca-contrast-cell': ContrastCell;
   }
 }

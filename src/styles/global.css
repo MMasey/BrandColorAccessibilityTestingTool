@@ -183,7 +183,7 @@ body {
   }
 
   /* Ensure contrast grid prints well */
-  app-shell {
+  bca-app-shell {
     display: block;
   }
 
@@ -207,7 +207,7 @@ body {
 
   /* Prevent page breaks inside grid cells */
   .cell,
-  contrast-cell {
+  bca-contrast-cell {
     break-inside: avoid;
     page-break-inside: avoid;
   }

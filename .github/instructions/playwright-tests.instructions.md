@@ -66,7 +66,7 @@ When writing or modifying Playwright end-to-end tests, follow these guidelines:
 ## Component Testing
 
 - Test web components using shadow DOM queries when needed
-- Example: `await page.locator('contrast-grid').locator('div.cell')`
+- Example: `await page.locator('bca-contrast-grid').locator('div.cell')`
 
 ## Configuration
 

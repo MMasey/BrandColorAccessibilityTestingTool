@@ -17,9 +17,9 @@ test.describe('Color Palette Sorting & Reordering', () => {
    * Helper function to add multiple colors to the palette
    */
   async function addColors(page: Page, colors: string[]) {
-    const colorInput = page.locator('color-palette').locator('color-input');
+    const colorInput = page.locator('bca-color-palette').locator('bca-color-input');
     const textInput = colorInput.locator('input[type="text"]').first();
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
     for (const color of colors) {
       await textInput.fill(color);
@@ -32,7 +32,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
    * Helper function to get hex values of all color swatches in order
    */
   async function getColorOrder(page: Page): Promise<string[]> {
-    const swatches = page.locator('color-palette').locator('color-swatch');
+    const swatches = page.locator('bca-color-palette').locator('bca-color-swatch');
     const count = await swatches.count();
     const hexValues: string[] = [];
 
@@ -49,7 +49,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
    * Helper to switch to manual order mode
    */
   async function switchToManualOrder(page: Page) {
-    const sortControls = page.locator('sort-controls');
+    const sortControls = page.locator('bca-sort-controls');
     const sortDropdown = sortControls.locator('select');
     await sortDropdown.selectOption('manual');
     await page.waitForTimeout(200);
@@ -57,7 +57,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test.describe('Sort Controls UI', () => {
@@ -65,7 +65,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       // Need to add colors first - sort-controls doesn't render with < 2 colors
       await addColors(page, ['#FF0000', '#00FF00']);
       
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
 
       await expect(sortDropdown).toBeVisible();
@@ -75,7 +75,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
     test('should hide direction toggle button in manual mode', async ({ page }) => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const directionButton = sortControls.locator('.direction-btn');
 
       // Direction button should be hidden in manual mode
@@ -85,7 +85,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
     test('should show direction toggle when sorted by luminance', async ({ page }) => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       const directionButton = sortControls.locator('.direction-btn');
 
@@ -102,7 +102,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
       await switchToManualOrder(page);
 
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const dragHandle = firstSwatch.locator('.drag-handle');
       const upButton = firstSwatch.locator('button[title="Move up"]');
       const downButton = firstSwatch.locator('button[title="Move down"]');
@@ -117,11 +117,11 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Verify controls are visible in manual mode
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       await expect(firstSwatch.locator('.drag-handle')).toBeVisible();
 
       // Switch to luminance sort
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -134,7 +134,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00']);
       await switchToManualOrder(page);
 
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const upButton = firstSwatch.locator('button[title="Move up"]');
 
       const boundingBox = await upButton.boundingBox();
@@ -158,7 +158,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       expect(initialOrder).toEqual(['#FF0000', '#00FF00', '#0000FF']);
 
       // Click up arrow on second color (green)
-      const secondSwatch = page.locator('color-swatch').nth(1);
+      const secondSwatch = page.locator('bca-color-swatch').nth(1);
       const upButton = secondSwatch.locator('button[title="Move up"]');
       await upButton.click();
       await page.waitForTimeout(300); // Wait for animation
@@ -175,7 +175,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       expect(initialOrder).toEqual(['#FF0000', '#00FF00', '#0000FF']);
 
       // Click down arrow on first color (red)
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downButton = firstSwatch.locator('button[title="Move down"]');
       await downButton.click();
       await page.waitForTimeout(300); // Wait for animation
@@ -189,7 +189,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Try to move first color up
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const upButton = firstSwatch.locator('button[title="Move up"]');
       await upButton.click();
       await page.waitForTimeout(300);
@@ -204,7 +204,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Try to move last color down
-      const lastSwatch = page.locator('color-swatch').last();
+      const lastSwatch = page.locator('bca-color-swatch').last();
       const downButton = lastSwatch.locator('button[title="Move down"]');
       await downButton.click();
       await page.waitForTimeout(300);
@@ -219,7 +219,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Rapidly press down arrow 3 times on first color
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downButton = firstSwatch.locator('button[title="Move down"]');
 
       await downButton.click();
@@ -242,7 +242,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Click down button on first swatch
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downButton = firstSwatch.locator('button[title="Move down"]');
       await downButton.click();
       await page.waitForTimeout(300);
@@ -265,7 +265,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Move second color up
-      const secondSwatch = page.locator('color-swatch').nth(1);
+      const secondSwatch = page.locator('bca-color-swatch').nth(1);
       const upButton = secondSwatch.locator('button[title="Move up"]');
       await upButton.click();
       await page.waitForTimeout(200);
@@ -285,7 +285,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       expect(initialOrder).toEqual(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']);
 
       // Get the first and third list items
-      const colorsList = page.locator('color-palette').locator('.colors-list');
+      const colorsList = page.locator('bca-color-palette').locator('.colors-list');
       const listItems = colorsList.locator('li');
       const firstItem = listItems.first();
       const thirdItem = listItems.nth(2);
@@ -306,7 +306,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Drag first color to last position
-      const colorsList = page.locator('color-palette').locator('.colors-list');
+      const colorsList = page.locator('bca-color-palette').locator('.colors-list');
       const listItems = colorsList.locator('li');
       const firstItem = listItems.first();
       const lastItem = listItems.last();
@@ -322,8 +322,8 @@ test.describe('Color Palette Sorting & Reordering', () => {
         await page.waitForTimeout(300);
 
         // Verify contrast grid exists and has cells
-        const contrastGrid = page.locator('contrast-grid');
-        const cells = contrastGrid.locator('contrast-cell');
+        const contrastGrid = page.locator('bca-contrast-grid');
+        const cells = contrastGrid.locator('bca-contrast-cell');
         await expect(cells.first()).toBeVisible();
       }
     });
@@ -335,7 +335,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // 1. Drag first color down 2 positions (to index 2)
-      const colorsList = page.locator('color-palette').locator('.colors-list');
+      const colorsList = page.locator('bca-color-palette').locator('.colors-list');
       const listItems = colorsList.locator('li');
       const firstItem = listItems.first();
       const thirdItem = listItems.nth(2);
@@ -351,7 +351,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
         await page.waitForTimeout(500); // Wait for SortableJS + Lit update
 
         // 2. Now use keyboard to move the 3rd card (dragged color) up
-        const thirdSwatch = page.locator('color-swatch').nth(2);
+        const thirdSwatch = page.locator('bca-color-swatch').nth(2);
         const upButton = thirdSwatch.locator('button[title="Move up"]');
         await upButton.click();
         await page.waitForTimeout(400);
@@ -369,7 +369,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // 1. Use keyboard to move first color (red) down one position
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downButton = firstSwatch.locator('button[title="Move down"]');
       await downButton.click();
       await page.waitForTimeout(400); // Wait for animation
@@ -383,7 +383,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       //    a keyboard operation. We just verify the order CHANGES — the exact
       //    result is not asserted because Playwright's CDP drag events interact
       //    with SortableJS's shadow-DOM hit-testing in a non-deterministic way.
-      const colorsList = page.locator('color-palette').locator('.colors-list');
+      const colorsList = page.locator('bca-color-palette').locator('.colors-list');
       const listItems = colorsList.locator('li');
       const firstItem = listItems.first();
       const thirdItem = listItems.nth(2);
@@ -402,7 +402,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF']);
       await switchToManualOrder(page);
 
-      const colorsList = page.locator('color-palette').locator('.colors-list');
+      const colorsList = page.locator('bca-color-palette').locator('.colors-list');
       const listItems = colorsList.locator('li');
 
       // 1. Drag first to second position
@@ -417,7 +417,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       }
 
       // 2. Keyboard move second color down
-      const secondSwatch = page.locator('color-swatch').nth(1);
+      const secondSwatch = page.locator('bca-color-swatch').nth(1);
       await secondSwatch.locator('button[title="Move down"]').click();
       await page.waitForTimeout(400);
 
@@ -433,7 +433,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       }
 
       // 4. Keyboard move first color down twice
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downBtn = firstSwatch.locator('button[title="Move down"]');
       await downBtn.click();
       await page.waitForTimeout(400);
@@ -450,7 +450,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
     test('should sort colors by luminance (lightest to darkest)', async ({ page }) => {
       await addColors(page, ['#000000', '#FFFFFF', '#808080', '#FF0000']);
 
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -465,7 +465,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
     test('should reverse luminance sort when direction toggled', async ({ page }) => {
       await addColors(page, ['#000000', '#FFFFFF', '#808080']);
 
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       const directionButton = sortControls.locator('.direction-btn');
 
@@ -487,7 +487,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       // Add colors and sort
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -508,7 +508,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
       // Sort by luminance
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -525,7 +525,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       expect(originalOrder).toEqual(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']);
 
       // Sort by luminance (will change order)
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -549,7 +549,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       const originalOrder = await getColorOrder(page);
 
       // Move first color down
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downButton = firstSwatch.locator('button[title="Move down"]');
       await downButton.click();
       await page.waitForTimeout(300);
@@ -559,7 +559,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       expect(reorderedOrder).not.toEqual(originalOrder);
 
       // Reset
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const resetButton = sortControls.locator('button[title="Reset to original order"]');
       await resetButton.click();
       await page.waitForTimeout(200);
@@ -591,7 +591,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Verify both drag handle AND keyboard buttons exist
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const dragHandle = firstSwatch.locator('.drag-handle');
       const upButton = firstSwatch.locator('button[title="Move up"]');
       const downButton = firstSwatch.locator('button[title="Move down"]');
@@ -612,7 +612,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00']);
       await switchToManualOrder(page);
 
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const upButton = firstSwatch.locator('button[title="Move up"]');
       const downButton = firstSwatch.locator('button[title="Move down"]');
 
@@ -632,7 +632,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await page.screenshot({ path: 'e2e/screenshots/before-keyboard-move.png' });
 
       // Move first color down
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downButton = firstSwatch.locator('button[title="Move down"]');
       await downButton.click();
 
@@ -653,7 +653,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await switchToManualOrder(page);
 
       // Move should still work but without animation
-      const firstSwatch = page.locator('color-swatch').first();
+      const firstSwatch = page.locator('bca-color-swatch').first();
       const downButton = firstSwatch.locator('button[title="Move down"]');
       await downButton.click();
       await page.waitForTimeout(100); // Shorter wait since no animation
@@ -668,7 +668,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
       // Sort by luminance
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -682,7 +682,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
       // Sort by luminance
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -701,7 +701,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
     test('should restore sort state from URL on page load', async ({ page }) => {
       // Navigate to URL with sort parameters
       await page.goto('/?colors=FF0000,00FF00,0000FF&sortBy=luminance&sortDir=ascending');
-      await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+      await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
       await page.waitForTimeout(300);
 
       // Verify sort was applied
@@ -709,7 +709,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       expect(order[0]).toBe('#00FF00'); // Green is lightest
 
       // Verify dropdown shows correct value
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await expect(sortDropdown).toHaveValue('luminance');
     });
@@ -719,7 +719,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
       // Sort by luminance
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);
@@ -730,7 +730,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
 
       // Reload the page with the same URL
       await page.goto(urlWithSort);
-      await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+      await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
       await page.waitForTimeout(300);
 
       // Should restore sorted state
@@ -743,7 +743,7 @@ test.describe('Color Palette Sorting & Reordering', () => {
       await addColors(page, ['#FF0000', '#00FF00', '#0000FF']);
 
       // Sort by luminance
-      const sortControls = page.locator('sort-controls');
+      const sortControls = page.locator('bca-sort-controls');
       const sortDropdown = sortControls.locator('select');
       await sortDropdown.selectOption('luminance');
       await page.waitForTimeout(200);

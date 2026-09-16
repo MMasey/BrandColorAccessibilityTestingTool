@@ -1,12 +1,12 @@
 import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { ThemeStoreController } from '../state';
 import type { Theme } from '../state';
 
 /**
  * Theme switcher component for selecting light/dark/high-contrast modes.
  */
-@customElement('theme-switcher')
+@defineElement('bca-theme-switcher')
 export class ThemeSwitcher extends LitElement {
   static styles = css`
     :host {
@@ -203,6 +203,6 @@ export class ThemeSwitcher extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'theme-switcher': ThemeSwitcher;
+    'bca-theme-switcher': ThemeSwitcher;
   }
 }

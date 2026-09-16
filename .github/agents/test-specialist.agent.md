@@ -127,7 +127,7 @@ Example:
 ```typescript
 test('should update contrast cell', async ({ page }) => {
   await page.goto('/');
-  const cell = page.locator('contrast-cell').first();
+  const cell = page.locator('bca-contrast-cell').first();
   await expect(cell).toBeVisible();
 });
 ```

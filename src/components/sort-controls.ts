@@ -6,11 +6,12 @@
  */
 
 import { LitElement, html, css } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { state } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { ColorStoreController } from '../state';
 import { getSortCriteriaLabel, type SortCriteria, type SortDirection } from '../utils/color-sorting';
 
-@customElement('sort-controls')
+@defineElement('bca-sort-controls')
 export class SortControls extends LitElement {
   static styles = css`
     :host {
@@ -263,6 +264,6 @@ export class SortControls extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'sort-controls': SortControls;
+    'bca-sort-controls': SortControls;
   }
 }

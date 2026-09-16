@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { ColorStoreController } from '../state';
 import './color-palette';
 import './contrast-grid';
@@ -12,7 +12,7 @@ import './grid-filters';
  * Main application shell component.
  * Provides the overall layout and wires together all UI components.
  */
-@customElement('app-shell')
+@defineElement('bca-app-shell')
 export class AppShell extends LitElement {
   private store = new ColorStoreController(this);
 
@@ -183,7 +183,7 @@ export class AppShell extends LitElement {
     }
 
     /* View toggle sits as a toolbar row between the heading and the results */
-    results-view-toggle {
+    bca-results-view-toggle {
       display: block;
       margin-bottom: var(--space-md, 1rem);
     }
@@ -252,7 +252,7 @@ export class AppShell extends LitElement {
             <p class="tagline">Validate your colour palette against WCAG 2.2 contrast requirements</p>
           </div>
           <div class="header-controls">
-            <theme-switcher></theme-switcher>
+            <bca-theme-switcher></bca-theme-switcher>
           </div>
         </div>
       </header>
@@ -260,10 +260,10 @@ export class AppShell extends LitElement {
       <main>
         <div class="layout">
           <section class="sidebar" aria-label="Colour palette controls">
-            <color-palette></color-palette>
+            <bca-color-palette></bca-color-palette>
 
             <div class="controls-section">
-              <grid-filters></grid-filters>
+              <bca-grid-filters></bca-grid-filters>
             </div>
           </section>
 
@@ -271,10 +271,10 @@ export class AppShell extends LitElement {
             <div class="grid-header">
               <h2 class="grid-title">Contrast Results</h2>
             </div>
-            <results-view-toggle></results-view-toggle>
+            <bca-results-view-toggle></bca-results-view-toggle>
             ${this.store.resultsView === 'list'
-              ? html`<contrast-list></contrast-list>`
-              : html`<contrast-grid></contrast-grid>`}
+              ? html`<bca-contrast-list></bca-contrast-list>`
+              : html`<bca-contrast-grid></bca-contrast-grid>`}
           </section>
         </div>
       </main>
@@ -299,6 +299,6 @@ export class AppShell extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-shell': AppShell;
+    'bca-app-shell': AppShell;
   }
 }

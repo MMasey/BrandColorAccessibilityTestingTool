@@ -1,10 +1,11 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 
 /**
  * Brand guidance component that shows helpful tips about brand color best practices.
  */
-@customElement('brand-guidance')
+@defineElement('bca-brand-guidance')
 export class BrandGuidance extends LitElement {
   static styles = css`
     :host {
@@ -130,6 +131,6 @@ export class BrandGuidance extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'brand-guidance': BrandGuidance;
+    'bca-brand-guidance': BrandGuidance;
   }
 }

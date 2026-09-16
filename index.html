@@ -66,7 +66,7 @@
         to { transform: rotate(360deg); }
       }
       /* Hide fallback when JS loads and component renders */
-      app-shell:defined .fallback-content {
+      bca-app-shell:defined .fallback-content {
         display: none;
       }
       /* Noscript styles */
@@ -106,7 +106,7 @@
     <!-- Skip link in light DOM, enhanced by app-shell to focus <main> inside shadow DOM -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <app-shell>
+    <bca-app-shell>
       <!-- Fallback content shown before JavaScript loads -->
       <div class="fallback-content">
         <div class="fallback-title">Brand Colour Accessibility Tool</div>
@@ -118,7 +118,7 @@
           <a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html">WCAG 2.2 accessibility standards</a>.
         </p>
       </div>
-    </app-shell>
+    </bca-app-shell>
 
     <!-- Message for users with JavaScript disabled -->
     <noscript>

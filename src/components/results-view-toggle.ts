@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { ColorStoreController } from '../state';
 import type { ResultsView } from '../state';
 
@@ -8,7 +8,7 @@ import type { ResultsView } from '../state';
  * Follows the theme-switcher pattern: fieldset + legend + radio inputs so
  * the current view is announced as a selected radio option.
  */
-@customElement('results-view-toggle')
+@defineElement('bca-results-view-toggle')
 export class ResultsViewToggle extends LitElement {
   static styles = css`
     :host {
@@ -199,6 +199,6 @@ export class ResultsViewToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'results-view-toggle': ResultsViewToggle;
+    'bca-results-view-toggle': ResultsViewToggle;
   }
 }

@@ -81,9 +81,9 @@ src/
 
 ### Lit Components
 
-- Use **decorators** for component definitions: `@customElement`, `@property`, `@state`
+- Use **decorators** for component definitions: `@defineElement` (from `src/components/define-element.ts`, not Lit's `@customElement`), `@property`, `@state`
 - Define `static styles` using `css` tagged template literal
-- Use **kebab-case** for custom element names (e.g., `contrast-cell`)
+- Use **kebab-case** for custom element names with the `bca-` prefix (e.g., `bca-contrast-cell`) so tags can't clash with a page that embeds the widget
 - Use **camelCase** for properties and methods
 - Include JSDoc comments explaining component purpose
 - Follow shadow DOM best practices

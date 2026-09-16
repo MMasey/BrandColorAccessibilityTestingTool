@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { defineElement } from './define-element';
 import { ColorStoreController } from '../state';
 import type { GridFilterLevel, GridCellSize } from '../state/color-store';
 
@@ -7,7 +7,7 @@ import type { GridFilterLevel, GridCellSize } from '../state/color-store';
  * Grid filter controls for showing/hiding contrast combinations
  * based on WCAG compliance levels.
  */
-@customElement('grid-filters')
+@defineElement('bca-grid-filters')
 export class GridFilters extends LitElement {
   static styles = css`
     :host {
@@ -266,6 +266,6 @@ export class GridFilters extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'grid-filters': GridFilters;
+    'bca-grid-filters': GridFilters;
   }
 }

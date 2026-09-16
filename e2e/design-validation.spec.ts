@@ -15,7 +15,7 @@ test.describe('Layout Consistency', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
   });
 
   test('color-input and color-swatch have matching dimensions', async ({ page }) => {
@@ -23,9 +23,9 @@ test.describe('Layout Consistency', () => {
     // (swatches without labels are shorter by design)
     // Needs 2 colors so we can switch to luminance sort, which hides the reorder controls.
     // Reorder controls (2×24px buttons) intentionally make swatches taller in manual mode.
-    const hexInput = page.locator('color-palette color-input #hex-input');
-    const labelInput = page.locator('color-palette color-input .label-input');
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+    const labelInput = page.locator('bca-color-palette bca-color-input .label-input');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
     await hexInput.fill('#1a1a1a');
     await labelInput.fill('Dark Grey');
@@ -36,13 +36,13 @@ test.describe('Layout Consistency', () => {
     await page.waitForTimeout(100);
 
     // Switch to luminance sort to hide reorder controls so the swatch matches the input height
-    const sortDropdown = page.locator('sort-controls select');
+    const sortDropdown = page.locator('bca-sort-controls select');
     await sortDropdown.selectOption('luminance');
     await page.waitForTimeout(100);
 
     // Get the container elements
-    const inputContainer = page.locator('color-palette color-input .swatch-container');
-    const swatchContainer = page.locator('color-palette color-swatch .swatch-container').first();
+    const inputContainer = page.locator('bca-color-palette bca-color-input .swatch-container');
+    const swatchContainer = page.locator('bca-color-palette bca-color-swatch .swatch-container').first();
 
     // Get bounding boxes
     const inputBox = await inputContainer.boundingBox();
@@ -62,16 +62,16 @@ test.describe('Layout Consistency', () => {
 
   test('color-input and color-swatch color boxes have matching width', async ({ page }) => {
     // Add a color
-    const hexInput = page.locator('color-palette color-input #hex-input');
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
     await hexInput.fill('#0066cc');
     await addButton.click();
     await page.waitForTimeout(100);
 
     // Get the color box elements
-    const inputColorBox = page.locator('color-palette color-input .color-box');
-    const swatchColorBox = page.locator('color-palette color-swatch .color-box').first();
+    const inputColorBox = page.locator('bca-color-palette bca-color-input .color-box');
+    const swatchColorBox = page.locator('bca-color-palette bca-color-swatch .color-box').first();
 
     const inputBoxSize = await inputColorBox.boundingBox();
     const swatchBoxSize = await swatchColorBox.boundingBox();
@@ -87,16 +87,16 @@ test.describe('Layout Consistency', () => {
 
   test('action buttons have consistent sizing', async ({ page }) => {
     // Add a color
-    const hexInput = page.locator('color-palette color-input #hex-input');
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
     await hexInput.fill('#dc2626');
     await addButton.click();
     await page.waitForTimeout(100);
 
     // Get action buttons
-    const addBtn = page.locator('color-palette color-input .add-btn');
-    const removeBtn = page.locator('color-palette color-swatch .remove-btn').first();
+    const addBtn = page.locator('bca-color-palette bca-color-input .add-btn');
+    const removeBtn = page.locator('bca-color-palette bca-color-swatch .remove-btn').first();
 
     const addBtnBox = await addBtn.boundingBox();
     const removeBtnBox = await removeBtn.boundingBox();
@@ -118,8 +118,8 @@ test.describe('Layout Consistency', () => {
 
   test('contrast grid cells have consistent sizing', async ({ page }) => {
     // Add multiple colors
-    const hexInput = page.locator('color-palette color-input #hex-input');
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
     for (const color of ['#1a1a1a', '#ffffff', '#0066cc']) {
       await hexInput.fill(color);
@@ -130,7 +130,7 @@ test.describe('Layout Consistency', () => {
     await page.waitForTimeout(200);
 
     // Get all grid cells
-    const cells = page.locator('contrast-grid .cell');
+    const cells = page.locator('bca-contrast-grid .cell');
     const cellCount = await cells.count();
 
     expect(cellCount).toBeGreaterThan(0);
@@ -156,7 +156,7 @@ test.describe('Accessibility Validation (WCAG 2.2 AA)', () => {
   test('empty state passes accessibility audit', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
@@ -173,11 +173,11 @@ test.describe('Accessibility Validation (WCAG 2.2 AA)', () => {
   test('with colours passes accessibility audit', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     // Add some colors
-    const hexInput = page.locator('color-palette color-input #hex-input');
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
     for (const color of ['#1a1a1a', '#ffffff', '#0066cc', '#dc2626']) {
       await hexInput.fill(color);
@@ -201,9 +201,9 @@ test.describe('Accessibility Validation (WCAG 2.2 AA)', () => {
             const targetPaths = node.target || [];
             return !targetPaths.some((path: string | string[]) => {
               if (Array.isArray(path)) {
-                return path.some(p => p.includes('contrast-cell') || p.includes('contrast-grid'));
+                return path.some(p => p.includes('bca-contrast-cell') || p.includes('bca-contrast-grid'));
               }
-              return path.includes('contrast-cell') || path.includes('contrast-grid');
+              return path.includes('bca-contrast-cell') || path.includes('bca-contrast-grid');
             });
           });
           return { ...violation, nodes: filteredNodes };
@@ -222,7 +222,7 @@ test.describe('Accessibility Validation (WCAG 2.2 AA)', () => {
   test('mobile view passes accessibility audit', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
@@ -240,11 +240,11 @@ test.describe('Touch Target Validation', () => {
   test('all interactive elements meet 44x44px minimum', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     // Add a color to reveal more interactive elements
-    const hexInput = page.locator('color-palette color-input #hex-input');
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
     await hexInput.fill('#1a1a1a');
     await addButton.click();
     await page.waitForTimeout(100);
@@ -255,13 +255,13 @@ test.describe('Touch Target Validation', () => {
     expect(addBtnBox?.height).toBeGreaterThanOrEqual(44);
 
     // Check remove button
-    const removeBtn = page.locator('color-palette color-swatch .remove-btn').first();
+    const removeBtn = page.locator('bca-color-palette bca-color-swatch .remove-btn').first();
     const removeBtnBox = await removeBtn.boundingBox();
     expect(removeBtnBox?.width).toBeGreaterThanOrEqual(44);
     expect(removeBtnBox?.height).toBeGreaterThanOrEqual(44);
 
     // Check theme options (label elements containing radio inputs)
-    const themeOptions = page.locator('theme-switcher label.theme-option');
+    const themeOptions = page.locator('bca-theme-switcher label.theme-option');
     const themeOptionCount = await themeOptions.count();
     for (let i = 0; i < themeOptionCount; i++) {
       const optionBox = await themeOptions.nth(i).boundingBox();
@@ -280,7 +280,7 @@ test.describe('Visual Regression', () => {
   test('empty state matches baseline', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
     await page.waitForTimeout(500); // Wait for any animations
 
     await expect(page).toHaveScreenshot('baseline-empty.png', {
@@ -291,11 +291,11 @@ test.describe('Visual Regression', () => {
   test('with 4 colours matches baseline', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
-    const hexInput = page.locator('color-palette color-input #hex-input');
-    const labelInput = page.locator('color-palette color-input .label-input');
-    const addButton = page.locator('color-palette color-input .add-btn');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
+    const labelInput = page.locator('bca-color-palette bca-color-input .label-input');
+    const addButton = page.locator('bca-color-palette bca-color-input .add-btn');
 
     const colors = [
       { hex: '#1a1a1a', label: 'Dark Grey' },
@@ -321,7 +321,7 @@ test.describe('Visual Regression', () => {
   test('mobile empty state matches baseline', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
     await page.waitForTimeout(500);
 
     await expect(page).toHaveScreenshot('baseline-mobile-empty.png', {
@@ -334,7 +334,7 @@ test.describe('Design Token Validation', () => {
   test('focus states use correct focus ring color', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     // Verify the focus ring CSS variable is properly set (not default gray)
     const focusRingColor = await page.evaluate(() => {
@@ -350,15 +350,15 @@ test.describe('Design Token Validation', () => {
   test('error state uses correct error color', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.waitForFunction(() => customElements.get('app-shell') !== undefined);
+    await page.waitForFunction(() => customElements.get('bca-app-shell') !== undefined);
 
     // Enter invalid color
-    const hexInput = page.locator('color-palette color-input #hex-input');
+    const hexInput = page.locator('bca-color-palette bca-color-input #hex-input');
     await hexInput.fill('invalid');
     await hexInput.blur();
 
     // Check error message color
-    const errorText = page.locator('color-palette color-input .error-text');
+    const errorText = page.locator('bca-color-palette bca-color-input .error-text');
     await expect(errorText).toBeVisible();
 
     const color = await errorText.evaluate((el) => {
