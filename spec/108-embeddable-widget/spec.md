@@ -24,9 +24,9 @@ no impact on the host page's global styles, `<html>` attributes, or URL.
 - A single self-registering custom element `<contrast-checker>` bundled into one file
   (`dist/widget.js`), loadable via CDN script tag or self-hosted.
 - The element renders, inside its own shadow root:
-  - Colour input controls (reuse `color-input` / `color-palette`)
-  - The contrast results (reuse `contrast-grid` and Feature 107's `contrast-list` +
-    `results-view-toggle` — the list view is the screen-reader-preferred presentation and
+  - Colour input controls (reuse `bca-color-input` / `bca-color-palette`)
+  - The contrast results (reuse `bca-contrast-grid` and Feature 107's `bca-contrast-list` +
+    `bca-results-view-toggle` — the list view is the screen-reader-preferred presentation and
     shares the same store field, so including it costs almost nothing)
   - An optional "Powered by Brand Colour Accessibility Tool" attribution link
 - Attribute changes reflow the widget reactively (observed attributes).
@@ -52,13 +52,18 @@ no impact on the host page's global styles, `<html>` attributes, or URL.
   the side effect into any bundle. Theme application must become an explicit `initTheme()`
   that only `src/main.ts` calls; the widget applies theme to its **own host element /
   shadow root**, never to `<html>` — it must not recolour the host page.
-- **No tag-name collisions**: the app self-registers 12 custom elements with generic names
+- **No tag-name collisions**: the app originally self-registered 12 custom elements with generic names
   (`color-input`, `color-palette`, `contrast-grid`, `contrast-cell`, `contrast-list`,
   `color-swatch`, `app-shell`, `brand-guidance`, `grid-filters`, `theme-switcher`,
   `sort-controls`, `results-view-toggle`). A duplicate `customElements.define` on a host
   page throws and kills the widget. Internal tags are renamed with a `bca-` prefix
   (main app included — no fork), registration goes through a guard that warns instead of
-  throwing, and only the public `<contrast-checker>` stays unprefixed.
+  throwing, and only the public `<contrast-checker>` stays unprefixed. Known limitation: the
+  guard keeps the first definition of each tag, so when two builds share a page (e.g. the
+  main app and `widget.js`) the widget's internal elements come from whichever loaded first.
+  They still receive the widget's store because the context key is a `Symbol.for` registry
+  symbol, but differing versions are not isolated — that would need scoped custom element
+  registries, which are out of scope for v1.
 - **No URL sync**: the widget must not read or write `window.location` (the main app's
   `url-sync.ts` behaviour is disabled/absent in the embed build).
 - **Style isolation**: all styles ship inside the shadow root; the widget must not leak CSS
@@ -96,8 +101,8 @@ no impact on the host page's global styles, `<html>` attributes, or URL.
   - Instantiates a **per-instance** color store via `createColorStore()` (not the shared
     `colorStore` singleton) and provides it to child components via Lit context.
   - Seeds the store from the parsed `colors` attribute on first render and on change.
-  - Renders `color-input` / `color-palette`, the grid/list results with
-    `results-view-toggle`, inside its shadow root.
+  - Renders `bca-color-input` / `bca-color-palette`, the grid/list results with
+    `bca-results-view-toggle`, inside its shadow root.
   - Applies the selected theme to its host/shadow root scope only.
   - Renders an attribution link unless `attribution="hide"`.
 - **Prep refactor (behaviour-neutral for the main app):**

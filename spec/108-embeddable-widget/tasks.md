@@ -55,7 +55,7 @@ Suggested delivery: sections 1–2 as a behaviour-neutral prep PR, section 3 as 
 - [ ] 5.3 Instantiate a per-instance store via `createColorStore()`, provide it via
       context, and seed it from the parsed `colors` attribute
 - [ ] 5.4 Render colour inputs/palette and the grid/list results with
-      `results-view-toggle` inside the shadow root
+      `bca-results-view-toggle` inside the shadow root
 - [ ] 5.5 Apply the `theme` attribute to the widget host scope only (including `system`
       via `prefers-color-scheme`); `standard="apca"` falls back to WCAG with a note until
       Feature 102
