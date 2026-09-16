@@ -29,15 +29,17 @@ Suggested delivery: sections 1–2 as a behaviour-neutral prep PR, section 3 as 
 - [x] 2.2 Rename all 12 internal custom-element tags with the `bca-` prefix (components,
       templates, styles, unit + E2E selectors)
 
-## 3. Container-Query Migration (main app visually identical at 767/1024px)
+## 3. Container-Query Migration (main app page layout unchanged at 767/1024px)
 
-- [ ] 3.1 Establish a `container-type: inline-size` query container on the app-shell (and
+- [x] 3.1 Establish a `container-type: inline-size` query container on the app-shell (and
       later the widget root) so the same component styles work in both
-- [ ] 3.2 Migrate layout-width `@media` breakpoints to `@container` in `app-shell.ts`
-      (767/768/1024px)
-- [ ] 3.3 Migrate layout-width `@media` breakpoints in `contrast-grid.ts` (640px),
+- [x] 3.2 Keep the `app-shell.ts` page layout (767/768/1024px) on `@media`: the widget
+      doesn't render the shell, and container widths exclude a classic scrollbar
+- [x] 3.3 Migrate layout-width `@media` breakpoints in `contrast-grid.ts` (640px),
       `grid-filters.ts` (360px), and `sort-controls.ts` (640px); leave
       `prefers-*`/`forced-colors` queries as `@media`
+- [x] 3.4 E2E: shared components switch at 640/360px of container width and follow the
+      container rather than the viewport
 
 ## 4. Theme Token Transform
 
@@ -84,7 +86,7 @@ Suggested delivery: sections 1–2 as a behaviour-neutral prep PR, section 3 as 
 ## 8. Validation
 
 - [ ] 8.1 Verify the main app is unregressed after each prep refactor and the query
-      migration: typecheck, unit, full E2E, and visually identical at 767/1024px
+      migration: typecheck, unit, full E2E, and page layout unchanged at 767/1024px
 - [ ] 8.2 E2E on the demo page: attributes update live, two widgets hold independent
       palettes, narrow container renders compact layout on a wide viewport
 - [ ] 8.3 E2E: host page integrity — `<html>` attributes and URL untouched on load and

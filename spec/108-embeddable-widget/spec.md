@@ -74,16 +74,21 @@ no impact on the host page's global styles, `<html>` attributes, or URL.
   strings (Vite `?inline`) and applies a small, unit-tested selector rewrite to
   `:host([theme="..."])` — tokens stay single-source, no forked palette.
 - **Container-based responsiveness**: the widget must lay out based on the size of the slot
-  it is embedded in, not the browser viewport. Convert the viewport width breakpoints to
-  container queries (`@container`) against a `container-type: inline-size` context on the
-  widget root. This is wider than app-shell: `app-shell.ts` (`@media (max-width: 767px)`,
-  `(min-width: 768px)`, `(min-width: 1024px)`) **plus** `contrast-grid.ts` (640px ×3),
-  `grid-filters.ts` (360px), and `sort-controls.ts` (640px ×3) — otherwise a widget in a
-  320px sidebar on a desktop viewport gets desktop styling inside the grid. **Do not** convert preference/environment queries — `forced-colors: active`,
-  `prefers-reduced-motion`, `prefers-color-scheme`, `prefers-contrast` must remain `@media`
-  (no container equivalent, and they are required accessibility signals). The main app reuses
-  the same components, so its responsiveness must remain visually identical (the app-shell
-  becomes the query container) — no separate stylesheet fork.
+  it is embedded in, not the browser viewport. Convert the width breakpoints in the shared
+  components the widget renders — `contrast-grid.ts` (640px ×3), `grid-filters.ts` (360px),
+  and `sort-controls.ts` (640px ×3) — to container queries (`@container`) against a
+  `container-type: inline-size` context on the widget root; otherwise a widget in a 320px
+  sidebar on a desktop viewport gets desktop styling inside the grid. In the main app the
+  app-shell host is the query container — no separate stylesheet fork. **Do not** convert
+  preference/environment queries — `forced-colors: active`, `prefers-reduced-motion`,
+  `prefers-color-scheme`, `prefers-contrast` must remain `@media` (no container equivalent,
+  and they are required accessibility signals).
+- **App-shell page layout stays on `@media`**: the widget never renders `bca-app-shell`, so
+  its 767/768/1024px page breakpoints keep measuring the viewport. A container's width
+  excludes a classic scrollbar (15px in desktop Chrome on Windows) where a media query
+  includes it, so migrating them would move every page breakpoint by the scrollbar width
+  on desktop. The shared components accept that shift at 640/360px: with a classic
+  scrollbar they turn compact up to one scrollbar width earlier.
 - **Separate build target**: a dedicated Vite library build (`build.lib`) with a single
   entry (`src/embed/widget.ts`) producing one IIFE/UMD file that self-registers the element;
   Lit bundled in (not externalised) so no host setup is required.
@@ -115,10 +120,10 @@ no impact on the host page's global styles, `<html>` attributes, or URL.
     touches `document`.
   - Rename the 12 internal custom-element tags with the `bca-` prefix and route
     registration through a define-guard that warns on duplicates instead of throwing.
-- Establish a `container-type: inline-size` context on the widget root and migrate the
-  layout width breakpoints in `app-shell.ts`, `contrast-grid.ts`, `grid-filters.ts`, and
-  `sort-controls.ts` from `@media` to `@container` queries, leaving preference/environment
-  `@media` queries unchanged.
+- Establish a `container-type: inline-size` context on the app-shell host and the widget
+  root, and migrate the width breakpoints in `contrast-grid.ts`, `grid-filters.ts`, and
+  `sort-controls.ts` from `@media` to `@container` queries, leaving the app-shell page
+  layout and preference/environment `@media` queries unchanged.
 - Build-time theme-token transform: import `src/styles/themes/*.css` via `?inline` and
   rewrite `:root[data-theme=...]` (and the dark-scheme media wrapper) to
   `:host([theme=...])` selectors with a unit-tested helper.
@@ -184,8 +189,8 @@ no impact on the host page's global styles, `<html>` attributes, or URL.
 - A `<contrast-checker>` placed in a narrow container (e.g. a 320px sidebar) on a wide
   viewport renders its compact layout; the same widget in a wide container renders the full
   layout — layout responds to the container, not the browser window.
-- The main app's responsive behaviour at 767/1024px is visually unchanged after the
-  media-to-container-query migration.
+- The main app's page layout at 767/1024px is unchanged after the media-to-container-query
+  migration, and the shared components switch at 640/360px of container width.
 - The widget does not modify `window.location` or the host page's `<html>` attributes.
 - `attribution="hide"` removes the "Powered by" link; default shows it.
 - Host CSS custom properties applied to the element restyle the widget without leaking.
