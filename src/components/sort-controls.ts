@@ -52,7 +52,7 @@ export class SortControls extends LitElement {
         outline-offset: var(--focus-ring-offset, 2px);
       }
 
-      @media (max-width: 640px) {
+      @container (max-width: 640px) {
         min-width: 140px;
         font-size: var(--font-size-xs, 0.75rem);
       }
@@ -84,7 +84,7 @@ export class SortControls extends LitElement {
         outline-offset: var(--focus-ring-offset, 2px);
       }
 
-      @media (max-width: 640px) {
+      @container (max-width: 640px) {
         font-size: var(--font-size-xs, 0.75rem);
       }
     }
@@ -117,7 +117,7 @@ export class SortControls extends LitElement {
         cursor: not-allowed;
       }
 
-      @media (max-width: 640px) {
+      @container (max-width: 640px) {
         font-size: var(--font-size-xs, 0.75rem);
       }
     }
