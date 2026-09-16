@@ -40,7 +40,7 @@ export class GridFilters extends LitElement {
       grid-template-columns: 1fr 1fr;
       gap: var(--space-sm, 0.5rem);
 
-      @media (max-width: 360px) {
+      @container (max-width: 360px) {
         grid-template-columns: 1fr;
       }
     }

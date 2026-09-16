@@ -49,10 +49,15 @@ export class AppShell extends LitElement {
   };
 
   static styles = css`
+    /* Shared components query this container so their breakpoints also work
+       inside the embed widget. The page layout below stays on media queries:
+       the widget never renders the shell, and container widths exclude a
+       classic scrollbar, which would shift these breakpoints on desktop. */
     :host {
       display: block;
       min-height: 100vh;
       background: var(--theme-page-bg-color, #ffffff);
+      container-type: inline-size;
     }
 
     header {

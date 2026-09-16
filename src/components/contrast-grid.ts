@@ -172,7 +172,7 @@ export class ContrastGrid extends LitElement {
       background: var(--theme-card-bg-color, #f5f5f5);
       border-radius: var(--radius-md, 0.5rem);
 
-      @media (max-width: 640px) {
+      @container (max-width: 640px) {
         gap: var(--space-sm, 0.5rem);
         padding: var(--space-sm, 0.5rem);
       }
@@ -184,7 +184,7 @@ export class ContrastGrid extends LitElement {
       gap: var(--space-xs, 0.25rem);
       font-size: var(--font-size-sm, 0.875rem);
 
-      @media (max-width: 640px) {
+      @container (max-width: 640px) {
         font-size: var(--font-size-xs, 0.75rem);
       }
     }
@@ -202,7 +202,7 @@ export class ContrastGrid extends LitElement {
       &.aa18 { background: ${unsafeCSS(WCAG_BADGE_COLORS.AA18)}; color: #fff; }
       &.dnp { background: ${unsafeCSS(WCAG_BADGE_COLORS.DNP)}; color: #fff; }
 
-      @media (max-width: 640px) {
+      @container (max-width: 640px) {
         font-size: 0.625rem;
         padding: 0.0625rem 0.25rem;
       }
